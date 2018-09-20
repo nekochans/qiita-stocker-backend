@@ -5,8 +5,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use App\Services\WeatherService;
+use Illuminate\Http\JsonResponse;
 
 /**
  * Class WeatherController
