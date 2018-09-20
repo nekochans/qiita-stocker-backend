@@ -1,0 +1,36 @@
+<?php
+
+$finder = PhpCsFixer\Finder::create()
+    ->exclude('bootstrap/cache')
+    ->exclude('storage')
+    ->exclude('vendor')
+    ->exclude('resources/lang')
+    ->in(__DIR__)
+    ->name('*.php')
+    ->notName('*.blade.php')
+    ->ignoreDotFiles(true);
+
+$config = PhpCsFixer\Config::create();
+$rules  = [
+    '@PSR1' => false,
+    '@PSR2' => true,
+    'array_syntax' => ['syntax' => 'short'],               // 配列は[]に統一
+    'no_multiline_whitespace_around_double_arrow' => true, // 演算子 => は複数行の空白に囲まれない
+    'no_multiline_whitespace_before_semicolons' => true,   // セミコロンを閉じる前の複数行の空白は禁止
+    'blank_line_after_namespace' => true,                  // 名前空間の後に空行を追加
+    'no_unused_imports' => true,                           // 未使用のuse文は削除
+    'ordered_imports' => ['sortAlgorithm' => 'length'],    // use文の整列
+    'single_quote' => true,                                // 単純な文字列の二重引用符を一重引用符に変換
+    'binary_operator_spaces' => [
+        'align_double_arrow' => true,
+    ],                                                     // = , => を整列する
+    'increment_style' => ['style' => 'post'],              // インクリメントおよびデクリメント演算子の統一
+    'linebreak_after_opening_tag' => true,                 // 開始タグの後ろに改行を入れる
+    'simplified_null_return' => true,                      // return nullを簡略化する
+];
+
+$config->setRules($rules)
+    ->setUsingCache(false)
+    ->setFinder($finder);
+
+return $config;
