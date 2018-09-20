@@ -17,7 +17,7 @@ class IndexTest extends TestCase
      */
     public function testSuccessIndex()
     {
-        $weatherArray = array('sunny', 'cloudy', 'rainy');
+        $weatherArray = ['sunny', 'cloudy', 'rainy'];
         $jsonResponse = $this->get('/api/weather');
 
         $jsonResponse->assertJsonStructure(['weather']);

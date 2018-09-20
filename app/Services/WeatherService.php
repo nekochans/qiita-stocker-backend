@@ -17,7 +17,7 @@ class WeatherService
      */
     public function fetchWeather(): array
     {
-        $weatherArray = array('sunny', 'cloudy', 'rainy');
+        $weatherArray = ['sunny', 'cloudy', 'rainy'];
 
         $key = array_rand($weatherArray);
 
