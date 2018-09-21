@@ -50,7 +50,8 @@
             "@php artisan package:discover"
         ],
         "phpcs": "php-cs-fixer fix --dry-run --diff -v --config .php_cs.dist",
-        "phpcs:format": "php-cs-fixer fix --diff -v --config .php_cs.dist"
+        "phpcs:format": "php-cs-fixer fix --diff -v --config .php_cs.dist",
+        "test": "phpunit"
     },
     "config": {
         "preferred-install": "dist",
