@@ -31,7 +31,11 @@ class RegistrationScenario
         // TODO QiitaAccountValueを用いて、ユーザをDBに登録する
 
         $sessionId = Uuid::uuid4();
-        $responseArray = ['$sessionId' => $sessionId];
+        $accountId = '1'; // 登録後に発行されたアカウントIDを指定する
+        $responseArray = [
+            'accountId' => $accountId,
+            '_embedded' => ['sessionId' => $sessionId]
+            ];
 
         // TODO LoginSessionをDBに保存すする
 
