@@ -13,3 +13,5 @@
 */
 
 Route::get('weather', 'WeatherController@index');
+
+Route::post('accounts', 'AccountController@registration');
