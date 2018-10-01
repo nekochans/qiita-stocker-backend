@@ -1,15 +1,15 @@
 <?php
 /**
- * RegistrationValueBuilder
+ * QiitaAccountValueBuilder
  */
 
 namespace App\Models\Domain;
 
 /**
- * Class RegistrationValueBuilder
+ * Class QiitaAccountValueBuilder
  * @package App\Models\Domain
  */
-class RegistrationValueBuilder
+class QiitaAccountValueBuilder
 {
     /**
      * パーマネントID
@@ -58,10 +58,10 @@ class RegistrationValueBuilder
     }
 
     /**
-     * @return RegistrationValue
+     * @return QiitaAccountValue
      */
-    public function build(): RegistrationValue
+    public function build(): QiitaAccountValue
     {
-        return new RegistrationValue($this);
+        return new QiitaAccountValue($this);
     }
 }

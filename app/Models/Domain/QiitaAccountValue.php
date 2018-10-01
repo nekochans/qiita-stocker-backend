@@ -1,15 +1,15 @@
 <?php
 /**
- * RegistrationValue
+ * QiitaAccountValue
  */
 
 namespace App\Models\Domain;
 
 /**
- * Class RegistrationValue
+ * Class QiitaAccountValue
  * @package App\Models\Domain
  */
-class RegistrationValue
+class QiitaAccountValue
 {
     /**
      * パーマネントID
@@ -25,7 +25,11 @@ class RegistrationValue
      */
     private $accessToken;
 
-    public function __construct(RegistrationValueBuilder $builder)
+    /**
+     * QiitaAccountValue constructor.
+     * @param QiitaAccountValueBuilder $builder
+     */
+    public function __construct(QiitaAccountValueBuilder $builder)
     {
         $this->permanentId = $builder->getPermanentId();
         $this->accessToken = $builder->getAccessToken();

@@ -6,7 +6,7 @@
 namespace App\Services;
 
 use Ramsey\Uuid\Uuid;
-use App\Models\Domain\RegistrationValueBuilder;
+use App\Models\Domain\QiitaAccountValueBuilder;
 
 /**
  * Class RegistrationScenario
@@ -23,12 +23,12 @@ class RegistrationScenario
      */
     public function registration(array $requestObject): array
     {
-        $builder = new RegistrationValueBuilder();
+        $builder = new QiitaAccountValueBuilder();
         $builder->setAccessToken($requestObject['accessToken']);
         $builder->setPermanentId($requestObject['permanentId']);
-        $registrationValue = $builder->build();
+        $qiitaAccountValue = $builder->build();
 
-        // TODO RegistrationValueを用いて、ユーザをDBに登録する
+        // TODO QiitaAccountValueを用いて、ユーザをDBに登録する
 
         $sessionId = Uuid::uuid4();
         $responseArray = ['$sessionId' => $sessionId];

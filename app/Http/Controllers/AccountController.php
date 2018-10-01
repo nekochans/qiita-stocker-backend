@@ -1,6 +1,6 @@
 <?php
 /**
- * RegistrationController
+ * AccountController
  */
 
 namespace App\Http\Controllers;
@@ -10,13 +10,13 @@ use Illuminate\Http\JsonResponse;
 use App\Services\RegistrationScenario;
 
 /**
- * Class RegistrationController
+ * Class AccountController
  * @package App\Http\Controllers
  */
-class RegistrationController extends Controller
+class AccountController extends Controller
 {
     /**
-     * ユーザを登録する
+     * アカウントを登録する
      *
      * @param Request $request
      * @return JsonResponse
