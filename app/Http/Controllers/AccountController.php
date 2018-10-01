@@ -31,6 +31,6 @@ class AccountController extends Controller
         $registrationScenario = new RegistrationScenario();
         $sessionId = $registrationScenario->registration($requestArray);
 
-        return response()->json($sessionId);
+        return response()->json($sessionId)->setStatusCode(201);
     }
 }
