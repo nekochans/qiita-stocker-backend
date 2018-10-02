@@ -20,8 +20,8 @@ class CreateLoginSessionsTable extends Migration
             $table->unsignedInteger('lock_version')->default(0);
             $table->timestamps();
             $table->primary('id');
-            $table->foreign('account_id')->references('id')->on('accounts');
-            $table->index('account_id');
+            $table->foreign('account_id', 'fk_login_sessions_01')->references('id')->on('accounts');
+            $table->index('account_id', 'idx_login_sessions_01');
         });
     }
 

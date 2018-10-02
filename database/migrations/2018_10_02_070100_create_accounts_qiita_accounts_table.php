@@ -19,10 +19,9 @@ class CreateAccountsQiitaAccountsTable extends Migration
             $table->string('qiita_account_id', 255);
             $table->unsignedInteger('lock_version')->default(0);
             $table->timestamps();
-            $table->unique('account_id');
-            $table->unique('qiita_account_id');
-            $table->foreign('account_id')->references('id')->on('accounts');
-            $table->index('qiita_account_id');
+            $table->unique('account_id', 'uq_accounts_qiita_accounts_01');
+            $table->unique('qiita_account_id', 'uq_accounts_qiita_accounts_02');
+            $table->foreign('account_id', 'fk_accounts_qiita_accounts_01')->references('id')->on('accounts');
         });
     }
 

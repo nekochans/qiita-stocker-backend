@@ -19,10 +19,9 @@ class CreateAccountsAccessTokensTable extends Migration
             $table->string('access_token', 255);
             $table->unsignedInteger('lock_version')->default(0);
             $table->timestamps();
-            $table->unique('account_id');
-            $table->unique('access_token');
-            $table->foreign('account_id')->references('id')->on('accounts');
-            $table->index('access_token');
+            $table->unique('account_id', 'uq_accounts_access_tokens_01');
+            $table->unique('access_token', 'uq_accounts_access_tokens_02');
+            $table->foreign('account_id', 'fk_accounts_access_tokens_01')->references('id')->on('accounts');
         });
     }
 
