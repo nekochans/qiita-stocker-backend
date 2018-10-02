@@ -6,8 +6,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\AccountScenario;
 use Illuminate\Http\JsonResponse;
-use App\Services\RegistrationScenario;
 
 /**
  * Class AccountController
@@ -28,8 +28,8 @@ class AccountController extends Controller
 
         // TODO リクエストのバリデーションを追加する
 
-        $registrationScenario = new RegistrationScenario();
-        $sessionId = $registrationScenario->registration($requestArray);
+        $accountScenario = new AccountScenario();
+        $sessionId = $accountScenario->create($requestArray);
 
         return response()->json($sessionId)->setStatusCode(201);
     }

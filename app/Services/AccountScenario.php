@@ -1,6 +1,6 @@
 <?php
 /**
- * RegistrationScenario
+ * AccountScenario
  */
 
 namespace App\Services;
@@ -11,19 +11,19 @@ use App\Models\Domain\LoginSessionEntityBuilder;
 use App\Infrastructure\Repositories\RegistrationRepository;
 
 /**
- * Class RegistrationScenario
+ * Class AccountScenario
  * @package App\Services
  */
-class RegistrationScenario
+class AccountScenario
 {
     /**
-     * ユーザを登録する
+     * アカウントを作成する
      *
      * @param array $requestObject
      * @return array
      * @throws \Exception
      */
-    public function registration(array $requestObject): array
+    public function create(array $requestObject): array
     {
         $registrationRepository = new RegistrationRepository();
 
@@ -35,6 +35,8 @@ class RegistrationScenario
         $accountEntity = $registrationRepository->createAccount($qiitaAccountValue);
 
         $sessionId = Uuid::uuid4();
+
+        // TODO 有効期限を適切な期限に修正
         $expiredOn = new \DateTime();
         $expiredOn->add(new \DateInterval('PT1H'));
 
@@ -49,7 +51,7 @@ class RegistrationScenario
         $responseArray = [
             'accountId' => $loginSessionEntity->getAccountId(),
             '_embedded' => ['sessionId' => $loginSessionEntity->getSessionId()]
-            ];
+        ];
 
         return $responseArray;
     }

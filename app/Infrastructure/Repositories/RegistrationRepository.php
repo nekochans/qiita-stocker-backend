@@ -7,7 +7,6 @@ namespace App\Infrastructure\Repositories;
 
 use App\Models\Domain\AccountEntity;
 use App\Models\Domain\QiitaAccountValue;
-
 use App\Models\Domain\LoginSessionEntity;
 use App\Models\Domain\AccountEntityBuilder;
 
