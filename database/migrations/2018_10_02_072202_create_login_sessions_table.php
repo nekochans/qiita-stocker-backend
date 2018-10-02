@@ -22,7 +22,6 @@ class CreateLoginSessionsTable extends Migration
             $table->primary('id');
             $table->foreign('account_id')->references('id')->on('accounts');
             $table->index('account_id');
-
         });
     }
 
