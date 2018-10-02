@@ -38,8 +38,8 @@ class AccountEntity
      */
     public function __construct(AccountEntityBuilder $builder)
     {
-        $this->accountId = $builder->getPermanentId();
-        $this->permanentId = $builder->getAccountId();
+        $this->accountId = $builder->getAccountId();
+        $this->permanentId = $builder->getPermanentId();
         $this->accessToken = $builder->getAccessToken();
     }
 
