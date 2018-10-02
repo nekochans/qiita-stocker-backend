@@ -26,6 +26,13 @@ class LoginSessionEntity
     private $sessionId;
 
     /**
+     * 有効期限切れになる日時
+     *
+     * @var \DateTime
+     */
+    private $expiredOn;
+
+    /**
      * LoginSessionEntity constructor.
      * @param LoginSessionEntityBuilder $builder
      */
@@ -33,6 +40,7 @@ class LoginSessionEntity
     {
         $this->accountId = $builder->getAccountId();
         $this->sessionId = $builder->getSessionId();
+        $this->expiredOn = $builder->getExpiredOn();
     }
 
     /**
@@ -49,5 +57,13 @@ class LoginSessionEntity
     public function getSessionId(): string
     {
         return $this->sessionId;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getExpiredOn(): \DateTime
+    {
+        return $this->expiredOn;
     }
 }

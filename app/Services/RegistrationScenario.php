@@ -35,9 +35,13 @@ class RegistrationScenario
         $accountEntity = $registrationRepository->createAccount($qiitaAccountValue);
 
         $sessionId = Uuid::uuid4();
+        $expiredOn = new \DateTime();
+        $expiredOn->add(new \DateInterval('PT1H'));
+
         $loginSessionEntityBuilder = new LoginSessionEntityBuilder();
         $loginSessionEntityBuilder->setAccountId($accountEntity->getAccountId());
         $loginSessionEntityBuilder->setSessionId($sessionId);
+        $loginSessionEntityBuilder->setExpiredOn($expiredOn);
         $loginSessionEntity = $loginSessionEntityBuilder->build();
 
         $registrationRepository->saveLoginSession($loginSessionEntity);
