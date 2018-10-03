@@ -1,20 +1,24 @@
 <?php
 /**
- * RegistrationRepository
+ * AccountRepository
  */
 
 namespace App\Infrastructure\Repositories;
 
+use App\Eloquents\Account;
+use App\Eloquents\AccessToken;
+use App\Eloquents\LoginSession;
+use App\Eloquents\QiitaAccount;
 use App\Models\Domain\AccountEntity;
 use App\Models\Domain\QiitaAccountValue;
 use App\Models\Domain\LoginSessionEntity;
 use App\Models\Domain\AccountEntityBuilder;
 
 /**
- * Class RegistrationRepository
+ * Class AccountRepository
  * @package App\Infrastructure\Repositories
  */
-class RegistrationRepository implements \App\Models\Domain\RegistrationRepository
+class AccountRepository implements \App\Models\Domain\AccountRepository
 {
     /**
      * アカウントを作成する
@@ -22,7 +26,7 @@ class RegistrationRepository implements \App\Models\Domain\RegistrationRepositor
      * @param QiitaAccountValue $qiitaAccountValue
      * @return AccountEntity
      */
-    public function createAccount(QiitaAccountValue $qiitaAccountValue): AccountEntity
+    public function create(QiitaAccountValue $qiitaAccountValue): AccountEntity
     {
         $accountId = $this->saveAccounts();
         $this->saveQiitaAccounts($accountId, $qiitaAccountValue->getPermanentId());
@@ -41,7 +45,10 @@ class RegistrationRepository implements \App\Models\Domain\RegistrationRepositor
      */
     private function saveAccounts(): int
     {
-        $accountId = 1;
+        $account = new Account;
+        $account->save();
+        $accountId = $account->getAttribute('id');
+
         return $accountId;
     }
 
@@ -52,6 +59,10 @@ class RegistrationRepository implements \App\Models\Domain\RegistrationRepositor
      */
     private function saveQiitaAccounts(int $accountId, string $permanentId)
     {
+        $qiitaAccount = new QiitaAccount();
+        $qiitaAccount->account_id = $accountId;
+        $qiitaAccount->qiita_account_id = $permanentId;
+        $qiitaAccount->save();
     }
 
     /**
@@ -62,6 +73,10 @@ class RegistrationRepository implements \App\Models\Domain\RegistrationRepositor
      */
     private function saveAccessTokens(int $accountId, string $accessToken)
     {
+        $accountAccessToken = new AccessToken();
+        $accountAccessToken->account_id = $accountId;
+        $accountAccessToken->access_token = $accessToken;
+        $accountAccessToken->save();
     }
 
     /**
@@ -72,5 +87,11 @@ class RegistrationRepository implements \App\Models\Domain\RegistrationRepositor
      */
     public function saveLoginSession(LoginSessionEntity $loginSessionEntity)
     {
+        $loginSession = new LoginSession();
+        $loginSession->id = $loginSessionEntity->getSessionId();
+        $loginSession->account_id = $loginSessionEntity->getAccountId();
+        $loginSession->expired_on = $loginSessionEntity->getExpiredOn();
+
+        $loginSession->save();
     }
 }

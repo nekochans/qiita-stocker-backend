@@ -16,6 +16,21 @@ use Illuminate\Http\JsonResponse;
 class AccountController extends Controller
 {
     /**
+     * AccountScenario
+     * @var
+     */
+    private $accountScenario;
+
+    /**
+     * AccountController constructor.
+     * @param AccountScenario $accountScenario
+     */
+    public function __construct(AccountScenario $accountScenario)
+    {
+        $this->accountScenario = $accountScenario;
+    }
+
+    /**
      * アカウントを登録する
      *
      * @param Request $request
@@ -28,8 +43,7 @@ class AccountController extends Controller
 
         // TODO リクエストのバリデーションを追加する
 
-        $accountScenario = new AccountScenario();
-        $sessionId = $accountScenario->create($requestArray);
+        $sessionId = $this->accountScenario->create($requestArray);
 
         return response()->json($sessionId)->setStatusCode(201);
     }

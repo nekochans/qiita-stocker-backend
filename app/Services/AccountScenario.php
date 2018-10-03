@@ -6,9 +6,9 @@
 namespace App\Services;
 
 use Ramsey\Uuid\Uuid;
+use App\Models\Domain\AccountRepository;
 use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\LoginSessionEntityBuilder;
-use App\Infrastructure\Repositories\RegistrationRepository;
 
 /**
  * Class AccountScenario
@@ -16,6 +16,23 @@ use App\Infrastructure\Repositories\RegistrationRepository;
  */
 class AccountScenario
 {
+
+    /**
+     * AccountRepository
+     *
+     * @var
+     */
+    private $accountRepository;
+
+    /**
+     * AccountScenario constructor.
+     * @param AccountRepository $accountRepository
+     */
+    public function __construct(AccountRepository $accountRepository)
+    {
+        $this->accountRepository = $accountRepository;
+    }
+
     /**
      * アカウントを作成する
      *
@@ -25,14 +42,12 @@ class AccountScenario
      */
     public function create(array $requestObject): array
     {
-        $registrationRepository = new RegistrationRepository();
-
         $qiitaAccountValueBuilder = new QiitaAccountValueBuilder();
         $qiitaAccountValueBuilder->setAccessToken($requestObject['accessToken']);
         $qiitaAccountValueBuilder->setPermanentId($requestObject['permanentId']);
         $qiitaAccountValue = $qiitaAccountValueBuilder->build();
 
-        $accountEntity = $registrationRepository->createAccount($qiitaAccountValue);
+        $accountEntity = $this->accountRepository->create($qiitaAccountValue);
 
         $sessionId = Uuid::uuid4();
 
@@ -46,7 +61,7 @@ class AccountScenario
         $loginSessionEntityBuilder->setExpiredOn($expiredOn);
         $loginSessionEntity = $loginSessionEntityBuilder->build();
 
-        $registrationRepository->saveLoginSession($loginSessionEntity);
+        $this->accountRepository->saveLoginSession($loginSessionEntity);
 
         $responseArray = [
             'accountId' => $loginSessionEntity->getAccountId(),
