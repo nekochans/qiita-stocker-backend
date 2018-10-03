@@ -1,15 +1,15 @@
 <?php
 /**
- * RegistrationRepository
+ * AccountRepository
  */
 
 namespace App\Models\Domain;
 
 /**
- * Interface RegistrationRepository
+ * Interface AccountRepository
  * @package App\Models\Domain
  */
-interface RegistrationRepository
+interface AccountRepository
 {
     /**
      * アカウントを作成する
@@ -17,7 +17,7 @@ interface RegistrationRepository
      * @param QiitaAccountValue $qiitaAccountValue
      * @return AccountEntity
      */
-    public function createAccount(QiitaAccountValue $qiitaAccountValue): AccountEntity;
+    public function create(QiitaAccountValue $qiitaAccountValue): AccountEntity;
 
     /**
      * ログインセッションを保存する

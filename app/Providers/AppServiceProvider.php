@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Services\AccountScenario;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Domain\AccountRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,5 +26,19 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind('App\Services\WeatherService');
+
+        $this->app->bind(
+            AccountRepository::class,
+            \App\Infrastructure\Repositories\AccountRepository::class
+        );
+
+        $this->app->bind(
+            AccountScenario::class,
+            function () {
+                return new AccountScenario(
+                $this->app->make(AccountRepository::class)
+            );
+            }
+        );
     }
 }
