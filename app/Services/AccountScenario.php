@@ -36,15 +36,15 @@ class AccountScenario
     /**
      * アカウントを作成する
      *
-     * @param array $requestObject
+     * @param array $requestArray
      * @return array
      * @throws \Exception
      */
-    public function create(array $requestObject): array
+    public function create(array $requestArray): array
     {
         $qiitaAccountValueBuilder = new QiitaAccountValueBuilder();
-        $qiitaAccountValueBuilder->setAccessToken($requestObject['accessToken']);
-        $qiitaAccountValueBuilder->setPermanentId($requestObject['permanentId']);
+        $qiitaAccountValueBuilder->setAccessToken($requestArray['accessToken']);
+        $qiitaAccountValueBuilder->setPermanentId($requestArray['permanentId']);
         $qiitaAccountValue = $qiitaAccountValueBuilder->build();
 
         $accountEntity = $this->accountRepository->create($qiitaAccountValue);

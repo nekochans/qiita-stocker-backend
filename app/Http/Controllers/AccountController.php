@@ -37,7 +37,7 @@ class AccountController extends Controller
      * @return JsonResponse
      * @throws \Exception
      */
-    public function registration(Request $request): JsonResponse
+    public function create(Request $request): JsonResponse
     {
         $requestArray = $request->json()->all();
 
