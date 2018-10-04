@@ -14,4 +14,4 @@
 
 Route::get('weather', 'WeatherController@index');
 
-Route::post('accounts', 'AccountController@registration');
+Route::post('accounts', 'AccountController@create');
