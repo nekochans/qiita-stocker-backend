@@ -3,7 +3,10 @@
  * AbstractTestCase
  */
 
-namespace Tests;
+namespace Tests\Feature;
+
+use Tests\TestCase;
+use Tests\CreatesApplication;
 
 /**
  * Class AbstractTestCase

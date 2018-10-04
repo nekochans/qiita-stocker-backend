@@ -3,7 +3,7 @@
  * AccountTest
  */
 
-namespace Tests;
+namespace Tests\Feature;
 
 use App\Eloquents\Account;
 use App\Eloquents\AccessToken;
