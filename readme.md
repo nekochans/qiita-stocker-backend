@@ -13,6 +13,7 @@ DB_PORT=3306
 DB_DATABASE=qiita_stocker
 DB_USERNAME=qiita_stocker
 DB_PASSWORD=(YourPassword999)
+CORS_ORIGIN=http://localhost:8080
 
 //.env.testing
 DB_CONNECTION=mysql
@@ -21,4 +22,5 @@ DB_PORT=3306
 DB_DATABASE=qiita_stocker_test
 DB_USERNAME=qiita_stocker_test
 DB_PASSWORD=(YourPassword999)
+CORS_ORIGIN=http://localhost:8080
 ```

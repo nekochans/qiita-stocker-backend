@@ -12,6 +12,12 @@
 |
 */
 
-Route::get('weather', 'WeatherController@index');
+Route::middleware(['cors'])->group(function () {
+    Route::get('weather', 'WeatherController@index');
 
-Route::post('accounts', 'AccountController@create');
+    Route::options('accounts', function () {
+        return response()->json();
+    });
+
+    Route::post('accounts', 'AccountController@create');
+});
