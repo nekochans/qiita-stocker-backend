@@ -47,11 +47,11 @@ class AccountScenario
         $qiitaAccountValueBuilder->setPermanentId($requestArray['permanentId']);
         $qiitaAccountValue = $qiitaAccountValueBuilder->build();
 
-        try {
-            $accountEntity = $this->accountRepository->findByPermanentId($qiitaAccountValue);
-            $this->accountRepository->updateAccessToken($accountEntity);
-        } catch (\Exception $e) {
-            // TODO 独自の例外処理を定義する
+        $accountEntity = $qiitaAccountValue->findAccountEntityByPermanentId($this->accountRepository);
+
+        if ($accountEntity) {
+            $accountEntity->updateAccessToken($this->accountRepository);
+        } else {
             $accountEntity = $this->accountRepository->create($qiitaAccountValue);
         }
 

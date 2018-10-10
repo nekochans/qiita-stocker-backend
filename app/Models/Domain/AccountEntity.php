@@ -66,4 +66,14 @@ class AccountEntity
     {
         return $this->accessToken;
     }
+
+    /**
+     * アクセストークンを更新する
+     *
+     * @param AccountRepository $accountRepository
+     */
+    public function updateAccessToken(AccountRepository $accountRepository)
+    {
+        $accountRepository->updateAccessToken($this);
+    }
 }
