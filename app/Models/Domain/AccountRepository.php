@@ -40,6 +40,7 @@ interface AccountRepository
      * アクセストークンを更新する
      *
      * @param AccountEntity $accountEntity
+     * @param QiitaAccountValue $qiitaAccountValue
      */
-    public function updateAccessToken(AccountEntity $accountEntity);
+    public function updateAccessToken(AccountEntity $accountEntity, QiitaAccountValue $qiitaAccountValue);
 }

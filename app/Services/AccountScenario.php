@@ -50,7 +50,7 @@ class AccountScenario
         $accountEntity = $qiitaAccountValue->findAccountEntityByPermanentId($this->accountRepository);
 
         if ($accountEntity) {
-            $accountEntity->updateAccessToken($this->accountRepository);
+            $accountEntity = $accountEntity->updateAccessToken($this->accountRepository, $qiitaAccountValue);
         } else {
             $accountEntity = $this->accountRepository->create($qiitaAccountValue);
         }

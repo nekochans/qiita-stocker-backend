@@ -107,13 +107,15 @@ class AccountRepository implements \App\Models\Domain\AccountRepository
         $qiitaAccount = QiitaAccount::where('qiita_account_id', $qiitaAccountValue->getPermanentId())->first();
 
         if ($qiitaAccount === null) {
-            throw new \Exception('error');
+            throw new \Exception('qiitaAccountNotFoundException');
         }
+
+        $accessToken = AccessToken::where('account_id', $qiitaAccount->account_id)->first();
 
         $accountEntityBuilder = new AccountEntityBuilder();
         $accountEntityBuilder->setAccountId($qiitaAccount->account_id);
         $accountEntityBuilder->setPermanentId($qiitaAccountValue->getPermanentId());
-        $accountEntityBuilder->setAccessToken($qiitaAccountValue->getAccessToken());
+        $accountEntityBuilder->setAccessToken($accessToken->access_token);
 
         return $accountEntityBuilder->build();
     }
@@ -122,11 +124,12 @@ class AccountRepository implements \App\Models\Domain\AccountRepository
      * アクセストークンを更新する
      *
      * @param AccountEntity $accountEntity
+     * @param QiitaAccountValue $qiitaAccountValue
      */
-    public function updateAccessToken(AccountEntity $accountEntity)
+    public function updateAccessToken(AccountEntity $accountEntity, QiitaAccountValue $qiitaAccountValue)
     {
         $accessToken = AccessToken::where('account_id', $accountEntity->getAccountId())->first();
-        $accessToken->access_token = $accountEntity->getAccessToken();
+        $accessToken->access_token = $qiitaAccountValue->getAccessToken();
         $accessToken->save();
     }
 }
