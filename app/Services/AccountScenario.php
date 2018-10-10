@@ -47,7 +47,13 @@ class AccountScenario
         $qiitaAccountValueBuilder->setPermanentId($requestArray['permanentId']);
         $qiitaAccountValue = $qiitaAccountValueBuilder->build();
 
-        $accountEntity = $this->accountRepository->create($qiitaAccountValue);
+        try {
+            $accountEntity = $this->accountRepository->findByPermanentId($qiitaAccountValue);
+            $this->accountRepository->updateAccessToken($accountEntity);
+        } catch (\Exception $e) {
+            // TODO 独自の例外処理を定義する
+            $accountEntity = $this->accountRepository->create($qiitaAccountValue);
+        }
 
         $sessionId = Uuid::uuid4();
 
