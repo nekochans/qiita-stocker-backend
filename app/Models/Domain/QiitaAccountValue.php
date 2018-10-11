@@ -50,4 +50,20 @@ class QiitaAccountValue
     {
         return $this->accessToken;
     }
+
+    /**
+     * permanentIDからAccountEntityを取得する
+     *
+     * @param AccountRepository $accountRepository
+     * @return AccountEntity|string
+     */
+    public function findAccountEntityByPermanentId(AccountRepository $accountRepository)
+    {
+        try {
+            return $accountRepository->findByPermanentId($this);
+        } catch (\Exception $e) {
+            // TODO 独自の例外処理を定義する
+            return '';
+        }
+    }
 }

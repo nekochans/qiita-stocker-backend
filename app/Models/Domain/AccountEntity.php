@@ -66,4 +66,22 @@ class AccountEntity
     {
         return $this->accessToken;
     }
+
+    /**
+     * アクセストークンを更新する
+     *
+     * @param AccountRepository $accountRepository
+     * @param QiitaAccountValue $qiitaAccountValue
+     * @return AccountEntity
+     */
+    public function updateAccessToken(AccountRepository $accountRepository, QiitaAccountValue $qiitaAccountValue): AccountEntity
+    {
+        $accountRepository->updateAccessToken($this, $qiitaAccountValue);
+
+        $accountEntityBuilder = new AccountEntityBuilder();
+        $accountEntityBuilder->setAccountId($this->accountId);
+        $accountEntityBuilder->setPermanentId($this->permanentId);
+        $accountEntityBuilder->setAccessToken($qiitaAccountValue->getAccessToken());
+        return $accountEntityBuilder->build();
+    }
 }
