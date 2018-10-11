@@ -1,33 +1,33 @@
 <?php
 /**
- * LoginController
+ * LoginSessionController
  */
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\LoginScenario;
 use Illuminate\Http\JsonResponse;
+use App\Services\LoginSessionScenario;
 
 /**
- * Class LoginController
+ * Class LoginSessionController
  * @package App\Http\Controllers
  */
-class LoginController extends Controller
+class LoginSessionController extends Controller
 {
     /**
-     * LoginScenario
+     * LoginSessionScenario
      * @var
      */
-    private $loginScenario;
+    private $loginSessionScenario;
 
     /**
-     * LoginController constructor.
-     * @param LoginScenario $loginScenario
+     * LoginSessionController constructor.
+     * @param LoginSessionScenario $loginSessionScenario
      */
-    public function __construct(LoginScenario $loginScenario)
+    public function __construct(LoginSessionScenario $loginSessionScenario)
     {
-        $this->loginScenario = $loginScenario;
+        $this->loginSessionScenario = $loginSessionScenario;
     }
 
     /**
@@ -43,7 +43,7 @@ class LoginController extends Controller
 
         // TODO リクエストのバリデーションを追加する
 
-        $sessionId = $this->loginScenario->create($requestArray);
+        $sessionId = $this->loginSessionScenario->create($requestArray);
 
         return response()->json($sessionId)->setStatusCode(201);
     }

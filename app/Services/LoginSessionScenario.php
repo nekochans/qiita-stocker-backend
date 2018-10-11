@@ -1,6 +1,6 @@
 <?php
 /**
- * LoginScenario
+ * LoginSessionScenario
  */
 
 namespace App\Services;
@@ -11,10 +11,10 @@ use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\LoginSessionEntityBuilder;
 
 /**
- * Class LoginScenario
+ * Class LoginSessionScenario
  * @package App\Services
  */
-class LoginScenario
+class LoginSessionScenario
 {
     /**
      * AccountRepository
@@ -24,7 +24,7 @@ class LoginScenario
     private $accountRepository;
 
     /**
-     * LoginScenario constructor.
+     * LoginSessionScenario constructor.
      * @param AccountRepository $accountRepository
      */
     public function __construct(AccountRepository $accountRepository)
@@ -33,7 +33,7 @@ class LoginScenario
     }
 
     /**
-     * ログインセッションを発行する
+     * ログインセッションを作成する
      *
      * @param array $requestArray
      * @return array

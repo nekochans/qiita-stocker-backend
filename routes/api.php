@@ -20,4 +20,6 @@ Route::middleware(['cors'])->group(function () {
     });
 
     Route::post('accounts', 'AccountController@create');
+
+    Route::post('login-sessions', 'LoginSessionController@create');
 });
