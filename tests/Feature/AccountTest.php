@@ -19,18 +19,6 @@ class AccountTest extends AbstractTestCase
 {
     use RefreshDatabase;
 
-    public function setUp()
-    {
-        parent::setUp();
-
-        \DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        Account::truncate();
-        LoginSession::truncate();
-        AccessToken::truncate();
-        QiitaAccount::truncate();
-        \DB::statement('SET FOREIGN_KEY_CHECKS=1');
-    }
-
     /**
      * 正常系のテスト
      * アカウントが作成できること
