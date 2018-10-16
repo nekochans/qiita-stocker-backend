@@ -11,7 +11,7 @@ use Throwable;
  * Class AccountCreatedException
  * @package App\Exceptions
  */
-class AccountCreatedException extends \Exception
+class AccountCreatedException extends BusinessLogicException
 {
     const ERROR_MESSAGE = 'Conflict';
 

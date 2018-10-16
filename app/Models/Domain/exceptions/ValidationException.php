@@ -11,7 +11,7 @@ use Throwable;
  * Class ValidationException
  * @package App\Models\Domain\exceptions
  */
-class ValidationException extends \Exception
+class ValidationException extends BusinessLogicException
 {
     const ERROR_MESSAGE = 'Unprocessable Entity';
 

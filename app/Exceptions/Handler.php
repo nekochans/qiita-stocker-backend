@@ -5,7 +5,7 @@ namespace App\Exceptions;
 use Exception;
 use App\Models\Domain\ErrorResponseEntityBuilder;
 use App\Models\Domain\exceptions\ValidationException;
-use App\Models\Domain\exceptions\AccountCreatedException;
+use App\Models\Domain\exceptions\BusinessLogicException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -49,15 +49,6 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if ($exception instanceof AccountCreatedException) {
-            $errorResponseEntityBuilder = new ErrorResponseEntityBuilder();
-            $errorResponseEntityBuilder->setErrorMessage($exception->getMessage());
-            $errorResponseEntityBuilder->setErrorCode($exception->getCode());
-            $errorResponseEntity = $errorResponseEntityBuilder->build();
-
-            return response()->json($errorResponseEntity->buildBody(), $errorResponseEntity->getErrorCode());
-        }
-
         if ($exception instanceof ValidationException) {
             $errorResponseEntityBuilder = new ErrorResponseEntityBuilder();
             $errorResponseEntityBuilder->setErrorMessage($exception->getMessage());
@@ -67,6 +58,16 @@ class Handler extends ExceptionHandler
 
             return response()->json($errorResponseEntity->buildBody(), $errorResponseEntity->getErrorCode());
         }
+
+        if ($exception instanceof BusinessLogicException) {
+            $errorResponseEntityBuilder = new ErrorResponseEntityBuilder();
+            $errorResponseEntityBuilder->setErrorMessage($exception->getMessage());
+            $errorResponseEntityBuilder->setErrorCode($exception->getCode());
+            $errorResponseEntity = $errorResponseEntityBuilder->build();
+
+            return response()->json($errorResponseEntity->buildBody(), $errorResponseEntity->getErrorCode());
+        }
+
         return parent::render($request, $exception);
     }
 }
