@@ -3,6 +3,9 @@
 namespace App\Exceptions;
 
 use Exception;
+use App\Models\Domain\ErrorResponseEntityBuilder;
+use App\Models\Domain\exceptions\ValidationException;
+use App\Models\Domain\exceptions\AccountCreatedException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -46,6 +49,24 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof AccountCreatedException) {
+            $errorResponseEntityBuilder = new ErrorResponseEntityBuilder();
+            $errorResponseEntityBuilder->setErrorMessage($exception->getMessage());
+            $errorResponseEntityBuilder->setErrorCode($exception->getCode());
+            $errorResponseEntity = $errorResponseEntityBuilder->build();
+
+            return response()->json($errorResponseEntity->buildBody(), $errorResponseEntity->getErrorCode());
+        }
+
+        if ($exception instanceof ValidationException) {
+            $errorResponseEntityBuilder = new ErrorResponseEntityBuilder();
+            $errorResponseEntityBuilder->setErrorMessage($exception->getMessage());
+            $errorResponseEntityBuilder->setErrorCode($exception->getCode());
+            $errorResponseEntityBuilder->setErrors($exception->getErrors());
+            $errorResponseEntity = $errorResponseEntityBuilder->build();
+
+            return response()->json($errorResponseEntity->buildBody(), $errorResponseEntity->getErrorCode());
+        }
         return parent::render($request, $exception);
     }
 }

@@ -84,4 +84,14 @@ class AccountEntity
         $accountEntityBuilder->setAccessToken($qiitaAccountValue->getAccessToken());
         return $accountEntityBuilder->build();
     }
+
+    /**
+     * アカウントが作成済みの場合に使用するメッセージ
+     *
+     * @return string
+     */
+    public function accountCreatedMessage(): string
+    {
+        return '既にアカウントの登録が完了しています。';
+    }
 }

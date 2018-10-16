@@ -35,7 +35,7 @@ class AccountController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
-     * @throws \Exception
+     * @throws \App\Models\Domain\exceptions\AccountCreatedException
      */
     public function create(Request $request): JsonResponse
     {
