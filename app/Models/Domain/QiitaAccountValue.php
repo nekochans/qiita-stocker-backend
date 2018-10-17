@@ -55,15 +55,14 @@ class QiitaAccountValue
      * permanentIDからAccountEntityを取得する
      *
      * @param AccountRepository $accountRepository
-     * @return AccountEntity|string
+     * @return AccountEntity
      */
-    public function findAccountEntityByPermanentId(AccountRepository $accountRepository)
+    public function findAccountEntityByPermanentId(AccountRepository $accountRepository): AccountEntity
     {
         try {
             return $accountRepository->findByPermanentId($this);
         } catch (\Exception $e) {
-            // TODO RuntimeExceptionをThrowする
-            return '';
+            throw new \RuntimeException();
         }
     }
 

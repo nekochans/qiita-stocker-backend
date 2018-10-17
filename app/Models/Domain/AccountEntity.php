@@ -94,4 +94,14 @@ class AccountEntity
     {
         return '既にアカウントの登録が完了しています。';
     }
+
+    /**
+     * アカウントが作成されていなかった場合に使用するメッセージ
+     *
+     * @return string
+     */
+    public static function accountNotFoundMessage(): string
+    {
+        return 'アカウントが登録されていません。アカウント作成ページよりアカウントを作成してください。';
+    }
 }

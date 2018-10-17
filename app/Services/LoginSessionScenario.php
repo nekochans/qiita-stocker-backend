@@ -6,9 +6,11 @@
 namespace App\Services;
 
 use Ramsey\Uuid\Uuid;
+use App\Models\Domain\AccountEntity;
 use App\Models\Domain\AccountRepository;
 use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\LoginSessionEntityBuilder;
+use App\Models\Domain\exceptions\AccountNotFoundException;
 
 /**
  * Class LoginSessionScenario
@@ -37,7 +39,7 @@ class LoginSessionScenario
      *
      * @param array $requestArray
      * @return array
-     * @throws \Exception
+     * @throws AccountNotFoundException
      */
     public function create(array $requestArray): array
     {
@@ -46,14 +48,13 @@ class LoginSessionScenario
         $qiitaAccountValueBuilder->setPermanentId($requestArray['permanentId']);
         $qiitaAccountValue = $qiitaAccountValueBuilder->build();
 
-        $accountEntity = $qiitaAccountValue->findAccountEntityByPermanentId($this->accountRepository);
-
-        if ($accountEntity) {
-            $accountEntity = $accountEntity->updateAccessToken($this->accountRepository, $qiitaAccountValue);
-        } else {
-            // TODO アカウントが作成されていない場合、エラーを返す
+        if (!$qiitaAccountValue->isCreatedAccount($this->accountRepository)) {
+            throw new AccountNotFoundException(AccountEntity::accountNotFoundMessage());
         }
 
+        $accountEntity = $qiitaAccountValue->findAccountEntityByPermanentId($this->accountRepository);
+
+        $accountEntity = $accountEntity->updateAccessToken($this->accountRepository, $qiitaAccountValue);
         $sessionId = Uuid::uuid4();
 
         // TODO 有効期限を適切な期限に修正
