@@ -19,19 +19,23 @@ class AccountTest extends AbstractTestCase
 {
     use RefreshDatabase;
 
-    /**
-     * 正常系のテスト
-     * アカウントが作成できること
-     */
-    public function testSuccessCreate()
+    public function setUp()
     {
+        parent::setUp();
         $accounts = factory(Account::class)->create();
         $accounts->each(function ($account) {
             factory(QiitaAccount::class)->create(['account_id' => $account->id]);
             factory(AccessToken::class)->create(['account_id' => $account->id]);
             factory(LoginSession::class)->create(['account_id' => $account->id]);
         });
+    }
 
+    /**
+     * 正常系のテスト
+     * アカウントが作成できること
+     */
+    public function testSuccessCreate()
+    {
         $permanentId = '123456';
         $accessToken = 'ea5d0a593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5';
 
@@ -80,5 +84,29 @@ class AccountTest extends AbstractTestCase
             'account_id'   => $expectedAccountId,
             'lock_version' => 0,
         ]);
+    }
+
+    /**
+     * 異常系のテスト
+     * アカウントが作成済みの場合エラーになること
+     */
+    public function testErrorCreate()
+    {
+        $permanentId = '1';
+        $accessToken = 'ea5d0a593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5';
+
+        $jsonResponse = $this->postJson(
+            '/api/accounts',
+            [
+                'permanentId' => $permanentId,
+                'accessToken' => $accessToken
+            ]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 409;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => '既にアカウントの登録が完了しています。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
     }
 }
