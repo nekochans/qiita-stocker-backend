@@ -9,6 +9,7 @@ use Ramsey\Uuid\Uuid;
 use App\Models\Domain\AccountRepository;
 use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\LoginSessionEntityBuilder;
+use App\Models\Domain\exceptions\AccountCreatedException;
 
 /**
  * Class AccountScenario
@@ -38,7 +39,7 @@ class AccountScenario
      *
      * @param array $requestArray
      * @return array
-     * @throws \Exception
+     * @throws AccountCreatedException
      */
     public function create(array $requestArray): array
     {
@@ -46,6 +47,12 @@ class AccountScenario
         $qiitaAccountValueBuilder->setAccessToken($requestArray['accessToken']);
         $qiitaAccountValueBuilder->setPermanentId($requestArray['permanentId']);
         $qiitaAccountValue = $qiitaAccountValueBuilder->build();
+
+        $accountEntity = $qiitaAccountValue->findAccountEntityByPermanentId($this->accountRepository);
+
+        if ($accountEntity !== '') {
+            throw new AccountCreatedException($accountEntity->accountCreatedMessage());
+        }
 
         $accountEntity = $this->accountRepository->create($qiitaAccountValue);
 
