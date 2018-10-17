@@ -62,8 +62,24 @@ class QiitaAccountValue
         try {
             return $accountRepository->findByPermanentId($this);
         } catch (\Exception $e) {
-            // TODO 独自の例外処理を定義する
+            // TODO RuntimeExceptionをThrowする
             return '';
+        }
+    }
+
+    /**
+     * アカウントが作成済みか確認する
+     *
+     * @param AccountRepository $accountRepository
+     * @return bool
+     */
+    public function isCreatedAccount(AccountRepository $accountRepository): bool
+    {
+        try {
+            $accountRepository->findByPermanentId($this);
+            return true;
+        } catch (\Exception $e) {
+            return false;
         }
     }
 }

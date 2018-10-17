@@ -90,7 +90,7 @@ class AccountEntity
      *
      * @return string
      */
-    public function accountCreatedMessage(): string
+    public static function accountCreatedMessage(): string
     {
         return '既にアカウントの登録が完了しています。';
     }

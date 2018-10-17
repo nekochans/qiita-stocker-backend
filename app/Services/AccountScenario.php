@@ -6,6 +6,7 @@
 namespace App\Services;
 
 use Ramsey\Uuid\Uuid;
+use App\Models\Domain\AccountEntity;
 use App\Models\Domain\AccountRepository;
 use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\LoginSessionEntityBuilder;
@@ -48,10 +49,8 @@ class AccountScenario
         $qiitaAccountValueBuilder->setPermanentId($requestArray['permanentId']);
         $qiitaAccountValue = $qiitaAccountValueBuilder->build();
 
-        $accountEntity = $qiitaAccountValue->findAccountEntityByPermanentId($this->accountRepository);
-
-        if ($accountEntity !== '') {
-            throw new AccountCreatedException($accountEntity->accountCreatedMessage());
+        if ($qiitaAccountValue->isCreatedAccount($this->accountRepository)) {
+            throw new AccountCreatedException(AccountEntity::accountCreatedMessage());
         }
 
         $accountEntity = $this->accountRepository->create($qiitaAccountValue);
