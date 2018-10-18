@@ -96,7 +96,7 @@ class AccountRepository implements \App\Models\Domain\AccountRepository
     }
 
     /**
-     * アカウントを取得する
+     * パーマネントIDからアカウントを取得する
      *
      * @param QiitaAccountValue $qiitaAccountValue
      * @return AccountEntity
@@ -132,5 +132,24 @@ class AccountRepository implements \App\Models\Domain\AccountRepository
         $accessToken = AccessToken::where('account_id', $accountEntity->getAccountId())->first();
         $accessToken->access_token = $qiitaAccountValue->getAccessToken();
         $accessToken->save();
+    }
+
+    /**
+     * アカウントを取得する
+     *
+     * @param string $accountId
+     * @return AccountEntity
+     */
+    public function find(string $accountId): AccountEntity
+    {
+        $qiitaAccount = QiitaAccount::where('account_id', $accountId)->firstOrFail();
+        $accessToken = AccessToken::where('account_id', $accountId)->firstOrFail();
+
+        $accountEntityBuilder = new AccountEntityBuilder();
+        $accountEntityBuilder->setAccountId($accountId);
+        $accountEntityBuilder->setPermanentId($qiitaAccount->qiita_account_id);
+        $accountEntityBuilder->setAccessToken($accessToken->access_token);
+
+        return $accountEntityBuilder->build();
     }
 }

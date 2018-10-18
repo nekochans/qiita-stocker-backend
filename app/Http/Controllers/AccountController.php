@@ -47,4 +47,23 @@ class AccountController extends Controller
 
         return response()->json($sessionId)->setStatusCode(201);
     }
+
+    /**
+     * アカウントを削除する
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function destroy(Request $request): JsonResponse
+    {
+        $sessionId = $request->bearerToken();
+
+        // TODO セッションIDが存在しなかった場合のエラー処理を追加する
+        $params = [
+            'sessionId' => $sessionId
+        ];
+
+        $this->accountScenario->destroy($params);
+        return response()->json()->setStatusCode(204);
+    }
 }

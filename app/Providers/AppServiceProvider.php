@@ -6,6 +6,7 @@ use App\Services\AccountScenario;
 use App\Services\LoginSessionScenario;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Domain\AccountRepository;
+use App\Models\Domain\LoginSessionRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,10 +35,16 @@ class AppServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
+            LoginSessionRepository::class,
+            \App\Infrastructure\Repositories\LoginSessionRepository::class
+        );
+
+        $this->app->bind(
             AccountScenario::class,
             function () {
                 return new AccountScenario(
-                $this->app->make(AccountRepository::class)
+                $this->app->make(AccountRepository::class),
+                $this->app->make(LoginSessionRepository::class)
             );
             }
         );

@@ -8,8 +8,10 @@ namespace App\Services;
 use Ramsey\Uuid\Uuid;
 use App\Models\Domain\AccountEntity;
 use App\Models\Domain\AccountRepository;
+use App\Models\Domain\LoginSessionRepository;
 use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\LoginSessionEntityBuilder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\exceptions\AccountCreatedException;
 
 /**
@@ -27,12 +29,20 @@ class AccountScenario
     private $accountRepository;
 
     /**
+     * LoginSessionRepository
+     *
+     * @var
+     */
+    private $loginSessionRepository;
+    /**
      * AccountScenario constructor.
      * @param AccountRepository $accountRepository
+     * @param LoginSessionRepository $loginSessionRepository
      */
-    public function __construct(AccountRepository $accountRepository)
+    public function __construct(AccountRepository $accountRepository, LoginSessionRepository $loginSessionRepository)
     {
         $this->accountRepository = $accountRepository;
+        $this->loginSessionRepository = $loginSessionRepository;
     }
 
     /**
@@ -75,5 +85,24 @@ class AccountScenario
         ];
 
         return $responseArray;
+    }
+
+    /**
+     * アカウントを削除する
+     *
+     * @param array $params
+     */
+    public function destroy(array $params)
+    {
+        try {
+            $loginSessionEntity = $this->loginSessionRepository->find($params['sessionId']);
+
+            // TODO 有効期限の検証を行う
+
+            $accountEntity = $loginSessionEntity->findHasAccountEntity($this->accountRepository);
+            $accountEntity->cancel();
+        } catch (ModelNotFoundException $e) {
+            // TODO LoginSessionEntity、AccountEntityが存在しなかった場合のエラー処理を追加する
+        }
     }
 }
