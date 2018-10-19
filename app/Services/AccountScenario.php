@@ -97,10 +97,10 @@ class AccountScenario
         try {
             $loginSessionEntity = $this->loginSessionRepository->find($params['sessionId']);
 
-            // TODO 有効期限の検証を行う
+            // TODO ログインセッションの有効期限の検証を行う
 
             $accountEntity = $loginSessionEntity->findHasAccountEntity($this->accountRepository);
-            $accountEntity->cancel();
+            $accountEntity->cancel($this->accountRepository, $this->loginSessionRepository);
         } catch (ModelNotFoundException $e) {
             // TODO LoginSessionEntity、AccountEntityが存在しなかった場合のエラー処理を追加する
         }

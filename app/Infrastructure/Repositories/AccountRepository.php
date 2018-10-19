@@ -152,4 +152,34 @@ class AccountRepository implements \App\Models\Domain\AccountRepository
 
         return $accountEntityBuilder->build();
     }
+
+    /**
+     * Qiitaアカウントを削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyQiitaAccount(string $accountId)
+    {
+        QiitaAccount::where('account_id', $accountId)->delete();
+    }
+
+    /**
+     * アクセストークンを削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyAccessToken(string $accountId)
+    {
+        AccessToken::where('account_id', $accountId)->delete();
+    }
+
+    /**
+     * アカウントを削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyAccount(string $accountId)
+    {
+        Account::destroy($accountId);
+    }
 }

@@ -32,4 +32,14 @@ class LoginSessionRepository implements \App\Models\Domain\LoginSessionRepositor
 
         return $builder->build();
     }
+
+    /**
+     * ログインセッションを削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyLoginSessions(string $accountId)
+    {
+        LoginSession::where('account_id', $accountId)->delete();
+    }
 }

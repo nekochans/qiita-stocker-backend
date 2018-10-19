@@ -51,4 +51,25 @@ interface AccountRepository
      * @return AccountEntity
      */
     public function find(string $accountId): AccountEntity;
+
+    /**
+     * Qiitaアカウントを削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyQiitaAccount(string $accountId);
+
+    /**
+     * アクセストークンを削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyAccessToken(string $accountId);
+
+    /**
+     * アカウントを削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyAccount(string $accountId);
 }

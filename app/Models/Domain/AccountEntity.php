@@ -87,14 +87,16 @@ class AccountEntity
 
     /**
      * 退会する
+     *
+     * @param AccountRepository $accountRepository
+     * @param LoginSessionRepository $loginSessionRepository
      */
-    public function cancel()
+    public function cancel(AccountRepository $accountRepository, LoginSessionRepository $loginSessionRepository)
     {
-        // 以下を削除する
-        // ログインセッション(複数の可能性あり)
-        // アクセストークン
-        // Qiitaアカウント
-        // アカウント
+        $loginSessionRepository->destroyLoginSessions($this->getAccountId());
+        $accountRepository->destroyAccessToken($this->getAccountId());
+        $accountRepository->destroyQiitaAccount($this->getAccountId());
+        $accountRepository->destroyAccount($this->getAccountId());
     }
 
     /**
