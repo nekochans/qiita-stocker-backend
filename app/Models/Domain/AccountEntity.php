@@ -86,6 +86,20 @@ class AccountEntity
     }
 
     /**
+     * 退会する
+     *
+     * @param AccountRepository $accountRepository
+     * @param LoginSessionRepository $loginSessionRepository
+     */
+    public function cancel(AccountRepository $accountRepository, LoginSessionRepository $loginSessionRepository)
+    {
+        $loginSessionRepository->destroyLoginSessions($this->getAccountId());
+        $accountRepository->destroyAccessToken($this->getAccountId());
+        $accountRepository->destroyQiitaAccount($this->getAccountId());
+        $accountRepository->destroyAccount($this->getAccountId());
+    }
+
+    /**
      * アカウントが作成済みの場合に使用するメッセージ
      *
      * @return string

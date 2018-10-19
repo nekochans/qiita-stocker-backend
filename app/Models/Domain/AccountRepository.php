@@ -28,7 +28,7 @@ interface AccountRepository
     public function saveLoginSession(LoginSessionEntity $loginSessionEntity);
 
     /**
-     * アカウントを取得する
+     * パーマネントIDからアカウントを取得する
      *
      * @param QiitaAccountValue $qiitaAccountValue
      * @return AccountEntity
@@ -43,4 +43,33 @@ interface AccountRepository
      * @param QiitaAccountValue $qiitaAccountValue
      */
     public function updateAccessToken(AccountEntity $accountEntity, QiitaAccountValue $qiitaAccountValue);
+
+    /**
+     * アカウントを取得する
+     *
+     * @param string $accountId
+     * @return AccountEntity
+     */
+    public function find(string $accountId): AccountEntity;
+
+    /**
+     * Qiitaアカウントを削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyQiitaAccount(string $accountId);
+
+    /**
+     * アクセストークンを削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyAccessToken(string $accountId);
+
+    /**
+     * アカウントを削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyAccount(string $accountId);
 }

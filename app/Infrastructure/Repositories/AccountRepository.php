@@ -96,7 +96,7 @@ class AccountRepository implements \App\Models\Domain\AccountRepository
     }
 
     /**
-     * アカウントを取得する
+     * パーマネントIDからアカウントを取得する
      *
      * @param QiitaAccountValue $qiitaAccountValue
      * @return AccountEntity
@@ -132,5 +132,54 @@ class AccountRepository implements \App\Models\Domain\AccountRepository
         $accessToken = AccessToken::where('account_id', $accountEntity->getAccountId())->first();
         $accessToken->access_token = $qiitaAccountValue->getAccessToken();
         $accessToken->save();
+    }
+
+    /**
+     * アカウントを取得する
+     *
+     * @param string $accountId
+     * @return AccountEntity
+     */
+    public function find(string $accountId): AccountEntity
+    {
+        $qiitaAccount = QiitaAccount::where('account_id', $accountId)->firstOrFail();
+        $accessToken = AccessToken::where('account_id', $accountId)->firstOrFail();
+
+        $accountEntityBuilder = new AccountEntityBuilder();
+        $accountEntityBuilder->setAccountId($accountId);
+        $accountEntityBuilder->setPermanentId($qiitaAccount->qiita_account_id);
+        $accountEntityBuilder->setAccessToken($accessToken->access_token);
+
+        return $accountEntityBuilder->build();
+    }
+
+    /**
+     * Qiitaアカウントを削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyQiitaAccount(string $accountId)
+    {
+        QiitaAccount::where('account_id', $accountId)->delete();
+    }
+
+    /**
+     * アクセストークンを削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyAccessToken(string $accountId)
+    {
+        AccessToken::where('account_id', $accountId)->delete();
+    }
+
+    /**
+     * アカウントを削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyAccount(string $accountId)
+    {
+        Account::destroy($accountId);
     }
 }

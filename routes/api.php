@@ -21,5 +21,11 @@ Route::middleware(['cors'])->group(function () {
 
     Route::post('accounts', 'AccountController@create');
 
+    Route::delete('accounts', 'AccountController@destroy');
+
+    Route::options('login-sessions', function () {
+        return response()->json();
+    });
+
     Route::post('login-sessions', 'LoginSessionController@create');
 });

@@ -66,4 +66,15 @@ class LoginSessionEntity
     {
         return $this->expiredOn;
     }
+
+    /**
+     * ログインセッションが持つアカウントのAccountEntityを取得する
+     *
+     * @param AccountRepository $accountRepository
+     * @return AccountEntity
+     */
+    public function findHasAccountEntity(AccountRepository $accountRepository): AccountEntity
+    {
+        return $accountRepository->find($this->getAccountId());
+    }
 }
