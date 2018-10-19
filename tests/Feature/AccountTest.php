@@ -109,4 +109,60 @@ class AccountTest extends AbstractTestCase
         $jsonResponse->assertJson(['message' => '既にアカウントの登録が完了しています。']);
         $jsonResponse->assertStatus($expectedErrorCode);
     }
+
+    /**
+     * 正常系のテスト
+     * アカウントが削除できること
+     */
+    public function testSuccessDestroy()
+    {
+        $destroyedAccountId = 1;
+        $accountId = 2;
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $destroyedAccountId, ]);
+
+        factory(Account::class)->create();
+        factory(QiitaAccount::class)->create(['qiita_account_id' => 2, 'account_id' => $accountId]);
+        factory(AccessToken::class)->create(['account_id' => $accountId]);
+        factory(LoginSession::class)->create(['account_id' => $accountId]);
+
+        $jsonResponse = $this->delete(
+            '/api/accounts',
+            [],
+            ['Authorization' => 'Bearer '.$loginSession]
+
+        );
+
+        $jsonResponse->assertStatus(204);
+
+        // DBのテーブルに期待した形でデータが入っているか確認する
+        $this->assertDatabaseMissing('accounts', [
+            'id'           => $destroyedAccountId,
+        ]);
+        $this->assertDatabaseHas('accounts', [
+            'id'       => $accountId,
+        ]);
+
+        $this->assertDatabaseMissing('accounts_qiita_accounts', [
+            'account_id'       => $destroyedAccountId,
+        ]);
+        $this->assertDatabaseHas('accounts_qiita_accounts', [
+            'account_id'       => $accountId,
+        ]);
+
+        $this->assertDatabaseMissing('accounts_access_tokens', [
+            'account_id'   => $destroyedAccountId,
+        ]);
+        $this->assertDatabaseHas('accounts_access_tokens', [
+            'account_id'       => $accountId,
+        ]);
+
+        $this->assertDatabaseMissing('login_sessions', [
+            'account_id'   => $destroyedAccountId,
+        ]);
+        $this->assertDatabaseHas('login_sessions', [
+            'account_id'   => $accountId,
+        ]);
+    }
 }

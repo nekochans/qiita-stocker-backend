@@ -16,7 +16,7 @@ $factory->define(App\Eloquents\QiitaAccount::class, function (Faker $faker) {
 $factory->define(App\Eloquents\AccessToken::class, function (Faker $faker) {
     return [
         'account_id'   => '1',
-        'access_token' => 'accesstoken655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5'
+        'access_token' => $faker->unique()->regexify('[a-z0-9]{64}')
     ];
 });
 
