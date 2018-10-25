@@ -119,8 +119,8 @@ class AccountScenario
     private function validateAccountValue(array $requestArray)
     {
         $validator = \Validator::make($requestArray, [
-            'accessToken' => 'required',
-            'permanentId' => 'required',
+            'accessToken' => 'required|alpha_num|min:40|max:64',
+            'permanentId' => 'required|integer|min:1|max:4294967294',
         ]);
 
         if ($validator->fails()) {
