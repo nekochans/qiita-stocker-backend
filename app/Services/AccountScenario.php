@@ -8,6 +8,7 @@ namespace App\Services;
 use Ramsey\Uuid\Uuid;
 use App\Models\Domain\AccountEntity;
 use App\Models\Domain\AccountRepository;
+use App\Models\Domain\QiitaAccountValue;
 use App\Models\Domain\LoginSessionRepository;
 use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\LoginSessionEntityBuilder;
@@ -124,7 +125,7 @@ class AccountScenario
         ]);
 
         if ($validator->fails()) {
-            throw new ValidationException($validator->errors()->toArray());
+            throw new ValidationException(QiitaAccountValue::accountCreatedValidationErrorMessage(), $validator->errors()->toArray());
         }
     }
 }

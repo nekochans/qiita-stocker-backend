@@ -27,15 +27,17 @@ class ValidationException extends BusinessLogicException
     /**
      * ValidationException constructor.
      *
+     * @param string $message
      * @param array $errors
      * @param Throwable|null $previous
      */
     public function __construct(
+        string $message = self::ERROR_MESSAGE,
         array $errors,
         Throwable $previous = null
     ) {
         parent::__construct(
-            self::ERROR_MESSAGE,
+            $message,
             self::ERROR_CODE,
             $previous
         );
