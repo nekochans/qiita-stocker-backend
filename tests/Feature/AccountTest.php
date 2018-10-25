@@ -244,14 +244,16 @@ class AccountTest extends AbstractTestCase
     public function permanentIdProvider()
     {
         return [
-            'emptyString'       => [''],
-            'null'              => [null],
-            'emptyArray'        => [[]],
-            'string'            => ['a'],
-            'symbol'            => ['1/'],
-            'multiByte'         => ['１'],
-            'negativeNumber'    => [-1],
-            'double'            => [1.1],
+            'emptyString'        => [''],
+            'null'               => [null],
+            'emptyArray'         => [[]],
+            'string'             => ['a'],
+            'symbol'             => ['1/'],
+            'multiByte'          => ['１'],
+            'negativeNumber'     => [-1],
+            'double'             => [1.1],
+            'lessThanMin'        => [0],
+            'greaterThanMax'     => [4294967295],
         ];
     }
 }
