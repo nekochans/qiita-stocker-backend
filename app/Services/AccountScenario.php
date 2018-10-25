@@ -120,12 +120,12 @@ class AccountScenario
     private function validateAccountValue(array $requestArray)
     {
         $validator = \Validator::make($requestArray, [
-            'accessToken' => 'required|alpha_num|min:40|max:64',
+            'accessToken' => 'required|regex:/^[a-z0-9]+$/|min:40|max:64',
             'permanentId' => 'required|integer|min:1|max:4294967294',
         ]);
 
         if ($validator->fails()) {
-            throw new ValidationException(QiitaAccountValue::accountCreatedValidationErrorMessage(), $validator->errors()->toArray());
+            throw new ValidationException(QiitaAccountValue::createAccountValidationErrorMessage(), $validator->errors()->toArray());
         }
     }
 }
