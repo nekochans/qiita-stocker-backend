@@ -52,6 +52,7 @@ class AccountController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws \App\Models\Domain\exceptions\UnauthorizedException
      */
     public function destroy(Request $request): JsonResponse
     {

@@ -13,6 +13,7 @@ use App\Models\Domain\LoginSessionRepository;
 use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\LoginSessionEntityBuilder;
 use App\Models\Domain\exceptions\ValidationException;
+use App\Models\Domain\exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\exceptions\AccountCreatedException;
 
@@ -96,9 +97,14 @@ class AccountScenario
      * アカウントを削除する
      *
      * @param array $params
+     * @throws UnauthorizedException
      */
     public function destroy(array $params)
     {
+        if ($params['sessionId'] === null) {
+            throw new UnauthorizedException();
+        }
+
         try {
             $loginSessionEntity = $this->loginSessionRepository->find($params['sessionId']);
 
@@ -107,7 +113,7 @@ class AccountScenario
             $accountEntity = $loginSessionEntity->findHasAccountEntity($this->accountRepository);
             $accountEntity->cancel($this->accountRepository, $this->loginSessionRepository);
         } catch (ModelNotFoundException $e) {
-            // TODO LoginSessionEntity、AccountEntityが存在しなかった場合のエラー処理を追加する
+            throw new UnauthorizedException();
         }
     }
 

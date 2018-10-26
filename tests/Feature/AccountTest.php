@@ -168,6 +168,42 @@ class AccountTest extends AbstractTestCase
 
     /**
      * 異常系のテスト
+     * Authorizationが存在しない場合エラーとなること
+     */
+    public function testErrorDestroyLoginSessionNull()
+    {
+        $jsonResponse = $this->delete('/api/accounts');
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 401;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => 'Unauthorixed']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+    }
+
+    /**
+     * 異常系のテスト
+     * ログインセッションが不正の場合エラーとなること
+     */
+    public function testErrorDestroyLoginSessionNotFound()
+    {
+        $loginSession = 'notFound-2bae-4028-b53d-0f128479e650';
+
+        $jsonResponse = $this->delete(
+            '/api/accounts',
+            [],
+            ['Authorization' => 'Bearer '.$loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 401;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => 'Unauthorixed']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+    }
+
+    /**
+     * 異常系のテスト
      * アカウント作成時のアクセストークンのバリデーション
      *
      * @param $accessToken
