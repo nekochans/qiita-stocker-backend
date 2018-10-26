@@ -101,4 +101,95 @@ class LoginSessionTest extends AbstractTestCase
         $jsonResponse->assertJson(['message' => 'アカウントが登録されていません。アカウント作成ページよりアカウントを作成してください。']);
         $jsonResponse->assertStatus($expectedErrorCode);
     }
+
+    /**
+     * 異常系のテスト
+     * ログイン時のアクセストークンのバリデーション
+     *
+     * @param $accessToken
+     * @dataProvider accessTokenProvider
+     */
+    public function testErrorLoginAccessTokenValidation($accessToken)
+    {
+        $permanentId = '123456';
+
+        $jsonResponse = $this->postJson(
+            '/api/login-sessions',
+            [
+                'permanentId' => $permanentId,
+                'accessToken' => $accessToken
+            ]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 422;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。再度、ログインしてください。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+    }
+
+    /**
+     * アクセストークンのデータプロバイダ
+     *
+     * @return array
+     */
+    public function accessTokenProvider()
+    {
+        return [
+            'emptyString'       => [''],
+            'null'              => [null],
+            'emptyArray'        => [[]],
+            'tooShortLength'    => ['ea5d0a593b2655e9568f144fb1826342292f5c6'], // 39文字
+            'tooLongLength'     => ['ea5d0a593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5a'],  //65文字
+            'symbol'            => ['%a5d0a593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5'],
+            'multiByte'         => ['あa5d0a593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a'],
+        ];
+    }
+
+    /**
+     * 異常系のテスト
+     * ログイン時のパーマネントIDのバリデーション
+     *
+     * @param $permanentId
+     * @dataProvider permanentIdProvider
+     */
+    public function testErrorLoginPermanentIdValidation($permanentId)
+    {
+        $accessToken = 'ea5d0a593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5';
+
+        $jsonResponse = $this->postJson(
+            '/api/login-sessions',
+            [
+                'permanentId' => $permanentId,
+                'accessToken' => $accessToken
+            ]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 422;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。再度、ログインしてください。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+    }
+
+    /**
+     * パーマネントIDのデータプロバイダ
+     *
+     * @return array
+     */
+    public function permanentIdProvider()
+    {
+        return [
+            'emptyString'        => [''],
+            'null'               => [null],
+            'emptyArray'         => [[]],
+            'string'             => ['a'],
+            'symbol'             => ['1/'],
+            'multiByte'          => ['１'],
+            'negativeNumber'     => [-1],
+            'double'             => [1.1],
+            'lessThanMin'        => [0],
+            'greaterThanMax'     => [4294967295],
+        ];
+    }
 }
