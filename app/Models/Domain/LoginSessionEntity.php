@@ -68,6 +68,22 @@ class LoginSessionEntity
     }
 
     /**
+     * 有効期限が切れているか確認する
+     *
+     * @return bool
+     */
+    public function isExpired(): bool
+    {
+        $expiredOn = $this->getExpiredOn();
+        $now = new \DateTime();
+
+        if ($expiredOn > $now) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * ログインセッションが持つアカウントのAccountEntityを取得する
      *
      * @param AccountRepository $accountRepository
@@ -76,5 +92,25 @@ class LoginSessionEntity
     public function findHasAccountEntity(AccountRepository $accountRepository): AccountEntity
     {
         return $accountRepository->find($this->getAccountId());
+    }
+
+    /**
+     * ログインセッションの有効期限が切れている場合のエラーメッセージ
+     *
+     * @return string
+     */
+    public function loginSessionExpiredMessage(): string
+    {
+        return 'セッションの期限が切れました。再度、ログインしてください。';
+    }
+
+    /**
+     * ログインセッションが不正だった場合のエラーメッセージ
+     *
+     * @return string
+     */
+    public static function loginSessionUnauthorizedMessage(): string
+    {
+        return 'セッションが不正です。再度、ログインしてください。';
     }
 }

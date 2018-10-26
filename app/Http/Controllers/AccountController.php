@@ -52,12 +52,13 @@ class AccountController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws \App\Models\Domain\exceptions\LoginSessionExpiredException
+     * @throws \App\Models\Domain\exceptions\UnauthorizedException
      */
     public function destroy(Request $request): JsonResponse
     {
         $sessionId = $request->bearerToken();
 
-        // TODO セッションIDが存在しなかった場合のエラー処理を追加する
         $params = [
             'sessionId' => $sessionId
         ];
