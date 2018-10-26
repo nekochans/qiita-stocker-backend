@@ -68,6 +68,22 @@ class LoginSessionEntity
     }
 
     /**
+     * 有効期限が切れているか確認する
+     *
+     * @return bool
+     */
+    public function isExpired(): bool
+    {
+        $expiredOn = $this->getExpiredOn();
+        $now = new \DateTime();
+
+        if ($expiredOn > $now) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * ログインセッションが持つアカウントのAccountEntityを取得する
      *
      * @param AccountRepository $accountRepository

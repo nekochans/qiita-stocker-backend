@@ -16,6 +16,7 @@ use App\Models\Domain\exceptions\ValidationException;
 use App\Models\Domain\exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\exceptions\AccountCreatedException;
+use App\Models\Domain\exceptions\LoginSessionExpiredException;
 
 /**
  * Class AccountScenario
@@ -97,6 +98,7 @@ class AccountScenario
      * アカウントを削除する
      *
      * @param array $params
+     * @throws LoginSessionExpiredException
      * @throws UnauthorizedException
      */
     public function destroy(array $params)
@@ -108,7 +110,9 @@ class AccountScenario
         try {
             $loginSessionEntity = $this->loginSessionRepository->find($params['sessionId']);
 
-            // TODO ログインセッションの有効期限の検証を行う
+            if ($loginSessionEntity->isExpired()) {
+                throw new LoginSessionExpiredException();
+            }
 
             $accountEntity = $loginSessionEntity->findHasAccountEntity($this->accountRepository);
             $accountEntity->cancel($this->accountRepository, $this->loginSessionRepository);
