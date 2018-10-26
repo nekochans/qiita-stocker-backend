@@ -13,7 +13,7 @@ use Throwable;
  */
 class UnauthorizedException extends BusinessLogicException
 {
-    const ERROR_MESSAGE = 'Unauthorixed';
+    const ERROR_MESSAGE = 'Unauthorized';
 
     const ERROR_CODE = 401;
 

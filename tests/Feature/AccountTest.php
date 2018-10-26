@@ -177,7 +177,7 @@ class AccountTest extends AbstractTestCase
         // 実際にJSONResponseに期待したデータが含まれているか確認する
         $expectedErrorCode = 401;
         $jsonResponse->assertJson(['code' => $expectedErrorCode]);
-        $jsonResponse->assertJson(['message' => 'Unauthorixed']);
+        $jsonResponse->assertJson(['message' => 'Unauthorized']);
         $jsonResponse->assertStatus($expectedErrorCode);
     }
 
@@ -198,7 +198,36 @@ class AccountTest extends AbstractTestCase
         // 実際にJSONResponseに期待したデータが含まれているか確認する
         $expectedErrorCode = 401;
         $jsonResponse->assertJson(['code' => $expectedErrorCode]);
-        $jsonResponse->assertJson(['message' => 'Unauthorixed']);
+        $jsonResponse->assertJson(['message' => 'Unauthorized']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+    }
+
+    /**
+     * 異常系のテスト
+     * ログインセッションが有効期限切れの場合エラーとなること
+     */
+    public function testErrorDestroyLoginSessionIsExpired()
+    {
+        $destroyedAccountId = 1;
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+
+        factory(LoginSession::class)->create([
+            'id' => $loginSession,
+            'account_id' => $destroyedAccountId,
+            'expired_on' => '2018-10-01 00:00:00'
+        ]);
+
+        $jsonResponse = $this->delete(
+            '/api/accounts',
+            [],
+            ['Authorization' => 'Bearer '.$loginSession]
+
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 401;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => 'Unauthorized']);
         $jsonResponse->assertStatus($expectedErrorCode);
     }
 

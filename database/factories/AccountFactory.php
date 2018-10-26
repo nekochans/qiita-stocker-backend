@@ -21,9 +21,12 @@ $factory->define(App\Eloquents\AccessToken::class, function (Faker $faker) {
 });
 
 $factory->define(App\Eloquents\LoginSession::class, function (Faker $faker) {
+    $expiredOn = new \DateTime();
+    $expiredOn->add(new \DateInterval('PT1H'));
+
     return [
         'id'         => $faker->uuid(),
         'account_id' => '1',
-        'expired_on' => '2018-10-01 00:00:00'
+        'expired_on' => $expiredOn
     ];
 });
