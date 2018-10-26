@@ -59,7 +59,6 @@ class AccountController extends Controller
     {
         $sessionId = $request->bearerToken();
 
-        // TODO セッションIDが存在しなかった場合のエラー処理を追加する
         $params = [
             'sessionId' => $sessionId
         ];
