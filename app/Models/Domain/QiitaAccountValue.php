@@ -81,4 +81,14 @@ class QiitaAccountValue
             return false;
         }
     }
+
+    /**
+     * アカウント作成時にバリデーションエラーの場合に使用するメッセージ
+     *
+     * @return string
+     */
+    public static function createAccountValidationErrorMessage(): string
+    {
+        return '不正なリクエストが行われました。再度、アカウント登録を行なってください。';
+    }
 }

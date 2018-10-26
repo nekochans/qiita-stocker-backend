@@ -36,12 +36,11 @@ class AccountController extends Controller
      * @param Request $request
      * @return JsonResponse
      * @throws \App\Models\Domain\exceptions\AccountCreatedException
+     * @throws \App\Models\Domain\exceptions\ValidationException
      */
     public function create(Request $request): JsonResponse
     {
         $requestArray = $request->json()->all();
-
-        // TODO リクエストのバリデーションを追加する
 
         $sessionId = $this->accountScenario->create($requestArray);
 

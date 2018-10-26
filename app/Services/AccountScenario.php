@@ -8,9 +8,11 @@ namespace App\Services;
 use Ramsey\Uuid\Uuid;
 use App\Models\Domain\AccountEntity;
 use App\Models\Domain\AccountRepository;
+use App\Models\Domain\QiitaAccountValue;
 use App\Models\Domain\LoginSessionRepository;
 use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\LoginSessionEntityBuilder;
+use App\Models\Domain\exceptions\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\exceptions\AccountCreatedException;
 
@@ -51,9 +53,12 @@ class AccountScenario
      * @param array $requestArray
      * @return array
      * @throws AccountCreatedException
+     * @throws ValidationException
      */
     public function create(array $requestArray): array
     {
+        $this->validateAccountValue($requestArray);
+
         $qiitaAccountValueBuilder = new QiitaAccountValueBuilder();
         $qiitaAccountValueBuilder->setAccessToken($requestArray['accessToken']);
         $qiitaAccountValueBuilder->setPermanentId($requestArray['permanentId']);
@@ -103,6 +108,24 @@ class AccountScenario
             $accountEntity->cancel($this->accountRepository, $this->loginSessionRepository);
         } catch (ModelNotFoundException $e) {
             // TODO LoginSessionEntity、AccountEntityが存在しなかった場合のエラー処理を追加する
+        }
+    }
+
+    /**
+     * バリデーションを行う
+     *
+     * @param array $requestArray
+     * @throws ValidationException
+     */
+    private function validateAccountValue(array $requestArray)
+    {
+        $validator = \Validator::make($requestArray, [
+            'accessToken' => 'required|regex:/^[a-z0-9]+$/|min:40|max:64',
+            'permanentId' => 'required|integer|min:1|max:4294967294',
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException(QiitaAccountValue::createAccountValidationErrorMessage(), $validator->errors()->toArray());
         }
     }
 }
