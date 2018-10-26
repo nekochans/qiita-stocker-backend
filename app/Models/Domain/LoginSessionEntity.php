@@ -99,8 +99,18 @@ class LoginSessionEntity
      *
      * @return string
      */
-    public function sessionExpiredMessage(): string
+    public function loginSessionExpiredMessage(): string
     {
         return 'セッションの期限が切れました。再度、ログインしてください。';
+    }
+
+    /**
+     * ログインセッションが不正だった場合のエラーメッセージ
+     *
+     * @return string
+     */
+    public static function loginSessionUnauthorizedMessage(): string
+    {
+        return 'セッションが不正です。再度、ログインしてください。';
     }
 }

@@ -177,7 +177,7 @@ class AccountTest extends AbstractTestCase
         // 実際にJSONResponseに期待したデータが含まれているか確認する
         $expectedErrorCode = 401;
         $jsonResponse->assertJson(['code' => $expectedErrorCode]);
-        $jsonResponse->assertJson(['message' => 'Unauthorized']);
+        $jsonResponse->assertJson(['message' => 'セッションが不正です。再度、ログインしてください。']);
         $jsonResponse->assertStatus($expectedErrorCode);
     }
 
@@ -198,7 +198,7 @@ class AccountTest extends AbstractTestCase
         // 実際にJSONResponseに期待したデータが含まれているか確認する
         $expectedErrorCode = 401;
         $jsonResponse->assertJson(['code' => $expectedErrorCode]);
-        $jsonResponse->assertJson(['message' => 'Unauthorized']);
+        $jsonResponse->assertJson(['message' => 'セッションが不正です。再度、ログインしてください。']);
         $jsonResponse->assertStatus($expectedErrorCode);
     }
 

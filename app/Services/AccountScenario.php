@@ -9,6 +9,7 @@ use Ramsey\Uuid\Uuid;
 use App\Models\Domain\AccountEntity;
 use App\Models\Domain\AccountRepository;
 use App\Models\Domain\QiitaAccountValue;
+use App\Models\Domain\LoginSessionEntity;
 use App\Models\Domain\LoginSessionRepository;
 use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\LoginSessionEntityBuilder;
@@ -104,20 +105,20 @@ class AccountScenario
     public function destroy(array $params)
     {
         if ($params['sessionId'] === null) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         }
 
         try {
             $loginSessionEntity = $this->loginSessionRepository->find($params['sessionId']);
 
             if ($loginSessionEntity->isExpired()) {
-                throw new LoginSessionExpiredException($loginSessionEntity->sessionExpiredMessage());
+                throw new LoginSessionExpiredException($loginSessionEntity->loginSessionExpiredMessage());
             }
 
             $accountEntity = $loginSessionEntity->findHasAccountEntity($this->accountRepository);
             $accountEntity->cancel($this->accountRepository, $this->loginSessionRepository);
         } catch (ModelNotFoundException $e) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         }
     }
 
