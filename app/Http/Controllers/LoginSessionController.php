@@ -35,13 +35,12 @@ class LoginSessionController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
-     * @throws \Exception
+     * @throws \App\Models\Domain\exceptions\AccountNotFoundException
+     * @throws \App\Models\Domain\exceptions\ValidationException
      */
     public function create(Request $request): JsonResponse
     {
         $requestArray = $request->json()->all();
-
-        // TODO リクエストのバリデーションを追加する
 
         $sessionId = $this->loginSessionScenario->create($requestArray);
 

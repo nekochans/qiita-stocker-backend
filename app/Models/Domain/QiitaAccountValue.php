@@ -91,4 +91,14 @@ class QiitaAccountValue
     {
         return '不正なリクエストが行われました。再度、アカウント登録を行なってください。';
     }
+
+    /**
+     * ログイン時にバリデーションエラーの場合に使用するメッセージ
+     *
+     * @return string
+     */
+    public static function createLoginSessionValidationErrorMessage(): string
+    {
+        return '不正なリクエストが行われました。再度、ログインしてください。';
+    }
 }

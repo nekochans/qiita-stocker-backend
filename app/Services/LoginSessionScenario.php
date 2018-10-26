@@ -8,8 +8,10 @@ namespace App\Services;
 use Ramsey\Uuid\Uuid;
 use App\Models\Domain\AccountEntity;
 use App\Models\Domain\AccountRepository;
+use App\Models\Domain\QiitaAccountValue;
 use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\LoginSessionEntityBuilder;
+use App\Models\Domain\exceptions\ValidationException;
 use App\Models\Domain\exceptions\AccountNotFoundException;
 
 /**
@@ -40,9 +42,12 @@ class LoginSessionScenario
      * @param array $requestArray
      * @return array
      * @throws AccountNotFoundException
+     * @throws ValidationException
      */
     public function create(array $requestArray): array
     {
+        $this->validateAccountValue($requestArray);
+
         $qiitaAccountValueBuilder = new QiitaAccountValueBuilder();
         $qiitaAccountValueBuilder->setAccessToken($requestArray['accessToken']);
         $qiitaAccountValueBuilder->setPermanentId($requestArray['permanentId']);
@@ -74,5 +79,23 @@ class LoginSessionScenario
         ];
 
         return $responseArray;
+    }
+
+    /**
+     * バリデーションを行う
+     *
+     * @param array $requestArray
+     * @throws ValidationException
+     */
+    private function validateAccountValue(array $requestArray)
+    {
+        $validator = \Validator::make($requestArray, [
+            'accessToken' => 'required|regex:/^[a-z0-9]+$/|min:40|max:64',
+            'permanentId' => 'required|integer|min:1|max:4294967294',
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException(QiitaAccountValue::createLoginSessionValidationErrorMessage(), $validator->errors()->toArray());
+        }
     }
 }
