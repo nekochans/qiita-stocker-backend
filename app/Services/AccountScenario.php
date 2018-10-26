@@ -111,7 +111,7 @@ class AccountScenario
             $loginSessionEntity = $this->loginSessionRepository->find($params['sessionId']);
 
             if ($loginSessionEntity->isExpired()) {
-                throw new LoginSessionExpiredException();
+                throw new LoginSessionExpiredException($loginSessionEntity->sessionExpiredMessage());
             }
 
             $accountEntity = $loginSessionEntity->findHasAccountEntity($this->accountRepository);

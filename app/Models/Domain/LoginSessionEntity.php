@@ -93,4 +93,14 @@ class LoginSessionEntity
     {
         return $accountRepository->find($this->getAccountId());
     }
+
+    /**
+     * ログインセッションの有効期限が切れている場合のエラーメッセージ
+     *
+     * @return string
+     */
+    public function sessionExpiredMessage(): string
+    {
+        return 'セッションの期限が切れました。再度、ログインしてください。';
+    }
 }
