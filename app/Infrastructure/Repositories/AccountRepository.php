@@ -100,18 +100,12 @@ class AccountRepository implements \App\Models\Domain\AccountRepository
      *
      * @param QiitaAccountValue $qiitaAccountValue
      * @return AccountEntity
-     * @throws \Exception
      */
     public function findByPermanentId(QiitaAccountValue $qiitaAccountValue): AccountEntity
     {
-        $qiitaAccount = QiitaAccount::where('qiita_account_id', $qiitaAccountValue->getPermanentId())->first();
+        $qiitaAccount = QiitaAccount::where('qiita_account_id', $qiitaAccountValue->getPermanentId())->firstOrFail();
 
-        if ($qiitaAccount === null) {
-            // TODO ModelNotFoundExceptionをThrowするように修正
-            throw new \Exception('qiitaAccountNotFoundException');
-        }
-
-        $accessToken = AccessToken::where('account_id', $qiitaAccount->account_id)->first();
+        $accessToken = AccessToken::where('account_id', $qiitaAccount->account_id)->firstOrFail();
 
         $accountEntityBuilder = new AccountEntityBuilder();
         $accountEntityBuilder->setAccountId($qiitaAccount->account_id);

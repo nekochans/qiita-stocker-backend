@@ -32,7 +32,6 @@ interface AccountRepository
      *
      * @param QiitaAccountValue $qiitaAccountValue
      * @return AccountEntity
-     * @throws \Exception
      */
     public function findByPermanentId(QiitaAccountValue $qiitaAccountValue): AccountEntity;
 
