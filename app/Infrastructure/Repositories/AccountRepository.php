@@ -107,7 +107,7 @@ class AccountRepository implements \App\Models\Domain\AccountRepository
         $qiitaAccount = QiitaAccount::where('qiita_account_id', $qiitaAccountValue->getPermanentId())->first();
 
         if ($qiitaAccount === null) {
-            // TODO 独自例外を定義する
+            // TODO ModelNotFoundExceptionをThrowするように修正
             throw new \Exception('qiitaAccountNotFoundException');
         }
 

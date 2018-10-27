@@ -60,32 +60,41 @@ class AccountScenario
      */
     public function create(array $requestArray): array
     {
-        $this->validateAccountValue($requestArray);
+        try {
+            $this->validateAccountValue($requestArray);
 
-        $qiitaAccountValueBuilder = new QiitaAccountValueBuilder();
-        $qiitaAccountValueBuilder->setAccessToken($requestArray['accessToken']);
-        $qiitaAccountValueBuilder->setPermanentId($requestArray['permanentId']);
-        $qiitaAccountValue = $qiitaAccountValueBuilder->build();
+            $qiitaAccountValueBuilder = new QiitaAccountValueBuilder();
+            $qiitaAccountValueBuilder->setAccessToken($requestArray['accessToken']);
+            $qiitaAccountValueBuilder->setPermanentId($requestArray['permanentId']);
+            $qiitaAccountValue = $qiitaAccountValueBuilder->build();
 
-        if ($qiitaAccountValue->isCreatedAccount($this->accountRepository)) {
-            throw new AccountCreatedException(AccountEntity::accountCreatedMessage());
+            if ($qiitaAccountValue->isCreatedAccount($this->accountRepository)) {
+                throw new AccountCreatedException(AccountEntity::accountCreatedMessage());
+            }
+
+            \DB::beginTransaction();
+
+            $accountEntity = $this->accountRepository->create($qiitaAccountValue);
+
+            $sessionId = Uuid::uuid4();
+
+            // TODO 有効期限を適切な期限に修正
+            $expiredOn = new \DateTime();
+            $expiredOn->add(new \DateInterval('PT1H'));
+
+            $loginSessionEntityBuilder = new LoginSessionEntityBuilder();
+            $loginSessionEntityBuilder->setAccountId($accountEntity->getAccountId());
+            $loginSessionEntityBuilder->setSessionId($sessionId);
+            $loginSessionEntityBuilder->setExpiredOn($expiredOn);
+            $loginSessionEntity = $loginSessionEntityBuilder->build();
+
+            $this->accountRepository->saveLoginSession($loginSessionEntity);
+
+            \DB::commit();
+        } catch (\PDOException $e) {
+            \DB::rollBack();
+            throw $e;
         }
-
-        $accountEntity = $this->accountRepository->create($qiitaAccountValue);
-
-        $sessionId = Uuid::uuid4();
-
-        // TODO 有効期限を適切な期限に修正
-        $expiredOn = new \DateTime();
-        $expiredOn->add(new \DateInterval('PT1H'));
-
-        $loginSessionEntityBuilder = new LoginSessionEntityBuilder();
-        $loginSessionEntityBuilder->setAccountId($accountEntity->getAccountId());
-        $loginSessionEntityBuilder->setSessionId($sessionId);
-        $loginSessionEntityBuilder->setExpiredOn($expiredOn);
-        $loginSessionEntity = $loginSessionEntityBuilder->build();
-
-        $this->accountRepository->saveLoginSession($loginSessionEntity);
 
         $responseArray = [
             'accountId' => $loginSessionEntity->getAccountId(),
@@ -104,11 +113,11 @@ class AccountScenario
      */
     public function destroy(array $params)
     {
-        if ($params['sessionId'] === null) {
-            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
-        }
-
         try {
+            if ($params['sessionId'] === null) {
+                throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+            }
+
             $loginSessionEntity = $this->loginSessionRepository->find($params['sessionId']);
 
             if ($loginSessionEntity->isExpired()) {
@@ -116,9 +125,17 @@ class AccountScenario
             }
 
             $accountEntity = $loginSessionEntity->findHasAccountEntity($this->accountRepository);
+
+            \DB::beginTransaction();
+
             $accountEntity->cancel($this->accountRepository, $this->loginSessionRepository);
+
+            \DB::commit();
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+        } catch (\PDOException $e) {
+            \DB::rollBack();
+            throw $e;
         }
     }
 
