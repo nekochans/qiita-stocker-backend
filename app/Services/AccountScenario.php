@@ -124,9 +124,17 @@ class AccountScenario
             }
 
             $accountEntity = $loginSessionEntity->findHasAccountEntity($this->accountRepository);
+
+            \DB::beginTransaction();
+
             $accountEntity->cancel($this->accountRepository, $this->loginSessionRepository);
+
+            \DB::commit();
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+        } catch (\PDOException $e) {
+            \DB::rollBack();
+            throw $e;
         }
     }
 
