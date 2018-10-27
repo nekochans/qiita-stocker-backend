@@ -60,19 +60,20 @@ class AccountScenario
      */
     public function create(array $requestArray): array
     {
-        $this->validateAccountValue($requestArray);
-
-        $qiitaAccountValueBuilder = new QiitaAccountValueBuilder();
-        $qiitaAccountValueBuilder->setAccessToken($requestArray['accessToken']);
-        $qiitaAccountValueBuilder->setPermanentId($requestArray['permanentId']);
-        $qiitaAccountValue = $qiitaAccountValueBuilder->build();
-
-        if ($qiitaAccountValue->isCreatedAccount($this->accountRepository)) {
-            throw new AccountCreatedException(AccountEntity::accountCreatedMessage());
-        }
-
-        \DB::beginTransaction();
         try {
+            $this->validateAccountValue($requestArray);
+
+            $qiitaAccountValueBuilder = new QiitaAccountValueBuilder();
+            $qiitaAccountValueBuilder->setAccessToken($requestArray['accessToken']);
+            $qiitaAccountValueBuilder->setPermanentId($requestArray['permanentId']);
+            $qiitaAccountValue = $qiitaAccountValueBuilder->build();
+
+            if ($qiitaAccountValue->isCreatedAccount($this->accountRepository)) {
+                throw new AccountCreatedException(AccountEntity::accountCreatedMessage());
+            }
+
+            \DB::beginTransaction();
+
             $accountEntity = $this->accountRepository->create($qiitaAccountValue);
 
             $sessionId = Uuid::uuid4();
@@ -112,11 +113,11 @@ class AccountScenario
      */
     public function destroy(array $params)
     {
-        if ($params['sessionId'] === null) {
-            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
-        }
-
         try {
+            if ($params['sessionId'] === null) {
+                throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+            }
+
             $loginSessionEntity = $this->loginSessionRepository->find($params['sessionId']);
 
             if ($loginSessionEntity->isExpired()) {
