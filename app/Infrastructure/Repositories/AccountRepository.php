@@ -105,7 +105,7 @@ class AccountRepository implements \App\Models\Domain\AccountRepository
     {
         $qiitaAccount = QiitaAccount::where('qiita_account_id', $qiitaAccountValue->getPermanentId())->firstOrFail();
 
-        $accessToken = AccessToken::where('account_id', $qiitaAccount->account_id)->first();
+        $accessToken = AccessToken::where('account_id', $qiitaAccount->account_id)->firstOrFail();
 
         $accountEntityBuilder = new AccountEntityBuilder();
         $accountEntityBuilder->setAccountId($qiitaAccount->account_id);
