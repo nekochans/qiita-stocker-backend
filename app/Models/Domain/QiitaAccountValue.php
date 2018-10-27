@@ -5,6 +5,8 @@
 
 namespace App\Models\Domain;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 /**
  * Class QiitaAccountValue
  * @package App\Models\Domain
@@ -61,7 +63,7 @@ class QiitaAccountValue
     {
         try {
             return $accountRepository->findByPermanentId($this);
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
             throw new \RuntimeException();
         }
     }
@@ -77,7 +79,7 @@ class QiitaAccountValue
         try {
             $accountRepository->findByPermanentId($this);
             return true;
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
             return false;
         }
     }
