@@ -12,7 +12,7 @@
 |
 */
 
-Route::middleware(['cors'])->group(function () {
+Route::middleware(['cors', 'xRequestId'])->group(function () {
     Route::get('weather', 'WeatherController@index');
 
     Route::options('accounts', function () {
