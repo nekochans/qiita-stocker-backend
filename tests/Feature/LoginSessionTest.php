@@ -53,6 +53,7 @@ class LoginSessionTest extends AbstractTestCase
         $accountId = 1;
         $jsonResponse->assertJson(['sessionId' => $responseObject->sessionId]);
         $jsonResponse->assertStatus(201);
+        $jsonResponse->assertHeader('X-Request-Id');
 
         // DBのテーブルに期待した形でデータが入っているか確認する
         $idSequence = 1;
@@ -100,6 +101,7 @@ class LoginSessionTest extends AbstractTestCase
         $jsonResponse->assertJson(['code' => $expectedErrorCode]);
         $jsonResponse->assertJson(['message' => 'アカウントが登録されていません。アカウント作成ページよりアカウントを作成してください。']);
         $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
     }
 
     /**
@@ -126,6 +128,7 @@ class LoginSessionTest extends AbstractTestCase
         $jsonResponse->assertJson(['code' => $expectedErrorCode]);
         $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。再度、ログインしてください。']);
         $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
     }
 
     /**
@@ -170,6 +173,7 @@ class LoginSessionTest extends AbstractTestCase
         $jsonResponse->assertJson(['code' => $expectedErrorCode]);
         $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。再度、ログインしてください。']);
         $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
     }
 
     /**

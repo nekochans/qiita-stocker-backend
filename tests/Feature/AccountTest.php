@@ -57,6 +57,7 @@ class AccountTest extends AbstractTestCase
         $jsonResponse->assertJson(['accountId' => $expectedAccountId]);
         $jsonResponse->assertJson(['_embedded' => $expectedEmbedded]);
         $jsonResponse->assertStatus(201);
+        $jsonResponse->assertHeader('X-Request-Id');
 
         // DBのテーブルに期待した形でデータが入っているか確認する
         $idSequence = 2;
@@ -108,6 +109,7 @@ class AccountTest extends AbstractTestCase
         $jsonResponse->assertJson(['code' => $expectedErrorCode]);
         $jsonResponse->assertJson(['message' => '既にアカウントの登録が完了しています。']);
         $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
     }
 
     /**
@@ -135,6 +137,8 @@ class AccountTest extends AbstractTestCase
         );
 
         $jsonResponse->assertStatus(204);
+        $jsonResponse->assertHeader('X-Request-Id');
+
 
         // DBのテーブルに期待した形でデータが入っているか確認する
         $this->assertDatabaseMissing('accounts', [
@@ -179,6 +183,7 @@ class AccountTest extends AbstractTestCase
         $jsonResponse->assertJson(['code' => $expectedErrorCode]);
         $jsonResponse->assertJson(['message' => 'セッションが不正です。再度、ログインしてください。']);
         $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
     }
 
     /**
@@ -200,6 +205,7 @@ class AccountTest extends AbstractTestCase
         $jsonResponse->assertJson(['code' => $expectedErrorCode]);
         $jsonResponse->assertJson(['message' => 'セッションが不正です。再度、ログインしてください。']);
         $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
     }
 
     /**
@@ -229,6 +235,7 @@ class AccountTest extends AbstractTestCase
         $jsonResponse->assertJson(['code' => $expectedErrorCode]);
         $jsonResponse->assertJson(['message' => 'セッションの期限が切れました。再度、ログインしてください。']);
         $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
     }
 
     /**
@@ -255,6 +262,7 @@ class AccountTest extends AbstractTestCase
         $jsonResponse->assertJson(['code' => $expectedErrorCode]);
         $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。再度、アカウント登録を行なってください。']);
         $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
     }
 
     /**
@@ -299,6 +307,7 @@ class AccountTest extends AbstractTestCase
         $jsonResponse->assertJson(['code' => $expectedErrorCode]);
         $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。再度、アカウント登録を行なってください。']);
         $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
     }
 
     /**
