@@ -10,6 +10,7 @@ use App\Models\Domain\AccountEntity;
 use App\Models\Domain\AccountRepository;
 use App\Models\Domain\QiitaAccountValue;
 use App\Models\Domain\LoginSessionEntity;
+use App\Models\Domain\AccountSpecification;
 use App\Models\Domain\LoginSessionRepository;
 use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\LoginSessionEntityBuilder;
@@ -61,7 +62,10 @@ class AccountScenario
     public function create(array $requestArray): array
     {
         try {
-            $this->validateAccountValue($requestArray);
+            $errors = AccountSpecification::canCreate($requestArray);
+            if ($errors) {
+                throw new ValidationException(QiitaAccountValue::createAccountValidationErrorMessage(), $errors);
+            }
 
             $qiitaAccountValueBuilder = new QiitaAccountValueBuilder();
             $qiitaAccountValueBuilder->setAccessToken($requestArray['accessToken']);
@@ -136,24 +140,6 @@ class AccountScenario
         } catch (\PDOException $e) {
             \DB::rollBack();
             throw $e;
-        }
-    }
-
-    /**
-     * バリデーションを行う
-     *
-     * @param array $requestArray
-     * @throws ValidationException
-     */
-    private function validateAccountValue(array $requestArray)
-    {
-        $validator = \Validator::make($requestArray, [
-            'accessToken' => 'required|regex:/^[a-z0-9]+$/|min:40|max:64',
-            'permanentId' => 'required|integer|min:1|max:4294967294',
-        ]);
-
-        if ($validator->fails()) {
-            throw new ValidationException(QiitaAccountValue::createAccountValidationErrorMessage(), $validator->errors()->toArray());
         }
     }
 }
