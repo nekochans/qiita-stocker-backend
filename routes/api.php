@@ -28,4 +28,10 @@ Route::middleware(['cors', 'xRequestId'])->group(function () {
     });
 
     Route::post('login-sessions', 'LoginSessionController@create');
+
+    Route::options('categories', function () {
+        return response()->json();
+    });
+
+    Route::post('categories', 'CategoryController@create');
 });
