@@ -21,7 +21,7 @@ class CategoryController extends Controller
 
         $categories = [
             'categoryId'   => 1,
-            'name' => '設計'
+            'name'         => '設計'
         ];
 
         return response()->json($categories)->setStatusCode(201);
