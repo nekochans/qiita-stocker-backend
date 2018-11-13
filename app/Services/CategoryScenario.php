@@ -8,8 +8,8 @@ namespace App\Services;
 use App\Models\Domain\AccountRepository;
 use App\Models\Domain\LoginSessionEntity;
 use App\Models\Domain\LoginSessionRepository;
-use App\Models\Domain\category\CategoryNameValue;
-use App\Models\Domain\category\CategoryRepository;
+use App\Models\Domain\Category\CategoryNameValue;
+use App\Models\Domain\Category\CategoryRepository;
 use App\Models\Domain\exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\exceptions\LoginSessionExpiredException;
@@ -76,7 +76,7 @@ class CategoryScenario
 
             $accountEntity = $loginSessionEntity->findHasAccountEntity($this->accountRepository);
 
-            \DB::beginTransaction();
+            // \DB::beginTransaction();
 
             $categoryNameValue = new CategoryNameValue($params['name']);
 
@@ -89,11 +89,11 @@ class CategoryScenario
 
             return $categories;
 
-            \DB::commit();
+            // \DB::commit();
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         } catch (\PDOException $e) {
-            \DB::rollBack();
+            // \DB::rollBack();
             throw $e;
         }
     }

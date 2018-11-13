@@ -1,24 +1,24 @@
 <?php
 /**
- * AccountCreatedException
+ * AccountNotFoundException
  */
 
-namespace App\Models\Domain\exceptions;
+namespace App\Models\Domain\Exceptions;
 
 use Throwable;
 
 /**
- * Class AccountCreatedException
- * @package App\Exceptions
+ * Class AccountNotFoundException
+ * @package App\Models\Domain\exceptions
  */
-class AccountCreatedException extends BusinessLogicException
+class AccountNotFoundException extends BusinessLogicException
 {
-    const ERROR_MESSAGE = 'Conflict';
+    const ERROR_MESSAGE = 'Not Found';
 
-    const ERROR_CODE = 409;
+    const ERROR_CODE = 404;
 
     /**
-     * AccountCreatedException constructor.
+     * AccountNotFoundException constructor.
      * @param string $message
      * @param Throwable|null $previous
      */

@@ -3,7 +3,7 @@
  * CategoryRepository
  */
 
-namespace App\Models\Domain\category;
+namespace App\Models\Domain\Category;
 
 use App\Models\Domain\AccountEntity;
 

@@ -1,24 +1,24 @@
 <?php
 /**
- * UnauthorizedException
+ * AccountCreatedException
  */
 
-namespace App\Models\Domain\exceptions;
+namespace App\Models\Domain\Exceptions;
 
 use Throwable;
 
 /**
- * Class UnauthorizedException
- * @package App\Models\Domain\exceptions
+ * Class AccountCreatedException
+ * @package App\Exceptions
  */
-class UnauthorizedException extends BusinessLogicException
+class AccountCreatedException extends BusinessLogicException
 {
-    const ERROR_MESSAGE = 'Unauthorized';
+    const ERROR_MESSAGE = 'Conflict';
 
-    const ERROR_CODE = 401;
+    const ERROR_CODE = 409;
 
     /**
-     * UnauthorizedException constructor.
+     * AccountCreatedException constructor.
      * @param string $message
      * @param Throwable|null $previous
      */

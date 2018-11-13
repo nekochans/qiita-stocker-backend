@@ -35,8 +35,8 @@ class AccountController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
-     * @throws \App\Models\Domain\exceptions\AccountCreatedException
-     * @throws \App\Models\Domain\exceptions\ValidationException
+     * @throws \App\Models\Domain\Exceptions\AccountCreatedException
+     * @throws \App\Models\Domain\Exceptions\ValidationException
      */
     public function create(Request $request): JsonResponse
     {
@@ -52,8 +52,8 @@ class AccountController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
-     * @throws \App\Models\Domain\exceptions\LoginSessionExpiredException
-     * @throws \App\Models\Domain\exceptions\UnauthorizedException
+     * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
+     * @throws \App\Models\Domain\Exceptions\UnauthorizedException
      */
     public function destroy(Request $request): JsonResponse
     {

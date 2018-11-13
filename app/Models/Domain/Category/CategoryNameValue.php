@@ -3,7 +3,7 @@
  * CategoryNameValue
  */
 
-namespace App\Models\Domain\category;
+namespace App\Models\Domain\Category;
 
 /**
  * Class CategoryNameValue
