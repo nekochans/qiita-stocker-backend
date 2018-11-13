@@ -14,7 +14,7 @@ class CategoryEntityBuilder
     /**
      * カテゴリID
      *
-     * @var string
+     * @var int
      */
     private $Id;
 
@@ -26,17 +26,17 @@ class CategoryEntityBuilder
     private $categoryNameValue;
 
     /**
-     * @return string
+     * @return int
      */
-    public function getId(): string
+    public function getId(): int
     {
         return $this->Id;
     }
 
     /**
-     * @param string $Id
+     * @param int $Id
      */
-    public function setId(string $Id): void
+    public function setId(int $Id): void
     {
         $this->Id = $Id;
     }

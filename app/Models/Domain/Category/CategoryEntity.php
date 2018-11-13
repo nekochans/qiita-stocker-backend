@@ -14,7 +14,7 @@ class CategoryEntity
     /**
      * カテゴリID
      *
-     * @var string
+     * @var int
      */
     private $Id;
 
@@ -32,9 +32,9 @@ class CategoryEntity
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getId(): string
+    public function getId(): int
     {
         return $this->Id;
     }
