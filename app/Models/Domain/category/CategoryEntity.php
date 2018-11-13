@@ -21,14 +21,14 @@ class CategoryEntity
     /**
      * カテゴリ名
      *
-     * @var string
+     * @var CategoryNameValue
      */
-    private $name;
+    private $categoryNameValue;
 
     public function __construct(CategoryEntityBuilder $builder)
     {
         $this->Id = $builder->getId();
-        $this->name = $builder->getName();
+        $this->categoryNameValue = $builder->getCategoryNameValue();
     }
 
     /**
@@ -40,10 +40,10 @@ class CategoryEntity
     }
 
     /**
-     * @return string
+     * @return CategoryNameValue
      */
-    public function getName(): string
+    public function getCategoryNameValue(): CategoryNameValue
     {
-        return $this->name;
+        return $this->categoryNameValue;
     }
 }

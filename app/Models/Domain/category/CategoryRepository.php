@@ -17,8 +17,8 @@ interface CategoryRepository
      * カテゴリを作成する
      *
      * @param AccountEntity $accountEntity
-     * @param CategoryValue $categoryValue
+     * @param CategoryNameValue $categoryNameValue
      * @return CategoryEntity
      */
-    public function create(AccountEntity $accountEntity, CategoryValue $categoryValue): CategoryEntity;
+    public function create(AccountEntity $accountEntity, CategoryNameValue $categoryNameValue): CategoryEntity;
 }

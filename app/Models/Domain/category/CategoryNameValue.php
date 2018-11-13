@@ -1,15 +1,15 @@
 <?php
 /**
- * CategoryValue
+ * CategoryNameValue
  */
 
 namespace App\Models\Domain\category;
 
 /**
- * Class CategoryValue
+ * Class CategoryNameValue
  * @package App\Models\Domain
  */
-class CategoryValue
+class CategoryNameValue
 {
     /**
      * カテゴリ名
@@ -19,12 +19,12 @@ class CategoryValue
     private $name;
 
     /**
-     * CategoryValue constructor.
-     * @param CategoryValueBuilder $builder
+     * CategoryNameValue constructor.
+     * @param string $name
      */
-    public function __construct(CategoryValueBuilder $builder)
+    public function __construct(string $name)
     {
-        $this->name = $builder->getName();
+        $this->name = $name;
     }
 
     /**

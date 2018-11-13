@@ -21,9 +21,9 @@ class CategoryEntityBuilder
     /**
      * カテゴリ名
      *
-     * @var string
+     * @var CategoryNameValue
      */
-    private $name;
+    private $categoryNameValue;
 
     /**
      * @return string
@@ -42,19 +42,19 @@ class CategoryEntityBuilder
     }
 
     /**
-     * @return string
+     * @return CategoryNameValue
      */
-    public function getName(): string
+    public function getCategoryNameValue(): CategoryNameValue
     {
-        return $this->name;
+        return $this->categoryNameValue;
     }
 
     /**
-     * @param string $name
+     * @param CategoryNameValue $categoryNameValue
      */
-    public function setName(string $name): void
+    public function setCategoryNameValue(CategoryNameValue $categoryNameValue): void
     {
-        $this->name = $name;
+        $this->categoryNameValue = $categoryNameValue;
     }
 
     /**

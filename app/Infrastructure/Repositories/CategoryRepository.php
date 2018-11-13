@@ -6,8 +6,8 @@
 namespace App\Infrastructure\Repositories;
 
 use App\Models\Domain\AccountEntity;
-use App\Models\Domain\category\CategoryValue;
 use App\Models\Domain\category\CategoryEntity;
+use App\Models\Domain\category\CategoryNameValue;
 use App\Models\Domain\category\CategoryEntityBuilder;
 
 /**
@@ -16,11 +16,11 @@ use App\Models\Domain\category\CategoryEntityBuilder;
  */
 class CategoryRepository implements \App\Models\Domain\category\CategoryRepository
 {
-    public function create(AccountEntity $accountEntity, CategoryValue $categoryValue): CategoryEntity
+    public function create(AccountEntity $accountEntity, CategoryNameValue $categoryNameValue): CategoryEntity
     {
         $categoryEntityBuilder = new CategoryEntityBuilder();
         $categoryEntityBuilder->setId('1');
-        $categoryEntityBuilder->setName($categoryValue->getName());
+        $categoryEntityBuilder->setCategoryNameValue($categoryNameValue);
         return $categoryEntityBuilder->build();
     }
 }

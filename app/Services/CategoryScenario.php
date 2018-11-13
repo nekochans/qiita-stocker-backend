@@ -8,8 +8,8 @@ namespace App\Services;
 use App\Models\Domain\AccountRepository;
 use App\Models\Domain\LoginSessionEntity;
 use App\Models\Domain\LoginSessionRepository;
+use App\Models\Domain\category\CategoryNameValue;
 use App\Models\Domain\category\CategoryRepository;
-use App\Models\Domain\category\CategoryValueBuilder;
 use App\Models\Domain\exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\exceptions\LoginSessionExpiredException;
@@ -78,15 +78,13 @@ class CategoryScenario
 
             \DB::beginTransaction();
 
-            $categoryValueBuilder = new CategoryValueBuilder();
-            $categoryValueBuilder->setName($params['name']);
-            $categoryValue = $categoryValueBuilder->build();
+            $categoryNameValue = new CategoryNameValue($params['name']);
 
-            $categoryEntity = $this->categoryRepository->create($accountEntity, $categoryValue);
+            $categoryEntity = $this->categoryRepository->create($accountEntity, $categoryNameValue);
 
             $categories = [
                 'categoryId'   => $categoryEntity->getId(),
-                'name'         => $categoryEntity->getName()
+                'name'         => $categoryEntity->getCategoryNameValue()->getName()
             ];
 
             return $categories;
