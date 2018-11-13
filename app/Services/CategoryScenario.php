@@ -84,13 +84,6 @@ class CategoryScenario
 
             $categoryEntity = $this->categoryRepository->create($accountEntity, $categoryNameValue);
 
-            $categories = [
-                'categoryId'   => $categoryEntity->getId(),
-                'name'         => $categoryEntity->getCategoryNameValue()->getName()
-            ];
-
-            return $categories;
-
             \DB::commit();
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
@@ -98,5 +91,12 @@ class CategoryScenario
             \DB::rollBack();
             throw $e;
         }
+
+        $categories = [
+            'categoryId'   => $categoryEntity->getId(),
+            'name'         => $categoryEntity->getCategoryNameValue()->getName()
+        ];
+
+        return $categories;
     }
 }
