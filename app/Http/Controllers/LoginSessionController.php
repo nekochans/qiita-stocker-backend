@@ -35,8 +35,8 @@ class LoginSessionController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
-     * @throws \App\Models\Domain\exceptions\AccountNotFoundException
-     * @throws \App\Models\Domain\exceptions\ValidationException
+     * @throws \App\Models\Domain\Exceptions\AccountNotFoundException
+     * @throws \App\Models\Domain\Exceptions\ValidationException
      */
     public function create(Request $request): JsonResponse
     {

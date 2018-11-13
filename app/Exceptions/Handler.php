@@ -4,8 +4,8 @@ namespace App\Exceptions;
 
 use Exception;
 use App\Models\Domain\ErrorResponseEntityBuilder;
-use App\Models\Domain\exceptions\ValidationException;
-use App\Models\Domain\exceptions\BusinessLogicException;
+use App\Models\Domain\Exceptions\ValidationException;
+use App\Models\Domain\Exceptions\BusinessLogicException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler

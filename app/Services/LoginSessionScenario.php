@@ -12,8 +12,8 @@ use App\Models\Domain\QiitaAccountValue;
 use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\LoginSessionEntityBuilder;
 use App\Models\Domain\LoginSessionSpecification;
-use App\Models\Domain\exceptions\ValidationException;
-use App\Models\Domain\exceptions\AccountNotFoundException;
+use App\Models\Domain\Exceptions\ValidationException;
+use App\Models\Domain\Exceptions\AccountNotFoundException;
 
 /**
  * Class LoginSessionScenario

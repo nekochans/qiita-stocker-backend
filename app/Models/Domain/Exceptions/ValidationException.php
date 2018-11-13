@@ -3,7 +3,7 @@
  * ValidationException
  */
 
-namespace App\Models\Domain\exceptions;
+namespace App\Models\Domain\Exceptions;
 
 use Throwable;
 

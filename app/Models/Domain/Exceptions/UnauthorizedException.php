@@ -1,24 +1,24 @@
 <?php
 /**
- * AccountNotFoundException
+ * UnauthorizedException
  */
 
-namespace App\Models\Domain\exceptions;
+namespace App\Models\Domain\Exceptions;
 
 use Throwable;
 
 /**
- * Class AccountNotFoundException
+ * Class UnauthorizedException
  * @package App\Models\Domain\exceptions
  */
-class AccountNotFoundException extends BusinessLogicException
+class UnauthorizedException extends BusinessLogicException
 {
-    const ERROR_MESSAGE = 'Not Found';
+    const ERROR_MESSAGE = 'Unauthorized';
 
-    const ERROR_CODE = 404;
+    const ERROR_CODE = 401;
 
     /**
-     * AccountNotFoundException constructor.
+     * UnauthorizedException constructor.
      * @param string $message
      * @param Throwable|null $previous
      */
