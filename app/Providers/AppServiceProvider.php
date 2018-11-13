@@ -8,7 +8,7 @@ use App\Services\LoginSessionScenario;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Domain\AccountRepository;
 use App\Models\Domain\LoginSessionRepository;
-use App\Models\Domain\category\CategoryRepository;
+use App\Models\Domain\Category\CategoryRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
