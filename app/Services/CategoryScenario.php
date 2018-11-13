@@ -64,6 +64,8 @@ class CategoryScenario
     public function create(array $params): array
     {
         try {
+            // TODO バリデーションを追加する
+
             if ($params['sessionId'] === null) {
                 throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
             }
@@ -76,25 +78,25 @@ class CategoryScenario
 
             $accountEntity = $loginSessionEntity->findHasAccountEntity($this->accountRepository);
 
-            // \DB::beginTransaction();
+            \DB::beginTransaction();
 
             $categoryNameValue = new CategoryNameValue($params['name']);
 
             $categoryEntity = $this->categoryRepository->create($accountEntity, $categoryNameValue);
 
-            $categories = [
-                'categoryId'   => $categoryEntity->getId(),
-                'name'         => $categoryEntity->getCategoryNameValue()->getName()
-            ];
-
-            return $categories;
-
-            // \DB::commit();
+            \DB::commit();
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         } catch (\PDOException $e) {
-            // \DB::rollBack();
+            \DB::rollBack();
             throw $e;
         }
+
+        $categories = [
+            'categoryId'   => $categoryEntity->getId(),
+            'name'         => $categoryEntity->getCategoryNameValue()->getName()
+        ];
+
+        return $categories;
     }
 }

@@ -7,8 +7,10 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Eloquents\Account;
+use App\Eloquents\Category;
 use Tests\CreatesApplication;
 use App\Eloquents\AccessToken;
+use App\Eloquents\CategoryName;
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
 
@@ -29,6 +31,8 @@ abstract class AbstractTestCase extends TestCase
         LoginSession::truncate();
         AccessToken::truncate();
         QiitaAccount::truncate();
+        Category::truncate();
+        CategoryName::truncate();
         \DB::statement('SET FOREIGN_KEY_CHECKS=1');
     }
 
