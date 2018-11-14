@@ -33,5 +33,7 @@ Route::middleware(['cors', 'xRequestId'])->group(function () {
         return response()->json();
     });
 
+    Route::get('categories', 'CategoryController@index');
+
     Route::post('categories', 'CategoryController@create');
 });
