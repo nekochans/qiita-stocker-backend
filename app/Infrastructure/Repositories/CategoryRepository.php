@@ -74,7 +74,7 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
             ->get();
 
         $categoryEntityCollection = $categories->map(function ($category): CategoryEntity {
-            return $this->buildCategoryEntity($category);
+            return $this->buildCategoryEntity($category->toArray());
         });
 
         $categoryEntities = new CategoryEntities(...$categoryEntityCollection->toArray());
@@ -85,14 +85,14 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
     /**
      * CategoryEntityを作成する
      *
-     * @param Category $eloquentCategory
+     * @param array $category
      * @return CategoryEntity
      */
-    public function buildCategoryEntity(Category $eloquentCategory): CategoryEntity
+    public function buildCategoryEntity(array $category): CategoryEntity
     {
-        $categoryNameVale = new CategoryNameValue($eloquentCategory->name);
+        $categoryNameVale = new CategoryNameValue($category['name']);
         $categoryEntityBuilder = new CategoryEntityBuilder();
-        $categoryEntityBuilder->setId($eloquentCategory->id);
+        $categoryEntityBuilder->setId($category['id']);
         $categoryEntityBuilder->setCategoryNameValue($categoryNameVale);
 
         return $categoryEntityBuilder->build();
