@@ -6,7 +6,9 @@
 namespace Tests\Feature;
 
 use App\Eloquents\Account;
+use App\Eloquents\Category;
 use App\Eloquents\AccessToken;
+use App\Eloquents\CategoryName;
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -27,6 +29,10 @@ class AccountDestroyTest extends AbstractTestCase
             factory(QiitaAccount::class)->create(['account_id' => $account->id]);
             factory(AccessToken::class)->create(['account_id' => $account->id]);
             factory(LoginSession::class)->create(['account_id' => $account->id]);
+            $categories = factory(Category::class, 2)->create(['account_id' => $account->id]);
+            $categories->each(function ($category) {
+                factory(CategoryName::class)->create(['category_id' => $category->id]);
+            });
         });
     }
 
@@ -46,6 +52,9 @@ class AccountDestroyTest extends AbstractTestCase
         factory(QiitaAccount::class)->create(['qiita_account_id' => 2, 'account_id' => $accountId]);
         factory(AccessToken::class)->create(['account_id' => $accountId]);
         factory(LoginSession::class)->create(['account_id' => $accountId]);
+
+        factory(Category::class)->create(['account_id' => $accountId]);
+        factory(CategoryName::class)->create(['category_id' => 3]);
 
         $jsonResponse = $this->delete(
             '/api/accounts',
@@ -85,6 +94,23 @@ class AccountDestroyTest extends AbstractTestCase
         ]);
         $this->assertDatabaseHas('login_sessions', [
             'account_id'   => $accountId,
+        ]);
+
+        $this->assertDatabaseMissing('categories', [
+            'account_id'   => $destroyedAccountId,
+        ]);
+        $this->assertDatabaseHas('categories', [
+            'account_id'   => $accountId,
+        ]);
+
+        $this->assertDatabaseMissing('categories_names', [
+            'category_id'   => 1,
+        ]);
+        $this->assertDatabaseMissing('categories_names', [
+            'category_id'   => 2,
+        ]);
+        $this->assertDatabaseHas('categories_names', [
+            'category_id'   => 3,
         ]);
     }
 
