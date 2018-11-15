@@ -51,7 +51,8 @@ class AppServiceProvider extends ServiceProvider
             function () {
                 return new AccountScenario(
                     $this->app->make(AccountRepository::class),
-                    $this->app->make(LoginSessionRepository::class)
+                    $this->app->make(LoginSessionRepository::class),
+                    $this->app->make(CategoryRepository::class)
                 );
             }
         );

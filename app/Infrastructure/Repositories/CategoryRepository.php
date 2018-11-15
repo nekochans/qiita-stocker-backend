@@ -73,7 +73,7 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
             ->join('categories_names', 'categories.id', '=', 'categories_names.category_id')
             ->get();
 
-        $categoryEntityCollection = $categories->map(function ($category): CategoryEntity {
+        $categoryEntityCollection = $categories->map(function (Category $category): CategoryEntity {
             return $this->buildCategoryEntity($category->toArray());
         });
 
@@ -96,5 +96,20 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
         $categoryEntityBuilder->setCategoryNameValue($categoryNameVale);
 
         return $categoryEntityBuilder->build();
+    }
+
+    /**
+     * アカウントに紐づくカテゴリを全て削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyAll(string $accountId)
+    {
+        $categories = Category::where('account_id', $accountId);
+
+        $categoryIdList = $categories->get()->pluck('id');
+        CategoryName::whereIn('category_id', $categoryIdList)->delete();
+
+        $categories->delete();
     }
 }

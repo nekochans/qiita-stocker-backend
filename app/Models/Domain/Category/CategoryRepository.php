@@ -29,4 +29,11 @@ interface CategoryRepository
      * @return CategoryEntities
      */
     public function search(AccountEntity $accountEntity): CategoryEntities;
+
+    /**
+     * アカウントに紐づくカテゴリを全て削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyAll(string $accountId);
 }
