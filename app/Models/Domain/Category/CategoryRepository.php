@@ -21,4 +21,12 @@ interface CategoryRepository
      * @return CategoryEntity
      */
     public function create(AccountEntity $accountEntity, CategoryNameValue $categoryNameValue): CategoryEntity;
+
+    /**
+     * カテゴリ一覧を取得する
+     *
+     * @param AccountEntity $accountEntity
+     * @return CategoryEntities
+     */
+    public function search(AccountEntity $accountEntity): CategoryEntities;
 }
