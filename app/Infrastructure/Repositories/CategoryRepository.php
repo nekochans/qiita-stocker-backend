@@ -69,7 +69,7 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
     public function search(AccountEntity $accountEntity): Collection
     {
         $categories = Category::select('categories.id', 'categories_names.name')
-            ->where('account_i', $accountEntity->getAccountId())
+            ->where('account_id', $accountEntity->getAccountId())
             ->join('categories_names', 'categories.id', '=', 'categories_names.category_id')
             ->get();
 
