@@ -8,7 +8,6 @@ namespace App\Services;
 use App\Models\Domain\AccountRepository;
 use App\Models\Domain\LoginSessionEntity;
 use App\Models\Domain\LoginSessionRepository;
-use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Category\CategoryNameValue;
 use App\Models\Domain\Category\CategoryRepository;
 use App\Models\Domain\exceptions\UnauthorizedException;
@@ -131,15 +130,16 @@ class CategoryScenario
             throw $e;
         }
 
-        $categories = $categoryEntities->map(function (CategoryEntity $categoryEntity): array {
+        $categories = [];
+        $categoryEntityList = $categoryEntities->getCategoryEntities();
+
+        foreach ($categoryEntityList as $categoryEntity) {
             $category = [
                 'categoryId'   => $categoryEntity->getId(),
                 'name'         => $categoryEntity->getCategoryNameValue()->getName()
             ];
-
-            return $category;
-        });
-
-        return $categories->toArray();
+            array_push($categories, $category);
+        }
+        return $categories;
     }
 }

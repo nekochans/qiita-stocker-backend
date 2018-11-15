@@ -7,9 +7,9 @@ namespace App\Infrastructure\Repositories;
 
 use App\Eloquents\Category;
 use App\Eloquents\CategoryName;
-use Illuminate\Support\Collection;
 use App\Models\Domain\AccountEntity;
 use App\Models\Domain\Category\CategoryEntity;
+use App\Models\Domain\Category\CategoryEntities;
 use App\Models\Domain\Category\CategoryNameValue;
 use App\Models\Domain\Category\CategoryEntityBuilder;
 
@@ -64,18 +64,20 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
      * カテゴリ一覧を取得する
      *
      * @param AccountEntity $accountEntity
-     * @return Collection
+     * @return CategoryEntities
      */
-    public function search(AccountEntity $accountEntity): Collection
+    public function search(AccountEntity $accountEntity): CategoryEntities
     {
         $categories = Category::select('categories.id', 'categories_names.name')
             ->where('account_id', $accountEntity->getAccountId())
             ->join('categories_names', 'categories.id', '=', 'categories_names.category_id')
             ->get();
 
-        $categoryEntities = $categories->map(function ($category): CategoryEntity {
+        $categoryEntityCollection = $categories->map(function ($category): CategoryEntity {
             return $this->buildCategoryEntity($category);
         });
+
+        $categoryEntities = new CategoryEntities(...$categoryEntityCollection->toArray());
 
         return $categoryEntities;
     }

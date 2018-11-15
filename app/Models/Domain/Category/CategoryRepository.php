@@ -5,7 +5,6 @@
 
 namespace App\Models\Domain\Category;
 
-use Illuminate\Support\Collection;
 use App\Models\Domain\AccountEntity;
 
 /**
@@ -27,7 +26,7 @@ interface CategoryRepository
      * カテゴリ一覧を取得する
      *
      * @param AccountEntity $accountEntity
-     * @return Collection
+     * @return CategoryEntities
      */
-    public function search(AccountEntity $accountEntity): Collection;
+    public function search(AccountEntity $accountEntity): CategoryEntities;
 }
