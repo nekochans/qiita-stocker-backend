@@ -35,29 +35,20 @@ class CategoryController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws \App\Models\Domain\exceptions\LoginSessionExpiredException
+     * @throws \App\Models\Domain\exceptions\UnauthorizedException
      */
     public function index(Request $request): JsonResponse
     {
-        $categories = [
-
-            [
-                'categoryId'   => 1,
-                'name'         => 'カテゴリ名1'
-
-            ],
-            [
-                'categoryId'   => 2,
-                'name'         => 'カテゴリ名2'
-            ],
-            [
-                'categoryId'   => 3,
-                'name'         => 'カテゴリ名3'
-            ]
+        $sessionId = $request->bearerToken();
+        $params = [
+            'sessionId' => $sessionId
         ];
+
+        $categories = $this->categoryScenario->index($params);
 
         return response()->json($categories)->setStatusCode(200);
     }
-
 
     /**
      * カテゴリを作成する

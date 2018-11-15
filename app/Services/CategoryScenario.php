@@ -8,6 +8,7 @@ namespace App\Services;
 use App\Models\Domain\AccountRepository;
 use App\Models\Domain\LoginSessionEntity;
 use App\Models\Domain\LoginSessionRepository;
+use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Category\CategoryNameValue;
 use App\Models\Domain\Category\CategoryRepository;
 use App\Models\Domain\exceptions\UnauthorizedException;
@@ -98,5 +99,47 @@ class CategoryScenario
         ];
 
         return $categories;
+    }
+
+    /**
+     * カテゴリ一覧を取得する
+     *
+     * @param array $params
+     * @return array
+     * @throws LoginSessionExpiredException
+     * @throws UnauthorizedException
+     */
+    public function index(array $params): array
+    {
+        try {
+            if ($params['sessionId'] === null) {
+                throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+            }
+
+            $loginSessionEntity = $this->loginSessionRepository->find($params['sessionId']);
+
+            if ($loginSessionEntity->isExpired()) {
+                throw new LoginSessionExpiredException($loginSessionEntity->loginSessionExpiredMessage());
+            }
+
+            $accountEntity = $loginSessionEntity->findHasAccountEntity($this->accountRepository);
+
+            $categoryEntities = $this->categoryRepository->search($accountEntity);
+        } catch (ModelNotFoundException $e) {
+            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+        } catch (\PDOException $e) {
+            throw $e;
+        }
+
+        $categories = $categoryEntities->map(function (CategoryEntity $categoryEntity): array {
+            $category = [
+                'categoryId'   => $categoryEntity->getId(),
+                'name'         => $categoryEntity->getCategoryNameValue()->getName()
+            ];
+
+            return $category;
+        });
+
+        return $categories->toArray();
     }
 }

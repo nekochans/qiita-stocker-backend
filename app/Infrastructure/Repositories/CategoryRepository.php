@@ -7,6 +7,7 @@ namespace App\Infrastructure\Repositories;
 
 use App\Eloquents\Category;
 use App\Eloquents\CategoryName;
+use Illuminate\Support\Collection;
 use App\Models\Domain\AccountEntity;
 use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Category\CategoryNameValue;
@@ -57,5 +58,41 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
         $categoryName->category_id = $categoryId;
         $categoryName->name = $categoryNameValue->getName();
         $categoryName->save();
+    }
+
+    /**
+     * カテゴリ一覧を取得する
+     *
+     * @param AccountEntity $accountEntity
+     * @return Collection
+     */
+    public function search(AccountEntity $accountEntity): Collection
+    {
+        $categories = Category::select('categories.id', 'categories_names.name')
+            ->where('account_i', $accountEntity->getAccountId())
+            ->join('categories_names', 'categories.id', '=', 'categories_names.category_id')
+            ->get();
+
+        $categoryEntities = $categories->map(function ($category): CategoryEntity {
+            return $this->buildCategoryEntity($category);
+        });
+
+        return $categoryEntities;
+    }
+
+    /**
+     * CategoryEntityを作成する
+     *
+     * @param Category $eloquentCategory
+     * @return CategoryEntity
+     */
+    public function buildCategoryEntity(Category $eloquentCategory): CategoryEntity
+    {
+        $categoryNameVale = new CategoryNameValue($eloquentCategory->name);
+        $categoryEntityBuilder = new CategoryEntityBuilder();
+        $categoryEntityBuilder->setId($eloquentCategory->id);
+        $categoryEntityBuilder->setCategoryNameValue($categoryNameVale);
+
+        return $categoryEntityBuilder->build();
     }
 }
