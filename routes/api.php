@@ -36,4 +36,6 @@ Route::middleware(['cors', 'xRequestId'])->group(function () {
     Route::get('categories', 'CategoryController@index');
 
     Route::post('categories', 'CategoryController@create');
+
+    Route::patch('categories/{id}', 'CategoryController@update');
 });
