@@ -5,6 +5,8 @@
 
 namespace App\Models\Domain;
 
+use App\Models\Domain\Category\CategoryRepository;
+
 /**
  * Class AccountEntity
  * @package App\Models\Domain
@@ -90,9 +92,14 @@ class AccountEntity
      *
      * @param AccountRepository $accountRepository
      * @param LoginSessionRepository $loginSessionRepository
+     * @param CategoryRepository $categoryRepository
      */
-    public function cancel(AccountRepository $accountRepository, LoginSessionRepository $loginSessionRepository)
-    {
+    public function cancel(
+        AccountRepository $accountRepository,
+        LoginSessionRepository $loginSessionRepository,
+        CategoryRepository $categoryRepository
+    ) {
+        $categoryRepository->destroyAll($this->getAccountId());
         $loginSessionRepository->destroyLoginSessions($this->getAccountId());
         $accountRepository->destroyAccessToken($this->getAccountId());
         $accountRepository->destroyQiitaAccount($this->getAccountId());

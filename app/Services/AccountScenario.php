@@ -14,6 +14,7 @@ use App\Models\Domain\AccountSpecification;
 use App\Models\Domain\LoginSessionRepository;
 use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\LoginSessionEntityBuilder;
+use App\Models\Domain\Category\CategoryRepository;
 use App\Models\Domain\Exceptions\ValidationException;
 use App\Models\Domain\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -40,15 +41,28 @@ class AccountScenario
      * @var
      */
     private $loginSessionRepository;
+
+    /**
+     * CategoryRepository
+     *
+     * @var
+     */
+    private $categoryRepository;
+
     /**
      * AccountScenario constructor.
      * @param AccountRepository $accountRepository
      * @param LoginSessionRepository $loginSessionRepository
+     * @param CategoryRepository $categoryRepository
      */
-    public function __construct(AccountRepository $accountRepository, LoginSessionRepository $loginSessionRepository)
-    {
+    public function __construct(
+        AccountRepository $accountRepository,
+        LoginSessionRepository $loginSessionRepository,
+        CategoryRepository $categoryRepository
+    ) {
         $this->accountRepository = $accountRepository;
         $this->loginSessionRepository = $loginSessionRepository;
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -132,7 +146,7 @@ class AccountScenario
 
             \DB::beginTransaction();
 
-            $accountEntity->cancel($this->accountRepository, $this->loginSessionRepository);
+            $accountEntity->cancel($this->accountRepository, $this->loginSessionRepository, $this->categoryRepository);
 
             \DB::commit();
         } catch (ModelNotFoundException $e) {
