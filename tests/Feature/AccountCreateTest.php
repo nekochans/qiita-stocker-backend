@@ -1,6 +1,6 @@
 <?php
 /**
- * AccountIndexTest
+ * AccountCreateTest
  */
 
 namespace Tests\Feature;
@@ -12,10 +12,10 @@ use App\Eloquents\QiitaAccount;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
- * Class AccountIndexTest
+ * Class AccountCreateTest
  * @package Tests
  */
-class AccountIndexTest extends AbstractTestCase
+class AccountCreateTest extends AbstractTestCase
 {
     use RefreshDatabase;
 
