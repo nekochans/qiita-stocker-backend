@@ -27,6 +27,7 @@ use App\Models\Domain\Exceptions\LoginSessionExpiredException;
  */
 class AccountScenario
 {
+    use Authentication;
 
     /**
      * AccountRepository
@@ -132,17 +133,7 @@ class AccountScenario
     public function destroy(array $params)
     {
         try {
-            if ($params['sessionId'] === null) {
-                throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
-            }
-
-            $loginSessionEntity = $this->loginSessionRepository->find($params['sessionId']);
-
-            if ($loginSessionEntity->isExpired()) {
-                throw new LoginSessionExpiredException($loginSessionEntity->loginSessionExpiredMessage());
-            }
-
-            $accountEntity = $loginSessionEntity->findHasAccountEntity($this->accountRepository);
+            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
 
             \DB::beginTransaction();
 

@@ -16,6 +16,8 @@ use App\Models\Domain\exceptions\LoginSessionExpiredException;
 
 class CategoryScenario
 {
+    use Authentication;
+
     /**
      * AccountRepository
      *
@@ -66,17 +68,7 @@ class CategoryScenario
         try {
             // TODO バリデーションを追加する
 
-            if ($params['sessionId'] === null) {
-                throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
-            }
-
-            $loginSessionEntity = $this->loginSessionRepository->find($params['sessionId']);
-
-            if ($loginSessionEntity->isExpired()) {
-                throw new LoginSessionExpiredException($loginSessionEntity->loginSessionExpiredMessage());
-            }
-
-            $accountEntity = $loginSessionEntity->findHasAccountEntity($this->accountRepository);
+            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
 
             \DB::beginTransaction();
 
@@ -111,17 +103,7 @@ class CategoryScenario
     public function index(array $params): array
     {
         try {
-            if ($params['sessionId'] === null) {
-                throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
-            }
-
-            $loginSessionEntity = $this->loginSessionRepository->find($params['sessionId']);
-
-            if ($loginSessionEntity->isExpired()) {
-                throw new LoginSessionExpiredException($loginSessionEntity->loginSessionExpiredMessage());
-            }
-
-            $accountEntity = $loginSessionEntity->findHasAccountEntity($this->accountRepository);
+            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
 
             $categoryEntities = $this->categoryRepository->search($accountEntity);
         } catch (ModelNotFoundException $e) {
