@@ -10,6 +10,7 @@ use App\Models\Domain\LoginSessionEntity;
 use App\Models\Domain\LoginSessionRepository;
 use App\Models\Domain\Category\CategoryNameValue;
 use App\Models\Domain\Category\CategoryRepository;
+use App\Models\Domain\Category\CategoryEntityBuilder;
 use App\Models\Domain\exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\exceptions\LoginSessionExpiredException;
@@ -84,12 +85,12 @@ class CategoryScenario
             throw $e;
         }
 
-        $categories = [
+        $category = [
             'categoryId'   => $categoryEntity->getId(),
             'name'         => $categoryEntity->getCategoryNameValue()->getName()
         ];
 
-        return $categories;
+        return $category;
     }
 
     /**
@@ -123,5 +124,54 @@ class CategoryScenario
             array_push($categories, $category);
         }
         return $categories;
+    }
+
+    /**
+     *指定されたカテゴリを更新する
+     *
+     * @param array $params
+     * @return array
+     * @throws LoginSessionExpiredException
+     * @throws UnauthorizedException
+     */
+    public function update(array $params): array
+    {
+        try {
+            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
+        } catch (ModelNotFoundException $e) {
+            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+        } catch (\PDOException $e) {
+            throw $e;
+        }
+
+        try {
+            // TODO nameのバリデーションを追加
+
+            $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
+
+            \DB::beginTransaction();
+
+            $categoryNameValue = new CategoryNameValue($params['name']);
+            $categoryEntityBuilder = new CategoryEntityBuilder();
+            $categoryEntityBuilder->setId($params['id']);
+            $categoryEntityBuilder->setCategoryNameValue($categoryNameValue);
+            $categoryEntity = $categoryEntityBuilder->build();
+
+            $this->categoryRepository->updateName($categoryEntity);
+
+            \DB::commit();
+        } catch (ModelNotFoundException $e) {
+            // TODO カテゴリが見つからなかった場合のエラー処理
+        } catch (\PDOException $e) {
+            \DB::rollBack();
+            throw $e;
+        }
+
+        $category = [
+            'categoryId'   => $categoryEntity->getId(),
+            'name'         => $categoryEntity->getCategoryNameValue()->getName()
+        ];
+
+        return $category;
     }
 }

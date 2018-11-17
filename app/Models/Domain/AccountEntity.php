@@ -5,6 +5,7 @@
 
 namespace App\Models\Domain;
 
+use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Category\CategoryRepository;
 
 /**
@@ -104,6 +105,18 @@ class AccountEntity
         $accountRepository->destroyAccessToken($this->getAccountId());
         $accountRepository->destroyQiitaAccount($this->getAccountId());
         $accountRepository->destroyAccount($this->getAccountId());
+    }
+
+    /**
+     * アカウントが持つCategoryEntityを取得する
+     *
+     * @param CategoryRepository $categoryRepository
+     * @param string $categoryId
+     * @return CategoryEntity
+     */
+    public function findHasCategoryEntity(CategoryRepository $categoryRepository, string $categoryId): CategoryEntity
+    {
+        return $categoryRepository->findByIdAndAccountId($categoryId, $this->getAccountId());
     }
 
     /**

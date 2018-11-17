@@ -75,22 +75,25 @@ class CategoryController extends Controller
     }
 
     /**
-     * カテゴリを更新する
+     * 指定されたカテゴリを更新する
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws \App\Models\Domain\exceptions\LoginSessionExpiredException
+     * @throws \App\Models\Domain\exceptions\UnauthorizedException
      */
     public function update(Request $request): JsonResponse
     {
-        $categoryId = $request->id;
         $requestArray = $request->json()->all();
 
-        // TODO カテゴリを更新する
-
-        $category = [
-            'categoryId'   => $categoryId,
+        $sessionId = $request->bearerToken();
+        $params = [
+            'sessionId'    => $sessionId,
+            'id'           => $request->id,
             'name'         => $requestArray['name']
         ];
+
+        $category = $this->categoryScenario->update($params);
 
         return response()->json($category)->setStatusCode(200);
     }

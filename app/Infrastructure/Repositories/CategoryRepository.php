@@ -88,7 +88,7 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
      * @param array $category
      * @return CategoryEntity
      */
-    public function buildCategoryEntity(array $category): CategoryEntity
+    private function buildCategoryEntity(array $category): CategoryEntity
     {
         $categoryNameVale = new CategoryNameValue($category['name']);
         $categoryEntityBuilder = new CategoryEntityBuilder();
@@ -111,5 +111,40 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
         CategoryName::whereIn('category_id', $categoryIdList)->delete();
 
         $categories->delete();
+    }
+
+    /**
+     * カテゴリを取得する
+     *
+     * @param string $categoryId
+     * @param string $accountId
+     * @return CategoryEntity
+     */
+    public function findByIdAndAccountId(string $categoryId, string $accountId): CategoryEntity
+    {
+        $category = Category::where('account_id', $accountId)->where('id', $categoryId)->firstOrFail();
+        $categoryName = CategoryName::where('category_Id', $category->id)->firstOrFail();
+
+        $params = [
+            'id'   => $category->id,
+            'name' => $categoryName->name
+        ];
+
+        return $this->buildCategoryEntity($params);
+    }
+
+
+    /**
+     * カテゴリ名を更新する
+     *
+     * @param CategoryEntity $categoryEntity
+     */
+    public function updateName(CategoryEntity $categoryEntity)
+    {
+        $categoryName = CategoryName::where('category_id', $categoryEntity->getId())->firstOrFail();
+
+        $categoryName->name = $categoryEntity->getCategoryNameValue()->getName();
+
+        $categoryName->save();
     }
 }
