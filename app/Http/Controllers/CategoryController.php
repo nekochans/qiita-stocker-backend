@@ -73,4 +73,25 @@ class CategoryController extends Controller
 
         return response()->json($category)->setStatusCode(201);
     }
+
+    /**
+     * カテゴリを更新する
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function update(Request $request): JsonResponse
+    {
+        $categoryId = $request->id;
+        $requestArray = $request->json()->all();
+
+        // TODO カテゴリを更新する
+
+        $category = [
+            'categoryId'   => $categoryId,
+            'name'         => $requestArray['name']
+        ];
+
+        return response()->json($category)->setStatusCode(200);
+    }
 }
