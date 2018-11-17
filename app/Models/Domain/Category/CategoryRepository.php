@@ -36,4 +36,20 @@ interface CategoryRepository
      * @param string $accountId
      */
     public function destroyAll(string $accountId);
+
+    /**
+     * カテゴリを取得する
+     *
+     * @param string $categoryId
+     * @param string $accountId
+     * @return CategoryEntity
+     */
+    public function findByIdAndAccountId(string $categoryId, string $accountId): CategoryEntity;
+
+    /**
+     * カテゴリ名を更新する
+     *
+     * @param CategoryEntity $categoryEntity
+     */
+    public function updateName(CategoryEntity $categoryEntity);
 }
