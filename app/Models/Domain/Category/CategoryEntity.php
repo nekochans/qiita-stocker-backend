@@ -46,4 +46,14 @@ class CategoryEntity
     {
         return $this->categoryNameValue;
     }
+
+    /**
+     * カテゴリが作成されていなかった場合に使用するメッセージ
+     *
+     * @return string
+     */
+    public static function categoryNotFoundMessage(): string
+    {
+        return '不正なリクエストが行われました。';
+    }
 }

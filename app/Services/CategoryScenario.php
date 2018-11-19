@@ -8,11 +8,13 @@ namespace App\Services;
 use App\Models\Domain\AccountRepository;
 use App\Models\Domain\LoginSessionEntity;
 use App\Models\Domain\LoginSessionRepository;
+use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Category\CategoryNameValue;
 use App\Models\Domain\Category\CategoryRepository;
 use App\Models\Domain\Category\CategoryEntityBuilder;
 use App\Models\Domain\exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\Domain\Exceptions\CategoryNotFoundException;
 use App\Models\Domain\exceptions\LoginSessionExpiredException;
 
 class CategoryScenario
@@ -131,6 +133,7 @@ class CategoryScenario
      *
      * @param array $params
      * @return array
+     * @throws CategoryNotFoundException
      * @throws LoginSessionExpiredException
      * @throws UnauthorizedException
      */
@@ -161,7 +164,7 @@ class CategoryScenario
 
             \DB::commit();
         } catch (ModelNotFoundException $e) {
-            // TODO カテゴリが見つからなかった場合のエラー処理
+            throw new CategoryNotFoundException(CategoryEntity::categoryNotFoundMessage());
         } catch (\PDOException $e) {
             \DB::rollBack();
             throw $e;

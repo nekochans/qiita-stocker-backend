@@ -77,6 +77,57 @@ class CategoryUpdateTest extends AbstractTestCase
         ]);
     }
 
+
+    /**
+     * 異常系のテスト
+     * 指定したカテゴリがアカウントに紐づかない場合エラーとなること
+     */
+    public function testErrorCategoryNotFound()
+    {
+        $otherAccountId = 2;
+        $otherCategoryId = 2;
+        $otherCategoryName = 'accountIDが2のカテゴリ';
+
+        factory(Account::class)->create();
+        factory(QiitaAccount::class)->create(['qiita_account_id' => 2, 'account_id' => $otherAccountId]);
+        factory(AccessToken::class)->create(['account_id' => $otherAccountId]);
+        factory(LoginSession::class)->create(['account_id' => $otherAccountId]);
+        factory(Category::class)->create(['account_id' => $otherAccountId]);
+        factory(CategoryName::class)->create(['category_id' => $otherCategoryId, 'name' => $otherCategoryName]);
+
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
+
+        $jsonResponse = $this->patchJson(
+            '/api/categories/'. $otherCategoryId,
+            ['name'          => 'テストカテゴリ名'],
+            ['Authorization' => 'Bearer '.$loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 404;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
+
+        // DBのテーブルに期待した形でデータが入っているか確認する
+        $idSequence = 2;
+        $this->assertDatabaseHas('categories', [
+            'id'               => $otherCategoryId,
+            'account_id'       => $otherAccountId,
+            'lock_version'     => 0,
+        ]);
+
+        $this->assertDatabaseHas('categories_names', [
+            'id'                => $idSequence,
+            'category_id'       => $otherAccountId,
+            'name'              => $otherCategoryName,
+            'lock_version'      => 0,
+        ]);
+    }
+
     /**
      * 異常系のテスト
      * Authorizationが存在しない場合エラーとなること
