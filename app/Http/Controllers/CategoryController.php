@@ -79,6 +79,7 @@ class CategoryController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws \App\Models\Domain\Exceptions\CategoryNotFoundException
      * @throws \App\Models\Domain\exceptions\LoginSessionExpiredException
      * @throws \App\Models\Domain\exceptions\UnauthorizedException
      */
