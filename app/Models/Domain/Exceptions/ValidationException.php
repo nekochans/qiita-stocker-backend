@@ -9,7 +9,7 @@ use Throwable;
 
 /**
  * Class ValidationException
- * @package App\Models\Domain\exceptions
+ * @package App\Models\Domain\Exceptions
  */
 class ValidationException extends BusinessLogicException
 {

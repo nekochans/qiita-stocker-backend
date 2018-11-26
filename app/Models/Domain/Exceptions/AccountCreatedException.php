@@ -9,7 +9,7 @@ use Throwable;
 
 /**
  * Class AccountCreatedException
- * @package App\Exceptions
+ * @package App\Models\Domain\Exceptions
  */
 class AccountCreatedException extends BusinessLogicException
 {
