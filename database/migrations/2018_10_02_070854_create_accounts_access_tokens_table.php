@@ -17,7 +17,7 @@ class CreateAccountsAccessTokensTable extends Migration
         Schema::create('accounts_access_tokens', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('account_id');
-            $table->string('access_token', 255);
+            $table->string('access_token');
             $table->unsignedInteger('lock_version')->default(0);
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));

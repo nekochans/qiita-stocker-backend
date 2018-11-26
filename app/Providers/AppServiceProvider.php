@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Services\AccountScenario;
 use App\Services\CategoryScenario;
 use App\Services\LoginSessionScenario;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Domain\AccountRepository;
 use App\Models\Domain\LoginSessionRepository;
@@ -19,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Schema::defaultStringLength(191);
     }
 
     /**
