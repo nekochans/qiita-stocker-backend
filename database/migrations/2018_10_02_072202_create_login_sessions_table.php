@@ -15,7 +15,7 @@ class CreateLoginSessionsTable extends Migration
     public function up()
     {
         Schema::create('login_sessions', function (Blueprint $table) {
-            $table->string('id', 255);
+            $table->string('id');
             $table->unsignedInteger('account_id');
             $table->dateTime('expired_on');
             $table->unsignedInteger('lock_version')->default(0);

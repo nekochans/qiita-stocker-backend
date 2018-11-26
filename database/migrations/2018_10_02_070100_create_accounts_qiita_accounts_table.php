@@ -17,7 +17,7 @@ class CreateAccountsQiitaAccountsTable extends Migration
         Schema::create('accounts_qiita_accounts', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('account_id');
-            $table->string('qiita_account_id', 255);
+            $table->string('qiita_account_id');
             $table->unsignedInteger('lock_version')->default(0);
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));

@@ -16,7 +16,7 @@ class CreateCategoriesNamesTable extends Migration
         Schema::create('categories_names', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('category_id');
-            $table->string('name', 255);
+            $table->string('name');
             $table->unsignedInteger('lock_version')->default(0);
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
