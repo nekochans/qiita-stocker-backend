@@ -9,7 +9,7 @@ use Throwable;
 
 /**
  * Class UnauthorizedException
- * @package App\Models\Domain\exceptions
+ * @package App\Models\Domain\Exceptions
  */
 class UnauthorizedException extends BusinessLogicException
 {

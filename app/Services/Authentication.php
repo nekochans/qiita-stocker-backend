@@ -10,8 +10,8 @@ use App\Models\Domain\AccountEntity;
 use App\Models\Domain\AccountRepository;
 use App\Models\Domain\LoginSessionEntity;
 use App\Models\Domain\LoginSessionRepository;
-use App\Models\Domain\exceptions\UnauthorizedException;
-use App\Models\Domain\exceptions\LoginSessionExpiredException;
+use App\Models\Domain\Exceptions\UnauthorizedException;
+use App\Models\Domain\Exceptions\LoginSessionExpiredException;
 
 /**
  * Trait Authentication
