@@ -9,6 +9,7 @@ use App\Eloquents\Account;
 use App\Eloquents\AccessToken;
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
+use App\Eloquents\QiitaUserName;
 use App\Models\Domain\QiitaAccountValue;
 use App\Models\Domain\Account\AccountEntity;
 use App\Models\Domain\Account\AccountEntityBuilder;
@@ -30,11 +31,13 @@ class AccountRepository implements \App\Models\Domain\Account\AccountRepository
     {
         $accountId = $this->saveAccounts();
         $this->saveQiitaAccounts($accountId, $qiitaAccountValue->getPermanentId());
+        $this->saveQiitaUserNames($accountId, $qiitaAccountValue->getUserName());
         $this->saveAccessTokens($accountId, $qiitaAccountValue->getAccessToken());
 
         $accountEntityBuilder = new AccountEntityBuilder();
         $accountEntityBuilder->setAccountId($accountId);
         $accountEntityBuilder->setPermanentId($qiitaAccountValue->getPermanentId());
+        $accountEntityBuilder->setUserName($qiitaAccountValue->getUserName());
         $accountEntityBuilder->setAccessToken($qiitaAccountValue->getAccessToken());
         return $accountEntityBuilder->build();
     }
@@ -63,6 +66,19 @@ class AccountRepository implements \App\Models\Domain\Account\AccountRepository
         $qiitaAccount->account_id = $accountId;
         $qiitaAccount->qiita_account_id = $permanentId;
         $qiitaAccount->save();
+    }
+
+    /**
+     * accounts_qiita_user_names テーブルにデータを保存する
+     * @param int $accountId
+     * @param string $userName
+     */
+    private function saveQiitaUserNames(int $accountId, string $userName)
+    {
+        $qiitaUserName = new QiitaUserName();
+        $qiitaUserName->account_id = $accountId;
+        $qiitaUserName->user_name = $userName;
+        $qiitaUserName->save();
     }
 
     /**
@@ -105,11 +121,14 @@ class AccountRepository implements \App\Models\Domain\Account\AccountRepository
     {
         $qiitaAccount = QiitaAccount::where('qiita_account_id', $qiitaAccountValue->getPermanentId())->firstOrFail();
 
+        $qiitaUserName = QiitaUserName::where('account_id', $qiitaAccount->account_id)->firstOrFail();
+
         $accessToken = AccessToken::where('account_id', $qiitaAccount->account_id)->firstOrFail();
 
         $accountEntityBuilder = new AccountEntityBuilder();
         $accountEntityBuilder->setAccountId($qiitaAccount->account_id);
         $accountEntityBuilder->setPermanentId($qiitaAccountValue->getPermanentId());
+        $accountEntityBuilder->setUserName($qiitaUserName->user_name);
         $accountEntityBuilder->setAccessToken($accessToken->access_token);
 
         return $accountEntityBuilder->build();

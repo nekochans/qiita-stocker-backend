@@ -13,6 +13,7 @@ use App\Eloquents\AccessToken;
 use App\Eloquents\CategoryName;
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
+use App\Eloquents\QiitaUserName;
 
 /**
  * Class AbstractTestCase
@@ -31,6 +32,7 @@ abstract class AbstractTestCase extends TestCase
         LoginSession::truncate();
         AccessToken::truncate();
         QiitaAccount::truncate();
+        QiitaUserName::truncate();
         Category::truncate();
         CategoryName::truncate();
         \DB::statement('SET FOREIGN_KEY_CHECKS=1');

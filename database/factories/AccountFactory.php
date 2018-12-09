@@ -13,6 +13,14 @@ $factory->define(App\Eloquents\QiitaAccount::class, function (Faker $faker) {
     ];
 });
 
+$factory->define(App\Eloquents\QiitaUserName::class, function (Faker $faker) {
+    return [
+        'account_id'       => '1',
+        'user_name'        => $faker->word
+    ];
+});
+
+
 $factory->define(App\Eloquents\AccessToken::class, function (Faker $faker) {
     return [
         'account_id'   => '1',
