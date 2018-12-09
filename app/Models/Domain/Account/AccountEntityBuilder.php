@@ -3,7 +3,7 @@
  * AccountEntityBuilder
  */
 
-namespace App\Models\Domain;
+namespace App\Models\Domain\Account;
 
 /**
  * Class AccountEntityBuilder

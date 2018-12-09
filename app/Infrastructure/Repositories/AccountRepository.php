@@ -9,16 +9,16 @@ use App\Eloquents\Account;
 use App\Eloquents\AccessToken;
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
-use App\Models\Domain\AccountEntity;
 use App\Models\Domain\QiitaAccountValue;
-use App\Models\Domain\LoginSessionEntity;
-use App\Models\Domain\AccountEntityBuilder;
+use App\Models\Domain\Account\AccountEntity;
+use App\Models\Domain\Account\AccountEntityBuilder;
+use App\Models\Domain\LoginSession\LoginSessionEntity;
 
 /**
  * Class AccountRepository
  * @package App\Infrastructure\Repositories
  */
-class AccountRepository implements \App\Models\Domain\AccountRepository
+class AccountRepository implements \App\Models\Domain\Account\AccountRepository
 {
     /**
      * アカウントを作成する

@@ -3,7 +3,10 @@
  * AccountRepository
  */
 
-namespace App\Models\Domain;
+namespace App\Models\Domain\Account;
+
+use App\Models\Domain\QiitaAccountValue;
+use App\Models\Domain\LoginSession\LoginSessionEntity;
 
 /**
  * Interface AccountRepository

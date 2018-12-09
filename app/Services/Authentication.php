@@ -5,12 +5,12 @@
 
 namespace App\Services;
 
-use App\Models\Domain\AccountEntity;
+use App\Models\Domain\Account\AccountEntity;
 
-use App\Models\Domain\AccountRepository;
-use App\Models\Domain\LoginSessionEntity;
-use App\Models\Domain\LoginSessionRepository;
+use App\Models\Domain\Account\AccountRepository;
+use App\Models\Domain\LoginSession\LoginSessionEntity;
 use App\Models\Domain\Exceptions\UnauthorizedException;
+use App\Models\Domain\LoginSession\LoginSessionRepository;
 use App\Models\Domain\Exceptions\LoginSessionExpiredException;
 
 /**

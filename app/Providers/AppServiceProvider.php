@@ -7,9 +7,9 @@ use App\Services\CategoryScenario;
 use App\Services\LoginSessionScenario;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use App\Models\Domain\AccountRepository;
-use App\Models\Domain\LoginSessionRepository;
+use App\Models\Domain\Account\AccountRepository;
 use App\Models\Domain\Category\CategoryRepository;
+use App\Models\Domain\LoginSession\LoginSessionRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
