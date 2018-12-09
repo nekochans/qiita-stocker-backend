@@ -122,6 +122,7 @@ class AccountEntity
         $loginSessionRepository->destroyLoginSessions($this->getAccountId());
         $accountRepository->destroyAccessToken($this->getAccountId());
         $accountRepository->destroyQiitaAccount($this->getAccountId());
+        $accountRepository->destroyQiitaUserName($this->getAccountId());
         $accountRepository->destroyAccount($this->getAccountId());
     }
 

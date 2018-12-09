@@ -62,6 +62,13 @@ interface AccountRepository
     public function destroyQiitaAccount(string $accountId);
 
     /**
+     * Qiitaユーザ名を削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyQiitaUserName(string $accountId);
+
+    /**
      * アクセストークンを削除する
      *
      * @param string $accountId

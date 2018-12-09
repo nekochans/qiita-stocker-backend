@@ -156,11 +156,13 @@ class AccountRepository implements \App\Models\Domain\Account\AccountRepository
     public function find(string $accountId): AccountEntity
     {
         $qiitaAccount = QiitaAccount::where('account_id', $accountId)->firstOrFail();
+        $qiitaUserName = QiitaUserName::where('account_id', $accountId)->firstOrFail();
         $accessToken = AccessToken::where('account_id', $accountId)->firstOrFail();
 
         $accountEntityBuilder = new AccountEntityBuilder();
         $accountEntityBuilder->setAccountId($accountId);
         $accountEntityBuilder->setPermanentId($qiitaAccount->qiita_account_id);
+        $accountEntityBuilder->setUserName($qiitaUserName->user_name);
         $accountEntityBuilder->setAccessToken($accessToken->access_token);
 
         return $accountEntityBuilder->build();
@@ -174,6 +176,16 @@ class AccountRepository implements \App\Models\Domain\Account\AccountRepository
     public function destroyQiitaAccount(string $accountId)
     {
         QiitaAccount::where('account_id', $accountId)->delete();
+    }
+
+    /**
+     * Qiitaユーザ名を削除する
+     *
+     * @param string $accountId
+     */
+    public function destroyQiitaUserName(string $accountId)
+    {
+        QiitaUserName::where('account_id', $accountId)->delete();
     }
 
     /**
