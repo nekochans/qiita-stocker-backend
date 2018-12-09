@@ -55,6 +55,7 @@ class LoginSessionScenario
 
             $qiitaAccountValueBuilder = new QiitaAccountValueBuilder();
             $qiitaAccountValueBuilder->setAccessToken($requestArray['accessToken']);
+            $qiitaAccountValueBuilder->setUserName($requestArray['qiitaAccountId']);
             $qiitaAccountValueBuilder->setPermanentId($requestArray['permanentId']);
             $qiitaAccountValue = $qiitaAccountValueBuilder->build();
 

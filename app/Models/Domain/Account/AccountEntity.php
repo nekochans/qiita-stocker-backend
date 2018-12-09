@@ -101,6 +101,7 @@ class AccountEntity
 
         $accountEntityBuilder = new AccountEntityBuilder();
         $accountEntityBuilder->setAccountId($this->accountId);
+        $accountEntityBuilder->setUserName($this->userName);
         $accountEntityBuilder->setPermanentId($this->permanentId);
         $accountEntityBuilder->setAccessToken($qiitaAccountValue->getAccessToken());
         return $accountEntityBuilder->build();
