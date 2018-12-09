@@ -1,18 +1,18 @@
 <?php
 /**
- * LoginSessionSpecification
+ * AccountSpecification
  */
 
-namespace App\Models\Domain;
+namespace App\Models\Domain\Account;
 
 /**
- * Class LoginSessionSpecification
+ * Class AccountSpecification
  * @package App\Models\Domain
  */
-class LoginSessionSpecification
+class AccountSpecification
 {
     /**
-     * ログイン可能か確認する
+     * アカウント作成可能か確認する
      *
      * @param array $requestArray
      * @return array

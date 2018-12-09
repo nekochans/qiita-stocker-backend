@@ -6,14 +6,14 @@
 namespace App\Infrastructure\Repositories;
 
 use App\Eloquents\LoginSession;
-use App\Models\Domain\LoginSessionEntity;
-use App\Models\Domain\LoginSessionEntityBuilder;
+use App\Models\Domain\LoginSession\LoginSessionEntity;
+use App\Models\Domain\LoginSession\LoginSessionEntityBuilder;
 
 /**
  * Class LoginSessionRepository
  * @package App\Infrastructure\Repositories
  */
-class LoginSessionRepository implements \App\Models\Domain\LoginSessionRepository
+class LoginSessionRepository implements \App\Models\Domain\LoginSession\LoginSessionRepository
 {
     /**
      * LoginSessionEntityを取得する

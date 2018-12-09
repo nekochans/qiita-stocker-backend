@@ -5,7 +5,7 @@
 
 namespace App\Models\Domain\Category;
 
-use App\Models\Domain\AccountEntity;
+use App\Models\Domain\Account\AccountEntity;
 
 /**
  * Interface CategoryRepository

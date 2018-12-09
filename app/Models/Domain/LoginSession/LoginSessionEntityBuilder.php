@@ -3,7 +3,7 @@
  * LoginSessionEntityBuilder
  */
 
-namespace App\Models\Domain;
+namespace App\Models\Domain\LoginSession;
 
 /**
  * Class LoginSessionEntityBuilder

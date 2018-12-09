@@ -3,7 +3,10 @@
  * LoginSessionEntity
  */
 
-namespace App\Models\Domain;
+namespace App\Models\Domain\LoginSession;
+
+use App\Models\Domain\Account\AccountEntity;
+use App\Models\Domain\Account\AccountRepository;
 
 /**
  * Class LoginSessionEntity

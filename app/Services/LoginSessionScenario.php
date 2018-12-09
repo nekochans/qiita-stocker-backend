@@ -6,14 +6,14 @@
 namespace App\Services;
 
 use Ramsey\Uuid\Uuid;
-use App\Models\Domain\AccountEntity;
-use App\Models\Domain\AccountRepository;
 use App\Models\Domain\QiitaAccountValue;
+use App\Models\Domain\Account\AccountEntity;
 use App\Models\Domain\QiitaAccountValueBuilder;
-use App\Models\Domain\LoginSessionEntityBuilder;
-use App\Models\Domain\LoginSessionSpecification;
+use App\Models\Domain\Account\AccountRepository;
 use App\Models\Domain\Exceptions\ValidationException;
 use App\Models\Domain\Exceptions\AccountNotFoundException;
+use App\Models\Domain\LoginSession\LoginSessionEntityBuilder;
+use App\Models\Domain\LoginSession\LoginSessionSpecification;
 
 /**
  * Class LoginSessionScenario

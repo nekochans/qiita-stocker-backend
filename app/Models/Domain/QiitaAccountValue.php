@@ -5,6 +5,8 @@
 
 namespace App\Models\Domain;
 
+use App\Models\Domain\Account\AccountEntity;
+use App\Models\Domain\Account\AccountRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**

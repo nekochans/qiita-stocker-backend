@@ -7,7 +7,7 @@ namespace App\Infrastructure\Repositories;
 
 use App\Eloquents\Category;
 use App\Eloquents\CategoryName;
-use App\Models\Domain\AccountEntity;
+use App\Models\Domain\Account\AccountEntity;
 use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Category\CategoryEntities;
 use App\Models\Domain\Category\CategoryNameValue;

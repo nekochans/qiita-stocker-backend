@@ -3,10 +3,12 @@
  * AccountEntity
  */
 
-namespace App\Models\Domain;
+namespace App\Models\Domain\Account;
 
+use App\Models\Domain\QiitaAccountValue;
 use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Category\CategoryRepository;
+use App\Models\Domain\LoginSession\LoginSessionEntity;
 
 /**
  * Class AccountEntity
@@ -92,12 +94,12 @@ class AccountEntity
      * 退会する
      *
      * @param AccountRepository $accountRepository
-     * @param LoginSessionRepository $loginSessionRepository
+     * @param LoginSessionEntity $loginSessionRepository
      * @param CategoryRepository $categoryRepository
      */
     public function cancel(
         AccountRepository $accountRepository,
-        LoginSessionRepository $loginSessionRepository,
+        LoginSessionEntity $loginSessionRepository,
         CategoryRepository $categoryRepository
     ) {
         $categoryRepository->destroyAll($this->getAccountId());
