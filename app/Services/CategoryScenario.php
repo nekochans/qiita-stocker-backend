@@ -142,6 +142,7 @@ class CategoryScenario
      * @throws CategoryNotFoundException
      * @throws LoginSessionExpiredException
      * @throws UnauthorizedException
+     * @throws ValidationException
      */
     public function update(array $params): array
     {
@@ -154,7 +155,15 @@ class CategoryScenario
         }
 
         try {
-            // TODO nameのバリデーションを追加
+            $errors = CategorySpecification::canSetCategoryEntityId($params);
+            if ($errors) {
+                throw new ValidationException(CategoryEntity::categoryIdValidationErrorMessage(), $errors);
+            }
+
+            $errors = CategorySpecification::canCreateCategoryNameValue($params);
+            if ($errors) {
+                throw new ValidationException(CategoryNameValue::nameValidationErrorMessage(), $errors);
+            }
 
             $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
 

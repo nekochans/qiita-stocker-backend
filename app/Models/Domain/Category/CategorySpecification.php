@@ -28,4 +28,22 @@ class CategorySpecification
         }
         return [];
     }
+
+    /**
+     * CategoryEntity が作成可能か確認する
+     *
+     * @param array $requestArray
+     * @return array
+     */
+    public static function canSetCategoryEntityId(array $requestArray): array
+    {
+        $validator = \Validator::make($requestArray, [
+            'id'   => 'required|integer|min:1|max:18446744073709551615' // 符号無しBIGINTの最大値
+        ]);
+
+        if ($validator->fails()) {
+            return $validator->errors()->toArray();
+        }
+        return [];
+    }
 }
