@@ -48,6 +48,16 @@ class CategoryEntity
     }
 
     /**
+     * カテゴリIDのバリデーションエラー時に利用するメッセージ
+     *
+     * @return string
+     */
+    public static function categoryIdValidationErrorMessage(): string
+    {
+        return '不正なリクエストが行われました。';
+    }
+
+    /**
      * カテゴリが作成されていなかった場合に使用するメッセージ
      *
      * @return string
