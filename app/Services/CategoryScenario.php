@@ -12,7 +12,7 @@ use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Category\CategoryNameValue;
 use App\Models\Domain\Category\CategoryRepository;
 use App\Models\Domain\Category\CategoryEntityBuilder;
-use App\Models\Domain\exceptions\UnauthorizedException;
+use App\Models\Domain\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\Exceptions\CategoryNotFoundException;
 use App\Models\Domain\exceptions\LoginSessionExpiredException;
