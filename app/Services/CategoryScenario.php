@@ -12,7 +12,9 @@ use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Category\CategoryNameValue;
 use App\Models\Domain\Category\CategoryRepository;
 use App\Models\Domain\Category\CategoryEntityBuilder;
-use App\Models\Domain\exceptions\UnauthorizedException;
+use App\Models\Domain\Category\CategorySpecification;
+use App\Models\Domain\Exceptions\ValidationException;
+use App\Models\Domain\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\Exceptions\CategoryNotFoundException;
 use App\Models\Domain\exceptions\LoginSessionExpiredException;
@@ -65,11 +67,15 @@ class CategoryScenario
      * @return array
      * @throws LoginSessionExpiredException
      * @throws UnauthorizedException
+     * @throws ValidationException
      */
     public function create(array $params): array
     {
         try {
-            // TODO バリデーションを追加する
+            $errors = CategorySpecification::canCreateCategoryNameValue($params);
+            if ($errors) {
+                throw new ValidationException(CategoryNameValue::nameValidationErrorMessage(), $errors);
+            }
 
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
 

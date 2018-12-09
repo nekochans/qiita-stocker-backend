@@ -145,4 +145,47 @@ class CategoryCreateTest extends AbstractTestCase
         $jsonResponse->assertStatus($expectedErrorCode);
         $jsonResponse->assertHeader('X-Request-Id');
     }
+
+    /**
+     * 異常系のテスト
+     * カテゴリ作成時のカテゴリ名のバリデーション
+     *
+     * @param $categoryName
+     * @dataProvider categoryNameProvider
+     */
+    public function testErrorCreateValidation($categoryName)
+    {
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId]);
+
+        $jsonResponse = $this->postJson(
+            '/api/categories',
+            ['name'          => $categoryName],
+            ['Authorization' => 'Bearer '.$loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 422;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => 'カテゴリ名は最大50文字です。カテゴリ名を短くしてください。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
+    }
+
+    /**
+     * カテゴリ名のデータプロバイダ
+     *
+     * @return array
+     */
+    public function categoryNameProvider()
+    {
+        return [
+            'emptyString'            => [''],
+            'null'                   => [null],
+            'emptyArray'             => [[]],
+            'tooLongLength'          => ['111111111122222222223333333333444444444455555555556'], //51文字
+            'multiByteTooLongLength' => ['テストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテストテス🐱'] //51文字
+        ];
+    }
 }

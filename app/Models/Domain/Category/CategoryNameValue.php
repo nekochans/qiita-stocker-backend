@@ -34,4 +34,14 @@ class CategoryNameValue
     {
         return $this->name;
     }
+
+    /**
+     * カテゴリ名のバリデーションエラー時に使用するメッセージ
+     *
+     * @return string
+     */
+    public static function nameValidationErrorMessage(): string
+    {
+        return 'カテゴリ名は最大50文字です。カテゴリ名を短くしてください。';
+    }
 }
