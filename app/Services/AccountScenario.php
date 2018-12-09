@@ -95,7 +95,6 @@ class AccountScenario
             \DB::beginTransaction();
 
             // TODO AccountEntityを修正
-            // TODO テーブル定義を修正を修正
             $accountEntity = $this->accountRepository->create($qiitaAccountValue);
 
             $sessionId = Uuid::uuid4();

@@ -8,7 +8,7 @@ namespace App\Models\Domain\Account;
 use App\Models\Domain\QiitaAccountValue;
 use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Category\CategoryRepository;
-use App\Models\Domain\LoginSession\LoginSessionEntity;
+use App\Models\Domain\LoginSession\LoginSessionRepository;
 
 /**
  * Class AccountEntity
@@ -31,6 +31,13 @@ class AccountEntity
     private $permanentId;
 
     /**
+     * ユーザ名
+     *
+     * @var string
+     */
+    private $userName;
+
+    /**
      * アクセストークン
      *
      * @var string
@@ -45,6 +52,7 @@ class AccountEntity
     {
         $this->accountId = $builder->getAccountId();
         $this->permanentId = $builder->getPermanentId();
+        $this->userName = $builder->getUserName();
         $this->accessToken = $builder->getAccessToken();
     }
 
@@ -62,6 +70,14 @@ class AccountEntity
     public function getPermanentId(): string
     {
         return $this->permanentId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserName(): string
+    {
+        return $this->userName;
     }
 
     /**
@@ -94,12 +110,12 @@ class AccountEntity
      * 退会する
      *
      * @param AccountRepository $accountRepository
-     * @param LoginSessionEntity $loginSessionRepository
+     * @param LoginSessionRepository $loginSessionRepository
      * @param CategoryRepository $categoryRepository
      */
     public function cancel(
         AccountRepository $accountRepository,
-        LoginSessionEntity $loginSessionRepository,
+        LoginSessionRepository $loginSessionRepository,
         CategoryRepository $categoryRepository
     ) {
         $categoryRepository->destroyAll($this->getAccountId());
