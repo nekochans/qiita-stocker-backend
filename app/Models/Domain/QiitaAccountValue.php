@@ -23,6 +23,13 @@ class QiitaAccountValue
     private $permanentId;
 
     /**
+     * ユーザ名
+     *
+     * @var string
+     */
+    private $userName;
+
+    /**
      * アクセストークン
      *
      * @var string
@@ -37,6 +44,7 @@ class QiitaAccountValue
     {
         $this->permanentId = $builder->getPermanentId();
         $this->accessToken = $builder->getAccessToken();
+        $this->userName = $builder->getUserName();
     }
 
     /**
@@ -45,6 +53,14 @@ class QiitaAccountValue
     public function getPermanentId(): string
     {
         return $this->permanentId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserName(): string
+    {
+        return $this->userName;
     }
 
     /**

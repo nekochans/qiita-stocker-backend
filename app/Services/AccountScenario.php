@@ -77,7 +77,7 @@ class AccountScenario
     public function create(array $requestArray): array
     {
         try {
-            // TODO バリデーションを追加
+            // TODO ユーザ名のバリデーションを追加
             $errors = AccountSpecification::canCreate($requestArray);
             if ($errors) {
                 throw new ValidationException(QiitaAccountValue::createAccountValidationErrorMessage(), $errors);
@@ -86,6 +86,7 @@ class AccountScenario
             $qiitaAccountValueBuilder = new QiitaAccountValueBuilder();
             $qiitaAccountValueBuilder->setAccessToken($requestArray['accessToken']);
             $qiitaAccountValueBuilder->setPermanentId($requestArray['permanentId']);
+            $qiitaAccountValueBuilder->setUserName($requestArray['qiitaAccountId']);
             $qiitaAccountValue = $qiitaAccountValueBuilder->build();
 
             if ($qiitaAccountValue->isCreatedAccount($this->accountRepository)) {
@@ -94,8 +95,6 @@ class AccountScenario
 
             \DB::beginTransaction();
 
-            // TODO AccountEntityを修正
-            // TODO テーブル定義を修正を修正
             $accountEntity = $this->accountRepository->create($qiitaAccountValue);
 
             $sessionId = Uuid::uuid4();

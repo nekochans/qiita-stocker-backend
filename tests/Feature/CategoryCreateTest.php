@@ -11,6 +11,7 @@ use App\Eloquents\AccessToken;
 use App\Eloquents\CategoryName;
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
+use App\Eloquents\QiitaUserName;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
@@ -27,6 +28,7 @@ class CategoryCreateTest extends AbstractTestCase
         $accounts = factory(Account::class)->create();
         $accounts->each(function ($account) {
             factory(QiitaAccount::class)->create(['account_id' => $account->id]);
+            factory(QiitaUserName::class)->create(['account_id' => $account->id]);
             factory(AccessToken::class)->create(['account_id' => $account->id]);
             factory(LoginSession::class)->create(['account_id' => $account->id]);
             $categories = factory(Category::class)->create(['account_id' => $account->id]);

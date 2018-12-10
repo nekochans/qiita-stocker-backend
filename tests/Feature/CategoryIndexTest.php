@@ -11,6 +11,7 @@ use App\Eloquents\AccessToken;
 use App\Eloquents\CategoryName;
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
+use App\Eloquents\QiitaUserName;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
@@ -27,6 +28,7 @@ class CategoryIndexTest extends AbstractTestCase
         $accounts = factory(Account::class)->create();
         $accounts->each(function ($account) {
             factory(QiitaAccount::class)->create(['account_id' => $account->id]);
+            factory(QiitaUserName::class)->create(['account_id' => $account->id]);
             factory(AccessToken::class)->create(['account_id' => $account->id]);
             factory(LoginSession::class)->create(['account_id' => $account->id]);
             $categories = factory(Category::class)->create(['account_id' => $account->id]);
@@ -52,6 +54,7 @@ class CategoryIndexTest extends AbstractTestCase
 
         factory(Account::class)->create();
         factory(QiitaAccount::class)->create(['qiita_account_id' => 2, 'account_id' => $accountId]);
+        factory(QiitaUserName::class)->create(['account_id' => $accountId]);
         factory(AccessToken::class)->create(['account_id' => $accountId]);
         factory(LoginSession::class)->create(['account_id' => $accountId, 'id' => $loginSession]);
 
@@ -82,6 +85,7 @@ class CategoryIndexTest extends AbstractTestCase
 
         factory(Account::class)->create();
         factory(QiitaAccount::class)->create(['qiita_account_id' => 2, 'account_id' => $accountId]);
+        factory(QiitaUserName::class)->create(['account_id' => $accountId]);
         factory(AccessToken::class)->create(['account_id' => $accountId]);
         factory(LoginSession::class)->create(['account_id' => $accountId, 'id' => $loginSession]);
 

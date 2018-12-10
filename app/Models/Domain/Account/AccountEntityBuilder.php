@@ -26,6 +26,13 @@ class AccountEntityBuilder
     private $permanentId;
 
     /**
+     * ユーザ名
+     *
+     * @var string
+     */
+    private $userName;
+
+    /**
      * アクセストークン
      *
      * @var string
@@ -62,6 +69,22 @@ class AccountEntityBuilder
     public function setPermanentId(string $permanentId): void
     {
         $this->permanentId = $permanentId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserName(): string
+    {
+        return $this->userName;
+    }
+
+    /**
+     * @param string $userName
+     */
+    public function setUserName(string $userName): void
+    {
+        $this->userName = $userName;
     }
 
     /**

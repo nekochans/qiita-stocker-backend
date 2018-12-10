@@ -9,6 +9,7 @@ use App\Eloquents\Account;
 use App\Eloquents\AccessToken;
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
+use App\Eloquents\QiitaUserName;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
@@ -25,6 +26,7 @@ class LoginSessionTest extends AbstractTestCase
         $accounts = factory(Account::class)->create();
         $accounts->each(function ($account) {
             factory(QiitaAccount::class)->create(['account_id' => $account->id]);
+            factory(QiitaUserName::class)->create(['account_id' => $account->id]);
             factory(AccessToken::class)->create(['account_id' => $account->id]);
             factory(LoginSession::class)->create(['account_id' => $account->id]);
         });
@@ -37,13 +39,15 @@ class LoginSessionTest extends AbstractTestCase
     public function testSuccessLogin()
     {
         $permanentId = '1';
+        $userName = 'test-user';
         $accessToken = 'login0593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5';
 
         $jsonResponse = $this->postJson(
             '/api/login-sessions',
             [
-                'permanentId' => $permanentId,
-                'accessToken' => $accessToken
+                'permanentId'    => $permanentId,
+                'qiitaAccountId' => $userName,
+                'accessToken'    => $accessToken
             ]
         );
 
@@ -86,13 +90,15 @@ class LoginSessionTest extends AbstractTestCase
     public function testErrorLogin()
     {
         $permanentId = '2';
+        $userName = 'test-user';
         $accessToken = 'login0593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5';
 
         $jsonResponse = $this->postJson(
             '/api/login-sessions',
             [
-                'permanentId' => $permanentId,
-                'accessToken' => $accessToken
+                'permanentId'    => $permanentId,
+                'qiitaAccountId' => $userName,
+                'accessToken'    => $accessToken
             ]
         );
 
@@ -114,11 +120,14 @@ class LoginSessionTest extends AbstractTestCase
     public function testErrorLoginAccessTokenValidation($accessToken)
     {
         $permanentId = '123456';
+        $userName = 'test-user';
 
         $jsonResponse = $this->postJson(
             '/api/login-sessions',
             [
-                'permanentId' => $permanentId,
+                'permanentId'    => $permanentId,
+                'qiitaAccountId' => $userName,
+
                 'accessToken' => $accessToken
             ]
         );
@@ -158,13 +167,15 @@ class LoginSessionTest extends AbstractTestCase
      */
     public function testErrorLoginPermanentIdValidation($permanentId)
     {
+        $userName = 'test-user';
         $accessToken = 'ea5d0a593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5';
 
         $jsonResponse = $this->postJson(
             '/api/login-sessions',
             [
-                'permanentId' => $permanentId,
-                'accessToken' => $accessToken
+                'permanentId'    => $permanentId,
+                'qiitaAccountId' => $userName,
+                'accessToken'    => $accessToken
             ]
         );
 
@@ -196,4 +207,6 @@ class LoginSessionTest extends AbstractTestCase
             'greaterThanMax'     => [4294967295],
         ];
     }
+
+    // TODO ユーザ名のバリデーションテスト
 }

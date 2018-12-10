@@ -9,6 +9,7 @@ use App\Eloquents\Account;
 use App\Eloquents\AccessToken;
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
+use App\Eloquents\QiitaUserName;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
@@ -25,6 +26,7 @@ class AccountCreateTest extends AbstractTestCase
         $accounts = factory(Account::class)->create();
         $accounts->each(function ($account) {
             factory(QiitaAccount::class)->create(['account_id' => $account->id]);
+            factory(QiitaUserName::class)->create(['account_id' => $account->id]);
             factory(AccessToken::class)->create(['account_id' => $account->id]);
             factory(LoginSession::class)->create(['account_id' => $account->id]);
         });
@@ -37,13 +39,15 @@ class AccountCreateTest extends AbstractTestCase
     public function testSuccessCreate()
     {
         $permanentId = '123456';
+        $userName = 'test-user';
         $accessToken = 'ea5d0a593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5';
 
         $jsonResponse = $this->postJson(
             '/api/accounts',
             [
-                'permanentId' => $permanentId,
-                'accessToken' => $accessToken
+                'permanentId'    => $permanentId,
+                'qiitaAccountId' => $userName,
+                'accessToken'    => $accessToken
             ]
         );
 
@@ -73,6 +77,13 @@ class AccountCreateTest extends AbstractTestCase
             'lock_version'     => 0,
         ]);
 
+        $this->assertDatabaseHas('accounts_qiita_user_names', [
+            'id'               => $idSequence,
+            'account_id'       => $expectedAccountId,
+            'user_name'        => $userName,
+            'lock_version'     => 0,
+        ]);
+
         $this->assertDatabaseHas('accounts_access_tokens', [
             'id'           => $idSequence,
             'account_id'   => $expectedAccountId,
@@ -94,13 +105,15 @@ class AccountCreateTest extends AbstractTestCase
     public function testErrorCreate()
     {
         $permanentId = '1';
+        $userName = 'test-user';
         $accessToken = 'ea5d0a593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5';
 
         $jsonResponse = $this->postJson(
             '/api/accounts',
             [
-                'permanentId' => $permanentId,
-                'accessToken' => $accessToken
+                'permanentId'    => $permanentId,
+                'qiitaAccountId' => $userName,
+                'accessToken'    => $accessToken
             ]
         );
 
@@ -122,12 +135,14 @@ class AccountCreateTest extends AbstractTestCase
     public function testErrorCreateAccessTokenValidation($accessToken)
     {
         $permanentId = '123456';
+        $userName = 'test-user';
 
         $jsonResponse = $this->postJson(
             '/api/accounts',
             [
-                'permanentId' => $permanentId,
-                'accessToken' => $accessToken
+                'permanentId'    => $permanentId,
+                'qiitaAccountId' => $userName,
+                'accessToken'    => $accessToken
             ]
         );
 
@@ -167,12 +182,14 @@ class AccountCreateTest extends AbstractTestCase
     public function testErrorCreatePermanentIdValidation($permanentId)
     {
         $accessToken = 'ea5d0a593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5';
+        $userName = 'test-user';
 
         $jsonResponse = $this->postJson(
             '/api/accounts',
             [
-                'permanentId' => $permanentId,
-                'accessToken' => $accessToken
+                'permanentId'    => $permanentId,
+                'qiitaAccountId' => $userName,
+                'accessToken'    => $accessToken
             ]
         );
 
@@ -204,4 +221,6 @@ class AccountCreateTest extends AbstractTestCase
             'greaterThanMax'     => [4294967295],
         ];
     }
+
+    // TODO ユーザ名のバリデーションテスト
 }
