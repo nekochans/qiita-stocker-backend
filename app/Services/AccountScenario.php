@@ -77,8 +77,7 @@ class AccountScenario
     public function create(array $requestArray): array
     {
         try {
-            // TODO ユーザ名のバリデーションを追加
-            $errors = AccountSpecification::canCreate($requestArray);
+            $errors = AccountSpecification::canCreateQiitaAccountValue($requestArray);
             if ($errors) {
                 throw new ValidationException(QiitaAccountValue::createAccountValidationErrorMessage(), $errors);
             }

@@ -208,5 +208,47 @@ class LoginSessionTest extends AbstractTestCase
         ];
     }
 
-    // TODO ユーザ名のバリデーションテスト
+    /**
+     * 異常系のテスト
+     * ログイン作成時のユーザ名のバリデーション
+     *
+     * @param $userName
+     * @dataProvider userNameProvider
+     */
+    public function testErrorLoginUserNameValidation($userName)
+    {
+        $accessToken = 'ea5d0a593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5';
+        $permanentId = '123456';
+
+        $jsonResponse = $this->postJson(
+            '/api/login-sessions',
+            [
+                'permanentId'    => $permanentId,
+                'qiitaAccountId' => $userName,
+                'accessToken'    => $accessToken
+            ]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 422;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。再度、ログインしてください。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
+    }
+
+    /**
+     * ユーザ名のデータプロバイダ
+     *
+     * @return array
+     */
+    public function userNameProvider()
+    {
+        return [
+            'emptyString'        => [''],
+            'null'               => [null],
+            'emptyArray'         => [[]],
+            'tooLongLength'      => [str_repeat('a', 192)]
+        ];
+    }
 }
