@@ -68,6 +68,11 @@ class LoginSessionScenario
             \DB::beginTransaction();
 
             $accountEntity = $accountEntity->updateAccessToken($this->accountRepository, $qiitaAccountValue);
+
+            if ($accountEntity->isChangedQiitaUserName($qiitaAccountValue)) {
+                $accountEntity = $accountEntity->updateQiitaUserName($this->accountRepository, $qiitaAccountValue);
+            }
+
             $sessionId = Uuid::uuid4();
 
             // TODO 有効期限を適切な期限に修正
