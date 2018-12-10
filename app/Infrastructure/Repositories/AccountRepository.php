@@ -148,6 +148,19 @@ class AccountRepository implements \App\Models\Domain\Account\AccountRepository
     }
 
     /**
+     * ユーザ名を更新する
+     *
+     * @param AccountEntity $accountEntity
+     * @param QiitaAccountValue $qiitaAccountValue
+     */
+    public function updateQiitaUserName(AccountEntity $accountEntity, QiitaAccountValue $qiitaAccountValue)
+    {
+        $qiitaUserName = QiitaUserName::where('account_id', $accountEntity->getAccountId())->first();
+        $qiitaUserName->user_name = $qiitaAccountValue->getUserName();
+        $qiitaUserName->save();
+    }
+
+    /**
      * アカウントを取得する
      *
      * @param string $accountId

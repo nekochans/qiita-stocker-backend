@@ -47,6 +47,14 @@ interface AccountRepository
     public function updateAccessToken(AccountEntity $accountEntity, QiitaAccountValue $qiitaAccountValue);
 
     /**
+     * ユーザ名を更新する
+     *
+     * @param AccountEntity $accountEntity
+     * @param QiitaAccountValue $qiitaAccountValue
+     */
+    public function updateQiitaUserName(AccountEntity $accountEntity, QiitaAccountValue $qiitaAccountValue);
+
+    /**
      * アカウントを取得する
      *
      * @param string $accountId

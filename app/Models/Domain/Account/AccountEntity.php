@@ -108,6 +108,39 @@ class AccountEntity
     }
 
     /**
+     * ユーザ名が更新されているか確認する
+     *
+     * @param QiitaAccountValue $qiitaAccountValue
+     * @return bool
+     */
+    public function isChangedQiitaUserName(QiitaAccountValue $qiitaAccountValue): bool
+    {
+        if ($this->userName !== $qiitaAccountValue->getUserName()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * ユーザ名を更新する
+     *
+     * @param AccountRepository $accountRepository
+     * @param QiitaAccountValue $qiitaAccountValue
+     * @return AccountEntity
+     */
+    public function updateQiitaUserName(AccountRepository $accountRepository, QiitaAccountValue $qiitaAccountValue): AccountEntity
+    {
+        $accountRepository->updateQiitaUserName($this, $qiitaAccountValue);
+
+        $accountEntityBuilder = new AccountEntityBuilder();
+        $accountEntityBuilder->setAccountId($this->accountId);
+        $accountEntityBuilder->setUserName($qiitaAccountValue->getUserName());
+        $accountEntityBuilder->setPermanentId($this->permanentId);
+        $accountEntityBuilder->setAccessToken($this->accessToken);
+        return $accountEntityBuilder->build();
+    }
+
+    /**
      * 退会する
      *
      * @param AccountRepository $accountRepository

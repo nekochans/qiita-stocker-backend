@@ -38,8 +38,73 @@ class LoginSessionTest extends AbstractTestCase
      */
     public function testSuccessLogin()
     {
+        $accountId = 2;
+        $permanentId = '123';
+        $userName = 'not-changed-test-user';
+        $accessToken = 'login0593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5';
+
+        factory(Account::class)->create();
+        factory(QiitaAccount::class)->create(['account_id' => $accountId, 'qiita_account_id' => $permanentId]);
+        factory(QiitaUserName::class)->create(['account_id' => $accountId, 'user_name' => $userName]);
+        factory(AccessToken::class)->create(['account_id' => $accountId]);
+        factory(LoginSession::class)->create(['account_id' => $accountId]);
+
+        $jsonResponse = $this->postJson(
+            '/api/login-sessions',
+            [
+                'permanentId'    => $permanentId,
+                'qiitaAccountId' => $userName,
+                'accessToken'    => $accessToken
+            ]
+        );
+
+        $responseObject = json_decode($jsonResponse->content());
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $jsonResponse->assertJson(['sessionId' => $responseObject->sessionId]);
+        $jsonResponse->assertStatus(201);
+        $jsonResponse->assertHeader('X-Request-Id');
+
+        // DBのテーブルに期待した形でデータが入っているか確認する
+        $idSequence = 2;
+
+        $this->assertDatabaseHas('accounts_qiita_accounts', [
+            'id'               => $idSequence,
+            'account_id'       => $accountId,
+            'qiita_account_id' => $permanentId,
+            'lock_version'     => 0,
+        ]);
+
+        $this->assertDatabaseHas('accounts_qiita_user_names', [
+            'id'               => $idSequence,
+            'account_id'       => $accountId,
+            'user_name'        => $userName,
+            'lock_version'     => 0,
+        ]);
+
+        $this->assertDatabaseHas('accounts_access_tokens', [
+            'id'           => $idSequence,
+            'account_id'   => $accountId,
+            'access_token' => $accessToken,
+            'lock_version' => 0,
+        ]);
+
+        $this->assertDatabaseHas('login_sessions', [
+            'id'           => $responseObject->sessionId,
+            'account_id'   => $accountId,
+            'lock_version' => 0,
+        ]);
+    }
+
+    /**
+     * 正常系のテスト
+     * ログインできること
+     * ユーザ名が更新されているケース
+     */
+    public function testSuccessLoginChangedUserName()
+    {
         $permanentId = '1';
-        $userName = 'test-user';
+        $userName = 'changed-test-user';
         $accessToken = 'login0593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5';
 
         $jsonResponse = $this->postJson(
@@ -66,6 +131,13 @@ class LoginSessionTest extends AbstractTestCase
             'id'               => $idSequence,
             'account_id'       => $accountId,
             'qiita_account_id' => $permanentId,
+            'lock_version'     => 0,
+        ]);
+
+        $this->assertDatabaseHas('accounts_qiita_user_names', [
+            'id'               => $idSequence,
+            'account_id'       => $accountId,
+            'user_name'        => $userName,
             'lock_version'     => 0,
         ]);
 
