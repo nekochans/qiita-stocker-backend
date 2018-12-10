@@ -48,7 +48,7 @@ class LoginSessionScenario
     public function create(array $requestArray): array
     {
         try {
-            $errors = LoginSessionSpecification::canCreate($requestArray);
+            $errors = LoginSessionSpecification::canCreateQiitaAccountValue($requestArray);
             if ($errors) {
                 throw new ValidationException(QiitaAccountValue::createLoginSessionValidationErrorMessage(), $errors);
             }

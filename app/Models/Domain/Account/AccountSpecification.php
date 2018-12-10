@@ -12,7 +12,7 @@ namespace App\Models\Domain\Account;
 class AccountSpecification
 {
     /**
-     * アカウント作成可能か確認する
+     * QiitaAccountValueが作成可能か確認する
      *
      * @param array $requestArray
      * @return array
