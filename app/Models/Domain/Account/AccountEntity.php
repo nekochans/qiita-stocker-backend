@@ -108,6 +108,8 @@ class AccountEntity
     }
 
     /**
+     * ユーザ名が確認されているか確認する
+     *
      * @param QiitaAccountValue $qiitaAccountValue
      * @return bool
      */
