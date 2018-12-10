@@ -108,7 +108,7 @@ class AccountEntity
     }
 
     /**
-     * ユーザ名が確認されているか確認する
+     * ユーザ名が更新されているか確認する
      *
      * @param QiitaAccountValue $qiitaAccountValue
      * @return bool
