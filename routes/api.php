@@ -38,4 +38,10 @@ Route::middleware(['cors', 'xRequestId'])->group(function () {
     Route::post('categories', 'CategoryController@create');
 
     Route::patch('categories/{id}', 'CategoryController@update');
+
+    Route::options('stocks', function () {
+        return response()->json();
+    });
+
+    Route::put('stocks', 'StockController@synchronize');
 });
