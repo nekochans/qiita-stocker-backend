@@ -18,7 +18,7 @@ class CreateStocksTable extends Migration
             $table->unsignedInteger('account_id');
             $table->string('article_id');
             $table->text('title');
-            $table->string('user_Id');
+            $table->string('user_id');
             $table->text('profile_image_url');
             $table->dateTime('article_created_at');
             $table->unsignedInteger('lock_version')->default(0);
