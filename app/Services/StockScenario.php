@@ -5,6 +5,8 @@
 
 namespace App\Services;
 
+use App\Models\Domain\QiitaApiRepository;
+use App\Models\Domain\Stock\StockRepository;
 use App\Models\Domain\Account\AccountRepository;
 use App\Models\Domain\LoginSession\LoginSessionEntity;
 use App\Models\Domain\Exceptions\UnauthorizedException;
@@ -34,16 +36,36 @@ class StockScenario
     private $loginSessionRepository;
 
     /**
+     * StockRepository
+     *
+     * @var
+     */
+    private $stockRepository;
+
+    /**
+     * QiitaApiRepository
+     *
+     * @var
+     */
+    private $qiitaApiRepository;
+
+    /**
      * StockScenario constructor.
      * @param AccountRepository $accountRepository
      * @param LoginSessionRepository $loginSessionRepository
+     * @param StockRepository $stockRepository
+     * @param QiitaApiRepository $qiitaApiRepository
      */
     public function __construct(
         AccountRepository $accountRepository,
-        LoginSessionRepository $loginSessionRepository
+        LoginSessionRepository $loginSessionRepository,
+        StockRepository $stockRepository,
+        QiitaApiRepository $qiitaApiRepository
     ) {
         $this->accountRepository = $accountRepository;
         $this->loginSessionRepository = $loginSessionRepository;
+        $this->stockRepository = $stockRepository;
+        $this->qiitaApiRepository = $qiitaApiRepository;
     }
 
     /**
@@ -58,9 +80,11 @@ class StockScenario
         try {
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
 
+            $stockEntities = $this->qiitaApiRepository->fetchStock($accountEntity->getUserName());
+
             \DB::beginTransaction();
 
-            // TODO 同期処理
+            $this->stockRepository->save($stockEntities);
 
             \DB::commit();
         } catch (ModelNotFoundException $e) {

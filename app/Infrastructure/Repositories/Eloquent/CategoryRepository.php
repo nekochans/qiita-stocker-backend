@@ -3,7 +3,7 @@
  * CategoryRepository
  */
 
-namespace App\Infrastructure\Repositories;
+namespace App\Infrastructure\Repositories\Eloquent;
 
 use App\Eloquents\Category;
 use App\Eloquents\CategoryName;
@@ -15,7 +15,7 @@ use App\Models\Domain\Category\CategoryEntityBuilder;
 
 /**
  * Class CategoryRepository
- * @package App\Infrastructure\Repositories
+ * @package App\Infrastructure\Repositories\Eloquent
  */
 class CategoryRepository implements \App\Models\Domain\Category\CategoryRepository
 {
