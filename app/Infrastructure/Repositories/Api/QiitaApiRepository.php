@@ -5,35 +5,63 @@
 
 namespace App\Infrastructure\Repositories\Api;
 
-use App\Models\Domain\Stock\StockEntities;
-use App\Models\Domain\Stock\StockEntityBuilder;
+use App\Models\Domain\Stock\StockValues;
+use App\Models\Domain\Stock\StockValueBuilder;
 
 /**
  * Class QiitaApiRepository
  * @package App\Infrastructure\Repositories\Qiita
  */
-class QiitaApiRepository implements \App\Models\Domain\QiitaApiRepository
+class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaApiRepository
 {
     /**
      * ストック一覧を取得する
      *
      * @param string $qiitaUserName
-     * @return StockEntities
+     * @return StockValues
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function fetchStock(string $qiitaUserName): StockEntities
+    public function fetchStock(string $qiitaUserName): StockValues
     {
-        $articleCreatedAt = new \DateTime();
-        
-        $stockEntityBuilder = new StockEntityBuilder();
-        $stockEntityBuilder->setId(1);
-        $stockEntityBuilder->setArticleId('c0a2609ae61a72dcc60e');
-        $stockEntityBuilder->setTitle('テストタイトル');
-        $stockEntityBuilder->setUserId('test-user');
-        $stockEntityBuilder->setProfileImageUrl('https://avatars3.githubusercontent.com/u/3268265?v=4');
-        $stockEntityBuilder->setArticleCreatedAt($articleCreatedAt);
-        $stockEntityBuilder->setTags(['CORS', 'laravel5.6', 'laravel', 'php']);
-        $stockEntity = $stockEntityBuilder->build();
+        // TODO パラメータが固定となっているが、全てのストックを取得できるように修正する
+        $url = 'api/v2/users/'.$qiitaUserName .'/stocks?page=1&per_page=20';
 
-        return new StockEntities($stockEntity);
+        $response = $this->getClient()->request('GET', $url);
+        $responseArray = json_decode($response->getBody());
+
+        $stockValues = [];
+        foreach ($responseArray as $stock) {
+            $articleCreatedAt = new \DateTime($stock->created_at);
+            $tagNames = $this->buildTagNamesArray($stock->tags);
+
+            $stockValueBuilder = new StockValueBuilder();
+            $stockValueBuilder->setArticleId($stock->id);
+            $stockValueBuilder->setTitle($stock->title);
+            $stockValueBuilder->setUserId($stock->user->id);
+            $stockValueBuilder->setProfileImageUrl($stock->user->profile_image_url);
+            $stockValueBuilder->setArticleCreatedAt($articleCreatedAt);
+            $stockValueBuilder->setTags($tagNames);
+            $stockValue = $stockValueBuilder->build();
+
+            array_push($stockValues, $stockValue);
+        }
+
+        return new StockValues(...$stockValues);
+    }
+
+    /**
+     * タグ名の配列を取得する
+     *
+     * @param array $tags
+     * @return array
+     */
+    private function buildTagNamesArray(array $tags): array
+    {
+        $tagNames = [];
+        foreach ($tags as $tag) {
+            $tagName = $tag->name;
+            array_push($tagNames, $tagName);
+        }
+        return $tagNames;
     }
 }

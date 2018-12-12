@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use GuzzleHttp\Client;
 use App\Services\StockScenario;
 use App\Services\AccountScenario;
 use App\Services\CategoryScenario;
@@ -12,6 +13,7 @@ use App\Models\Domain\QiitaApiRepository;
 use App\Models\Domain\Stock\StockRepository;
 use App\Models\Domain\Account\AccountRepository;
 use App\Models\Domain\Category\CategoryRepository;
+use App\Infrastructure\Repositories\Api\Repository;
 use App\Models\Domain\LoginSession\LoginSessionRepository;
 
 class AppServiceProvider extends ServiceProvider
@@ -60,6 +62,10 @@ class AppServiceProvider extends ServiceProvider
             \App\Infrastructure\Repositories\Api\QiitaApiRepository::class
         );
 
+        $this->app->bind(Client::class, function () {
+            return new Client(['base_uri' => 'https://qiita.com/']);
+        });
+
         $this->app->bind(
             AccountScenario::class,
             function () {
@@ -90,6 +96,7 @@ class AppServiceProvider extends ServiceProvider
                 );
             }
         );
+
         $this->app->bind(
             StockScenario::class,
             function () {
@@ -98,6 +105,15 @@ class AppServiceProvider extends ServiceProvider
                     $this->app->make(LoginSessionRepository::class),
                     $this->app->make(StockRepository::class),
                     $this->app->make(QiitaApiRepository::class)
+                );
+            }
+        );
+
+        $this->app->bind(
+            Repository::class,
+            function () {
+                return new Repository(
+                    $this->app->make(Client::class)
                 );
             }
         );

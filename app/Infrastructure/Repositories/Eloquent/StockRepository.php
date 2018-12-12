@@ -5,7 +5,7 @@
 
 namespace App\Infrastructure\Repositories\Eloquent;
 
-use App\Models\Domain\Stock\StockEntities;
+use App\Models\Domain\Stock\StockValues;
 
 /**
  * Class StockRepository
@@ -16,10 +16,10 @@ class StockRepository implements \App\Models\Domain\Stock\StockRepository
     /**
      * ストックを保存する
      *
-     * @param StockEntities $stockEntities
+     * @param StockValues $stockEntities
      * @return mixed|void
      */
-    public function save(StockEntities $stockEntities)
+    public function save(StockValues $stockEntities)
     {
         // ストックをテーブルに保存する
     }

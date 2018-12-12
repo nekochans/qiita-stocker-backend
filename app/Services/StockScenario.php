@@ -6,6 +6,7 @@
 namespace App\Services;
 
 use App\Models\Domain\QiitaApiRepository;
+use GuzzleHttp\Exception\RequestException;
 use App\Models\Domain\Stock\StockRepository;
 use App\Models\Domain\Account\AccountRepository;
 use App\Models\Domain\LoginSession\LoginSessionEntity;
@@ -80,15 +81,17 @@ class StockScenario
         try {
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
 
-            $stockEntities = $this->qiitaApiRepository->fetchStock($accountEntity->getUserName());
+            $stockValues = $this->qiitaApiRepository->fetchStock($accountEntity->getUserName());
 
             \DB::beginTransaction();
 
-            $this->stockRepository->save($stockEntities);
+            $this->stockRepository->save($stockValues);
 
             \DB::commit();
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+        } catch (RequestException $e) {
+            // TODO QiitaAPIでエラーになった場合の処理を追加する
         } catch (\PDOException $e) {
             \DB::rollBack();
             throw $e;

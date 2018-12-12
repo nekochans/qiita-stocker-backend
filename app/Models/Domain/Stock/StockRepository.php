@@ -14,8 +14,8 @@ interface StockRepository
     /**
      * ストックを保存する
      *
-     * @param StockEntities $stockEntities
+     * @param StockValues $stockEntities
      * @return mixed
      */
-    public function save(StockEntities $stockEntities);
+    public function save(StockValues $stockEntities);
 }

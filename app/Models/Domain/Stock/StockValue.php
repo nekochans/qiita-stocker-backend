@@ -1,23 +1,16 @@
 <?php
 /**
- * StockEntity
+ * StockValue
  */
 
 namespace App\Models\Domain\Stock;
 
 /**
- * Class StockEntity
+ * Class StockValue
  * @package App\Models\Domain\Stock
  */
-class StockEntity
+class StockValue
 {
-    /**
-     * ストックID
-     *
-     * @var int
-     */
-    private $Id;
-
     /**
      * 記事ID
      *
@@ -61,26 +54,17 @@ class StockEntity
     private $tags;
 
     /**
-     * StockEntity constructor.
-     * @param StockEntityBuilder $builder
+     * StockValue constructor.
+     * @param StockValueBuilder $builder
      */
-    public function __construct(StockEntityBuilder $builder)
+    public function __construct(StockValueBuilder $builder)
     {
-        $this->id = $builder->getId();
         $this->articleId = $builder->getArticleId();
         $this->title = $builder->getTitle();
         $this->userId = $builder->getUserId();
         $this->profileImageUrl = $builder->getProfileImageUrl();
         $this->articleCreatedAt = $builder->getArticleCreatedAt();
         $this->tags = $builder->getTags();
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->Id;
     }
 
     /**

@@ -1,23 +1,16 @@
 <?php
 /**
- * StockEntity
+ * StockValueBuilder
  */
 
 namespace App\Models\Domain\Stock;
 
 /**
- * Class StockEntity
+ * Class StockValueBuilder
  * @package App\Models\Domain\Stock
  */
-class StockEntity
+class StockValueBuilder
 {
-    /**
-     * ストックID
-     *
-     * @var int
-     */
-    private $Id;
-
     /**
      * 記事ID
      *
@@ -61,34 +54,19 @@ class StockEntity
     private $tags;
 
     /**
-     * StockEntity constructor.
-     * @param StockEntityBuilder $builder
-     */
-    public function __construct(StockEntityBuilder $builder)
-    {
-        $this->id = $builder->getId();
-        $this->articleId = $builder->getArticleId();
-        $this->title = $builder->getTitle();
-        $this->userId = $builder->getUserId();
-        $this->profileImageUrl = $builder->getProfileImageUrl();
-        $this->articleCreatedAt = $builder->getArticleCreatedAt();
-        $this->tags = $builder->getTags();
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->Id;
-    }
-
-    /**
      * @return string
      */
     public function getArticleId(): string
     {
         return $this->articleId;
+    }
+
+    /**
+     * @param string $articleId
+     */
+    public function setArticleId(string $articleId): void
+    {
+        $this->articleId = $articleId;
     }
 
     /**
@@ -100,11 +78,27 @@ class StockEntity
     }
 
     /**
+     * @param string $title
+     */
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
+    }
+
+    /**
      * @return string
      */
     public function getUserId(): string
     {
         return $this->userId;
+    }
+
+    /**
+     * @param string $userId
+     */
+    public function setUserId(string $userId): void
+    {
+        $this->userId = $userId;
     }
 
     /**
@@ -116,6 +110,14 @@ class StockEntity
     }
 
     /**
+     * @param string $profileImageUrl
+     */
+    public function setProfileImageUrl(string $profileImageUrl): void
+    {
+        $this->profileImageUrl = $profileImageUrl;
+    }
+
+    /**
      * @return \DateTime
      */
     public function getArticleCreatedAt(): \DateTime
@@ -124,10 +126,34 @@ class StockEntity
     }
 
     /**
+     * @param \DateTime $articleCreatedAt
+     */
+    public function setArticleCreatedAt(\DateTime $articleCreatedAt): void
+    {
+        $this->articleCreatedAt = $articleCreatedAt;
+    }
+
+    /**
      * @return string[]
      */
     public function getTags(): array
     {
         return $this->tags;
+    }
+
+    /**
+     * @param string[] $tags
+     */
+    public function setTags(array $tags): void
+    {
+        $this->tags = $tags;
+    }
+
+    /**
+     * @return StockValue
+     */
+    public function build(): StockValue
+    {
+        return new StockValue($this);
     }
 }
