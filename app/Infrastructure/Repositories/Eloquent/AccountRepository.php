@@ -3,7 +3,7 @@
  * AccountRepository
  */
 
-namespace App\Infrastructure\Repositories;
+namespace App\Infrastructure\Repositories\Eloquent;
 
 use App\Eloquents\Account;
 use App\Eloquents\AccessToken;
@@ -17,7 +17,7 @@ use App\Models\Domain\LoginSession\LoginSessionEntity;
 
 /**
  * Class AccountRepository
- * @package App\Infrastructure\Repositories
+ * @package App\Infrastructure\Repositories\Eloquent
  */
 class AccountRepository implements \App\Models\Domain\Account\AccountRepository
 {

@@ -25,6 +25,10 @@ class CategoryEntity
      */
     private $categoryNameValue;
 
+    /**
+     * CategoryEntity constructor.
+     * @param CategoryEntityBuilder $builder
+     */
     public function __construct(CategoryEntityBuilder $builder)
     {
         $this->Id = $builder->getId();

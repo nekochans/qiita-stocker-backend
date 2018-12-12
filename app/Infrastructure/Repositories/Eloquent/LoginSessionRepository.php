@@ -3,7 +3,7 @@
  * LoginSessionRepository
  */
 
-namespace App\Infrastructure\Repositories;
+namespace App\Infrastructure\Repositories\Eloquent;
 
 use App\Eloquents\LoginSession;
 use App\Models\Domain\LoginSession\LoginSessionEntity;
@@ -11,7 +11,7 @@ use App\Models\Domain\LoginSession\LoginSessionEntityBuilder;
 
 /**
  * Class LoginSessionRepository
- * @package App\Infrastructure\Repositories
+ * @package App\Infrastructure\Repositories\Eloquent
  */
 class LoginSessionRepository implements \App\Models\Domain\LoginSession\LoginSessionRepository
 {

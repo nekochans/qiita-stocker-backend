@@ -2,13 +2,18 @@
 
 namespace App\Providers;
 
+use GuzzleHttp\Client;
+use App\Services\StockScenario;
 use App\Services\AccountScenario;
 use App\Services\CategoryScenario;
 use App\Services\LoginSessionScenario;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Domain\QiitaApiRepository;
+use App\Models\Domain\Stock\StockRepository;
 use App\Models\Domain\Account\AccountRepository;
 use App\Models\Domain\Category\CategoryRepository;
+use App\Infrastructure\Repositories\Api\Repository;
 use App\Models\Domain\LoginSession\LoginSessionRepository;
 
 class AppServiceProvider extends ServiceProvider
@@ -34,17 +39,27 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(
             AccountRepository::class,
-            \App\Infrastructure\Repositories\AccountRepository::class
+            \App\Infrastructure\Repositories\Eloquent\AccountRepository::class
         );
 
         $this->app->bind(
             LoginSessionRepository::class,
-            \App\Infrastructure\Repositories\LoginSessionRepository::class
+            \App\Infrastructure\Repositories\Eloquent\LoginSessionRepository::class
         );
 
         $this->app->bind(
             CategoryRepository::class,
-            \App\Infrastructure\Repositories\CategoryRepository::class
+            \App\Infrastructure\Repositories\Eloquent\CategoryRepository::class
+        );
+
+        $this->app->bind(
+            StockRepository::class,
+            \App\Infrastructure\Repositories\Eloquent\StockRepository::class
+        );
+
+        $this->app->bind(
+            QiitaApiRepository::class,
+            \App\Infrastructure\Repositories\Api\QiitaApiRepository::class
         );
 
         $this->app->bind(
@@ -74,6 +89,27 @@ class AppServiceProvider extends ServiceProvider
                     $this->app->make(AccountRepository::class),
                     $this->app->make(LoginSessionRepository::class),
                     $this->app->make(CategoryRepository::class)
+                );
+            }
+        );
+
+        $this->app->bind(
+            StockScenario::class,
+            function () {
+                return new StockScenario(
+                    $this->app->make(AccountRepository::class),
+                    $this->app->make(LoginSessionRepository::class),
+                    $this->app->make(StockRepository::class),
+                    $this->app->make(QiitaApiRepository::class)
+                );
+            }
+        );
+
+        $this->app->bind(
+            Repository::class,
+            function () {
+                return new Repository(
+                    $this->app->make(Client::class)
                 );
             }
         );
