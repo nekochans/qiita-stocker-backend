@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\StockScenario;
 use App\Services\AccountScenario;
 use App\Services\CategoryScenario;
 use App\Services\LoginSessionScenario;
@@ -74,6 +75,15 @@ class AppServiceProvider extends ServiceProvider
                     $this->app->make(AccountRepository::class),
                     $this->app->make(LoginSessionRepository::class),
                     $this->app->make(CategoryRepository::class)
+                );
+            }
+        );
+        $this->app->bind(
+            StockScenario::class,
+            function () {
+                return new StockScenario(
+                    $this->app->make(AccountRepository::class),
+                    $this->app->make(LoginSessionRepository::class)
                 );
             }
         );
