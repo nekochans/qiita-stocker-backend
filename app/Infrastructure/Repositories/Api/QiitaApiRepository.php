@@ -24,7 +24,12 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
     public function fetchStock(string $qiitaUserName): StockValues
     {
         // TODO パラメータが固定となっているが、全てのストックを取得できるように修正する
-        $uri = 'https://qiita.com/api/v2/users/'.$qiitaUserName .'/stocks?page=1&per_page=20';
+        $uri = sprintf(
+            'https://qiita.com/api/v2/users/%s/stocks?page=%d&per_page=%d',
+            $qiitaUserName,
+            1,
+            20
+        );
 
         $response = $this->getClient()->request('GET', $uri);
         $responseArray = json_decode($response->getBody());
