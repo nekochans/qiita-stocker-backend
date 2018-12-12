@@ -62,10 +62,6 @@ class AppServiceProvider extends ServiceProvider
             \App\Infrastructure\Repositories\Api\QiitaApiRepository::class
         );
 
-        $this->app->bind(Client::class, function () {
-            return new Client(['base_uri' => 'https://qiita.com/']);
-        });
-
         $this->app->bind(
             AccountScenario::class,
             function () {
