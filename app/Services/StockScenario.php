@@ -85,7 +85,7 @@ class StockScenario
 
             \DB::beginTransaction();
 
-            $this->stockRepository->save($stockValues);
+            $this->stockRepository->save($accountEntity->getAccountId(), $stockValues);
 
             \DB::commit();
         } catch (ModelNotFoundException $e) {
