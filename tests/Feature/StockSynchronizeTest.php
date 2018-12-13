@@ -5,8 +5,10 @@
 
 namespace Tests\Feature;
 
+use App\Eloquents\Stock;
 use App\Eloquents\Account;
 use App\Eloquents\Category;
+use App\Eloquents\StockTag;
 use App\Eloquents\AccessToken;
 use App\Eloquents\CategoryName;
 use App\Eloquents\LoginSession;
@@ -35,6 +37,10 @@ class StockSynchronizeTest extends AbstractTestCase
             $categories->each(function ($category) {
                 factory(CategoryName::class)->create(['category_id' => $category->id]);
             });
+            $stocks = factory(Stock::class)->create(['account_id' => $account->id]);
+            $stocks->each(function ($stock) {
+                factory(StockTag::class)->create(['stock_id' => $stock->id]);
+            });
         });
     }
 
@@ -57,6 +63,36 @@ class StockSynchronizeTest extends AbstractTestCase
         // 実際にJSONResponseに期待したデータが含まれているか確認する
         $jsonResponse->assertStatus(200);
         $jsonResponse->assertHeader('X-Request-Id');
+
+        // DBのテーブルに期待した形でデータが入っているか確認する
+        $body = file_get_contents(dirname(__FILE__) . '/StockSynchronizeTest.json');
+        $array = json_decode($body, true);
+
+        $stockIdSequence = 2;
+        $stockTagIdSequence = 2;
+
+        for ($i = 0; $i < count($array); $i++) {
+            $this->assertDatabaseHas('stocks', [
+                'id'                       => $stockIdSequence,
+                'account_id'               => $accountId,
+                'article_id'               => $array[$i]['id'],
+                'title'                    => $array[$i]['title'],
+                'user_id'                  => $array[$i]['user']['id'],
+                'profile_image_url'        => $array[$i]['user']['profile_image_url'],
+                'article_created_at'       => $array[$i]['created_at']
+            ]);
+
+            for ($j = 0; $j < count($array[$i]['tags']); $j++) {
+                $this->assertDatabaseHas('stocks_tags', [
+                    'id'                       => $stockTagIdSequence,
+                    'stock_id'                 => $stockIdSequence,
+                    'name'                     => $array[$i]['tags'][$j]['name'],
+                ]);
+                $stockTagIdSequence += 1;
+            }
+
+            $stockIdSequence += 1;
+        }
     }
 
     /**

@@ -19,7 +19,13 @@ use App\Models\Domain\Category\CategoryEntityBuilder;
  */
 class CategoryRepository implements \App\Models\Domain\Category\CategoryRepository
 {
-    public function create(AccountEntity $accountEntity, CategoryNameValue $categoryNameValue): CategoryEntity
+    /**
+     * カテゴリを作成する
+     *
+     * @param AccountEntity $accountEntity
+     * @param CategoryNameValue $categoryNameValue
+     * @return CategoryEntity
+     */    public function create(AccountEntity $accountEntity, CategoryNameValue $categoryNameValue): CategoryEntity
     {
         $categoryId = $this->saveCategories($accountEntity->getAccountId());
         $this->saveCategoriesNames($categoryId, $categoryNameValue);

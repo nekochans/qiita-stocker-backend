@@ -21,7 +21,6 @@ class StockController extends Controller
      */
     private $stockScenario;
 
-
     /**
      * StockController constructor.
      * @param StockScenario $stockScenario

@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use App\Services\StockScenario;
 use App\Services\AccountScenario;
 use App\Services\CategoryScenario;
+use Tests\Feature\TestClientHandler;
 use App\Services\LoginSessionScenario;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -104,6 +105,14 @@ class AppServiceProvider extends ServiceProvider
                 );
             }
         );
+
+        $this->app->bind(Client::class, function () {
+            if (config('app.env') == 'testing') {
+                $handler = TestClientHandler::create();
+                return new Client(['handler' => $handler]);
+            }
+            return new Client();
+        });
 
         $this->app->bind(
             Repository::class,
