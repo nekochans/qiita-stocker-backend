@@ -85,6 +85,8 @@ class StockScenario
 
             \DB::beginTransaction();
 
+            $stockEntities = $this->stockRepository->search($accountEntity);
+
             $this->stockRepository->save($accountEntity->getAccountId(), $stockValues);
 
             \DB::commit();
