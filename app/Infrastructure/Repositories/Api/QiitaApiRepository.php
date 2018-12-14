@@ -5,6 +5,7 @@
 
 namespace App\Infrastructure\Repositories\Api;
 
+use App\Models\Domain\Stock\StockValue;
 use App\Models\Domain\Stock\StockValues;
 use App\Models\Domain\Stock\StockValueBuilder;
 
@@ -23,35 +24,74 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
      */
     public function fetchStock(string $qiitaUserName): StockValues
     {
-        // TODO パラメータが固定となっているが、全てのストックを取得できるように修正する
-        $uri = sprintf(
-            'https://qiita.com/api/v2/users/%s/stocks?page=%d&per_page=%d',
-            $qiitaUserName,
-            1,
-            20
-        );
+        $firstPage = 1;
+        $perPage = 100;
+        $response = $this->requestToStockApi($qiitaUserName, $firstPage, $perPage);
 
-        $response = $this->getClient()->request('GET', $uri);
         $responseArray = json_decode($response->getBody());
+
+        $stockTotalCount = $response->getHeader('total-count');
+        $requestTotalCount = ceil($stockTotalCount[0] / $perPage);
+
+        for ($nextPage = $firstPage + 1; $nextPage <= $requestTotalCount; $nextPage++) {
+            $response = $this->requestToStockApi($qiitaUserName, $nextPage, $perPage);
+
+            $stockList = json_decode($response->getBody());
+            foreach ($stockList as $stock) {
+                array_push($responseArray, $stock);
+            }
+        }
 
         $stockValues = [];
         foreach ($responseArray as $stock) {
-            $articleCreatedAt = new \DateTime($stock->created_at);
-            $tagNames = $this->buildTagNamesArray($stock->tags);
-
-            $stockValueBuilder = new StockValueBuilder();
-            $stockValueBuilder->setArticleId($stock->id);
-            $stockValueBuilder->setTitle($stock->title);
-            $stockValueBuilder->setUserId($stock->user->id);
-            $stockValueBuilder->setProfileImageUrl($stock->user->profile_image_url);
-            $stockValueBuilder->setArticleCreatedAt($articleCreatedAt);
-            $stockValueBuilder->setTags($tagNames);
-            $stockValue = $stockValueBuilder->build();
-
+            $stockValue = $this->buildStockValue($stock);
             array_push($stockValues, $stockValue);
         }
 
         return new StockValues(...$stockValues);
+    }
+
+    /**
+     * Stock APIにリクエストを行う
+     *
+     * @param string $qiitaUserName
+     * @param int $page
+     * @param int $perPage
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    private function requestToStockApi(string $qiitaUserName, int $page, int $perPage)
+    {
+        $uri = sprintf(
+            'https://qiita.com/api/v2/users/%s/stocks?page=%d&per_page=%d',
+            $qiitaUserName,
+            $page,
+            $perPage
+        );
+
+        return $this->getClient()->request('GET', $uri);
+    }
+
+    /**
+     * StockValue を作成する
+     *
+     * @param object $stock
+     * @return StockValue
+     */
+    private function buildStockValue(object $stock): StockValue
+    {
+        $articleCreatedAt = new \DateTime($stock->created_at);
+        $tagNames = $this->buildTagNamesArray($stock->tags);
+
+        $stockValueBuilder = new StockValueBuilder();
+        $stockValueBuilder->setArticleId($stock->id);
+        $stockValueBuilder->setTitle($stock->title);
+        $stockValueBuilder->setUserId($stock->user->id);
+        $stockValueBuilder->setProfileImageUrl($stock->user->profile_image_url);
+        $stockValueBuilder->setArticleCreatedAt($articleCreatedAt);
+        $stockValueBuilder->setTags($tagNames);
+
+        return $stockValueBuilder->build();
     }
 
     /**
