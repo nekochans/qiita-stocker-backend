@@ -9,6 +9,7 @@ use App\Eloquents\Stock;
 use App\Eloquents\Account;
 use App\Eloquents\Category;
 use App\Eloquents\StockTag;
+use Faker\Factory as Faker;
 use App\Eloquents\AccessToken;
 use App\Eloquents\CategoryName;
 use App\Eloquents\LoginSession;
@@ -50,6 +51,13 @@ class StockSynchronizeTest extends AbstractTestCase
      */
     public function testSuccess()
     {
+        $firstPageStocks = $this->createStocksData(100);
+        $nextPageStocks = $this->createStocksData(1);
+        $totalStocks = array_merge($firstPageStocks, $nextPageStocks);
+
+        $this->exportMockDataFile($firstPageStocks, 'StockSynchronizeTestMockFirst.json');
+        $this->exportMockDataFile($nextPageStocks, 'StockSynchronizeTestMockNext.json');
+
         $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
         $accountId = 1;
         factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
@@ -65,34 +73,107 @@ class StockSynchronizeTest extends AbstractTestCase
         $jsonResponse->assertHeader('X-Request-Id');
 
         // DBのテーブルに期待した形でデータが入っているか確認する
-        $body = file_get_contents(dirname(__FILE__) . '/StockSynchronizeTest.json');
-        $array = json_decode($body, true);
-
         $stockIdSequence = 2;
         $stockTagIdSequence = 2;
 
-        for ($i = 0; $i < count($array); $i++) {
+        for ($i = 0; $i < count($totalStocks); $i++) {
             $this->assertDatabaseHas('stocks', [
                 'id'                       => $stockIdSequence,
                 'account_id'               => $accountId,
-                'article_id'               => $array[$i]['id'],
-                'title'                    => $array[$i]['title'],
-                'user_id'                  => $array[$i]['user']['id'],
-                'profile_image_url'        => $array[$i]['user']['profile_image_url'],
-                'article_created_at'       => $array[$i]['created_at']
+                'article_id'               => $totalStocks[$i]['id'],
+                'title'                    => $totalStocks[$i]['title'],
+                'user_id'                  => $totalStocks[$i]['user']['id'],
+                'profile_image_url'        => $totalStocks[$i]['user']['profile_image_url'],
+                'article_created_at'       => $totalStocks[$i]['created_at']
             ]);
 
-            for ($j = 0; $j < count($array[$i]['tags']); $j++) {
+            for ($j = 0; $j < count($totalStocks[$i]['tags']); $j++) {
                 $this->assertDatabaseHas('stocks_tags', [
                     'id'                       => $stockTagIdSequence,
                     'stock_id'                 => $stockIdSequence,
-                    'name'                     => $array[$i]['tags'][$j]['name'],
+                    'name'                     => $totalStocks[$i]['tags'][$j]['name'],
                 ]);
                 $stockTagIdSequence += 1;
             }
 
             $stockIdSequence += 1;
         }
+    }
+
+    /**
+     * Mockデータをファイルに出力する
+     *
+     * @param array $stocks
+     * @param string $fileName
+     */
+    private function exportMockDataFile(array $stocks, string $fileName)
+    {
+        file_put_contents(dirname(__FILE__) . '/' . $fileName, json_encode($stocks));
+    }
+
+    /**
+     * ストックのデータを作成する
+     *
+     * @param int $count
+     * @return array
+     */
+    private function createStocksData(int $count) :array
+    {
+        $faker = Faker::create();
+
+        $stocks = [];
+        for ($i = 0; $i < $count; $i++) {
+            $stock = [
+                'rendered_body'   => '<h1>Example</h1>',
+                'body'            => '# Example',
+                'coediting'       => false,
+                'comments_count'  => 0,
+                'created_at'      => '2018-12-12T09:00:43+09:00',
+                'group'           => null,
+                'id'              => $faker->unique()->regexify('[a-z0-9]{20}'),
+                'likes_count'     => 50,
+                'private'         => false,
+                'reactions_count' => 0,
+                'tags'            => [
+                        0 => [
+                                'name'     => $faker->word,
+                                'versions' => [
+                                    ],
+                            ],
+                        1 => [
+                                'name'     => $faker->word,
+                                'versions' => [
+                                    ],
+                            ],
+                    ],
+                'title'      => $faker->sentence,
+                'updated_at' => $faker->dateTimeThisDecade,
+                'url'        => 'https://qiita.com/yaotti/items/4bd431809afb1bb99e4f',
+                'user'       => [
+                        'description'         => 'Hello, world.',
+                        'facebook_id'         => '',
+                        'followees_count'     => 100,
+                        'followers_count'     => 200,
+                        'github_login_name'   => '',
+                        'id'                  => $faker->userName,
+                        'items_count'         => 300,
+                        'linkedin_id'         => '',
+                        'location'            => 'Tokyo, Japan',
+                        'name'                => '',
+                        'organization'        => 'test Inc',
+                        'permanent_id'        => 1,
+                        'profile_image_url'   => $faker->url,
+                        'team_only'           => false,
+                        'twitter_screen_name' => '',
+                        'website_url'         => '',
+                    ],
+                'page_views_count' => null
+            ];
+
+            array_push($stocks, $stock);
+        }
+
+        return $stocks;
     }
 
     /**

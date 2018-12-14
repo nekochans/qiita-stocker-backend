@@ -18,9 +18,11 @@ class TestClientHandler
      */
     public static function create(): HandlerStack
     {
-        $body = file_get_contents(dirname(__FILE__) . '/StockSynchronizeTest.json');
+        $firstPage = file_get_contents(dirname(__FILE__) . '/StockSynchronizeTestMockFirst.json');
+        $nestPage = file_get_contents(dirname(__FILE__) . '/StockSynchronizeTestMockNext.json');
         $mock = new MockHandler([
-            new Response(200, [], $body)
+            new Response(200, ['total-count' => '101'], $firstPage),
+            new Response(200, ['total-count' => '101'], $nestPage)
         ]);
         return HandlerStack::create($mock);
     }
