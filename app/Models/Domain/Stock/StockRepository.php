@@ -5,8 +5,6 @@
 
 namespace App\Models\Domain\Stock;
 
-use App\Models\Domain\Account\AccountEntity;
-
 /**
  * Interface StockRepository
  * @package App\Models\Domain\Stock
@@ -18,15 +16,22 @@ interface StockRepository
      *
      * @param string $accountId
      * @param StockValues $stockValues
-     * @return mixed
      */
     public function save(string $accountId, StockValues $stockValues);
 
     /**
      * ストック一覧を取得する
      *
-     * @param AccountEntity $accountEntity
+     * @param string $accountId
      * @return StockEntities
      */
-    public function search(AccountEntity $accountEntity): StockEntities;
+    public function search(string $accountId): StockEntities;
+
+    /**
+     * ストックを削除する
+     *
+     * @param string $accountId
+     * @param array $articleIdList
+     */
+    public function delete(string $accountId, array $articleIdList);
 }

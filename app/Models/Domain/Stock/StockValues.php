@@ -29,7 +29,7 @@ class StockValues
     /**
      * @return StockValue[]
      */
-    public function getStockEntities(): array
+    public function getStockValues(): array
     {
         return $this->stockValues;
     }

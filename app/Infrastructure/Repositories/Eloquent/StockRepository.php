@@ -11,7 +11,6 @@ use App\Models\Domain\Stock\StockValue;
 use App\Models\Domain\Stock\StockEntity;
 use App\Models\Domain\Stock\StockValues;
 use App\Models\Domain\Stock\StockEntities;
-use App\Models\Domain\Account\AccountEntity;
 use App\Models\Domain\Stock\StockEntityBuilder;
 
 /**
@@ -25,11 +24,10 @@ class StockRepository implements \App\Models\Domain\Stock\StockRepository
      *
      * @param string $accountId
      * @param StockValues $stockValues
-     * @return mixed
      */
     public function save(string $accountId, StockValues $stockValues)
     {
-        $stockValueList = $stockValues->getStockEntities();
+        $stockValueList = $stockValues->getStockValues();
         foreach ($stockValueList as $stockValue) {
             $stockId = $this->saveStocks($accountId, $stockValue);
             $this->saveStocksTags($stockId, $stockValue->getTags());
@@ -77,15 +75,12 @@ class StockRepository implements \App\Models\Domain\Stock\StockRepository
     /**
      * ストック一覧を取得する
      *
-     * @param AccountEntity $accountEntity
-     */
-    /**
-     * @param AccountEntity $accountEntity
+     * @param string $accountId
      * @return StockEntities
      */
-    public function search(AccountEntity $accountEntity): StockEntities
+    public function search(string $accountId): StockEntities
     {
-        $stocks = Stock::where('account_id', $accountEntity->getAccountId())->get();
+        $stocks = Stock::where('account_id', $accountId)->get();
 
         $stockEntityList = $stocks->map(function (Stock $stock): StockEntity {
             return $this->buildStockEntity($stock->toArray());
@@ -120,5 +115,21 @@ class StockRepository implements \App\Models\Domain\Stock\StockRepository
         $stockEntityBuilder->setTags($stockTagNames->toArray());
 
         return $stockEntityBuilder->build();
+    }
+
+    /**
+     * ストックを削除する
+     *
+     * @param string $accountId
+     * @param array $articleIdList
+     */
+    public function delete(string $accountId, array $articleIdList)
+    {
+        $stocks = Stock::where('account_id', $accountId)->whereIn('article_id', $articleIdList);
+
+        $stockIdList = $stocks->get()->pluck('id');
+        StockTag::whereIn('stock_id', $stockIdList)->delete();
+
+        $stocks->delete();
     }
 }
