@@ -72,7 +72,7 @@ class StockEntities
                     array_push($updateStockEntityList, $updateStockEntity);
                 }
 
-                $this->insertTags($stockEntity, $stockValue, $stockRepository);
+                $this->saveTags($stockEntity, $stockValue, $stockRepository);
                 $this->deleteTags($stockEntity, $stockValue, $stockRepository);
             } else {
                 array_push($saveStockValueList, $stockValue);
@@ -114,7 +114,7 @@ class StockEntities
      * @param StockValue $stockValue
      * @param StockRepository $stockRepository
      */
-    private function insertTags(StockEntity $stockEntity, StockValue $stockValue, StockRepository $stockRepository)
+    private function saveTags(StockEntity $stockEntity, StockValue $stockValue, StockRepository $stockRepository)
     {
         $insertTagList = array_diff($stockValue->getTags(), $stockEntity->getStockValue()->getTags());
         $insertTagList = array_values($insertTagList);
