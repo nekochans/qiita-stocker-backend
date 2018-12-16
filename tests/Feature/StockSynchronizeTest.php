@@ -51,8 +51,20 @@ class StockSynchronizeTest extends AbstractTestCase
      */
     public function testSuccess()
     {
+        $updateStock = [
+            'article_id'               => '1234567890abcdefghij',
+            'title'                    => 'ストック同期テスト🐱',
+            'user_id'                  => 'test-user-updated',
+            'profile_image_url'        => 'http://test.com/test-image-updated.jpag',
+            'article_created_at'       => '2018-12-01 00:00:00.000000'
+        ];
+
         $firstPageStocks = $this->createStocksData(100);
         $nextPageStocks = $this->createStocksData(1);
+        $nextPageUpdateStock = $this->createUpdateStockData($updateStock);
+
+        array_push($nextPageStocks, $nextPageUpdateStock);
+
         $totalStocks = array_merge($firstPageStocks, $nextPageStocks);
 
         $this->exportMockDataFile($firstPageStocks, 'StockSynchronizeTestMockFirst.json');
@@ -61,6 +73,18 @@ class StockSynchronizeTest extends AbstractTestCase
         $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
         $accountId = 1;
         factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
+
+
+        factory(Stock::class)->create([
+            'account_id'               => $accountId,
+            'article_id'               => $updateStock['article_id'],
+            'title'                    => $updateStock['title'],
+            'user_id'                  => $updateStock['user_id'],
+            'profile_image_url'        => $updateStock['profile_image_url'],
+            'article_created_at'       => $updateStock['article_created_at']
+        ]);
+
+        factory(StockTag::class)->create(['stock_id' => 2, 'name' => 'delete.tag']);
 
         $jsonResponse = $this->put(
             '/api/stocks',
@@ -73,6 +97,7 @@ class StockSynchronizeTest extends AbstractTestCase
         $jsonResponse->assertHeader('X-Request-Id');
 
         // DBのテーブルに期待した形でデータが入っているか確認する
+        // ストックが削除されていることを確認
         $this->assertDatabaseMissing('stocks', [
             'id'                       => 1,
             'account_id'               => $accountId,
@@ -82,10 +107,34 @@ class StockSynchronizeTest extends AbstractTestCase
             'id'                       => 1,
         ]);
 
-        $stockIdSequence = 2;
-        $stockTagIdSequence = 2;
+        // ストックが更新されていることを確認
+        $this->assertDatabaseHas('stocks', [
+            'id'                       => 2,
+            'account_id'               => $accountId,
+            'article_id'               => $updateStock['article_id'],
+            'title'                    => $updateStock['title'],
+            'user_id'                  => $updateStock['user_id'],
+            'profile_image_url'        => $updateStock['profile_image_url'],
+            'article_created_at'       => $updateStock['article_created_at']
+        ]);
 
-        for ($i = 0; $i < count($totalStocks); $i++) {
+        // タグが削除されていることを確認
+        $this->assertDatabaseMissing('stocks_tags', [
+            'stock_id'                   => 2,
+            'name'                       => 'delete.tag'
+        ]);
+
+        // タグが追加されていることを確認
+        $this->assertDatabaseHas('stocks_tags', [
+            'stock_id'                   => 2,
+            'name'                       => 'insert.tag'
+        ]);
+
+        $stockIdSequence = 3;
+        $stockTagIdSequence = 4;
+
+        // ストックが追加されていることを確認
+        for ($i = 0; $i < count($totalStocks) - 1; $i++) {
             $this->assertDatabaseHas('stocks', [
                 'id'                       => $stockIdSequence,
                 'account_id'               => $accountId,
@@ -146,13 +195,11 @@ class StockSynchronizeTest extends AbstractTestCase
                 'tags'            => [
                         0 => [
                                 'name'     => $faker->word,
-                                'versions' => [
-                                    ],
+                                'versions' => []
                             ],
                         1 => [
-                                'name'     => $faker->word,
-                                'versions' => [
-                                    ],
+                            'name'     => $faker->word,
+                            'versions' => [],
                             ],
                     ],
                 'title'      => $faker->sentence,
@@ -183,6 +230,61 @@ class StockSynchronizeTest extends AbstractTestCase
         }
 
         return $stocks;
+    }
+
+    /**
+     * ストックの更新用データを作成する
+     *
+     * @param array $updateStock
+     * @return array
+     */
+    private function createUpdateStockData(array $updateStock) :array
+    {
+        $faker = Faker::create();
+
+        $stock = [
+                'rendered_body'   => '<h1>Example</h1>',
+                'body'            => '# Example',
+                'coediting'       => false,
+                'comments_count'  => 0,
+                'created_at'      => $updateStock['article_created_at'],
+                'group'           => null,
+                'id'              => $updateStock['article_id'],
+                'likes_count'     => 50,
+                'private'         => false,
+                'reactions_count' => 0,
+                'tags'            => [
+                    0 => [
+                        'name'     => 'insert.tag',
+                        'versions' => [
+                        ],
+                    ]
+                ],
+                'title'      => $updateStock['title'],
+                'updated_at' => $faker->dateTimeThisDecade,
+                'url'        => 'https://qiita.com/yaotti/items/4bd431809afb1bb99e4f',
+                'user'       => [
+                    'description'         => 'Hello, world.',
+                    'facebook_id'         => '',
+                    'followees_count'     => 100,
+                    'followers_count'     => 200,
+                    'github_login_name'   => '',
+                    'id'                  => $updateStock['user_id'],
+                    'items_count'         => 300,
+                    'linkedin_id'         => '',
+                    'location'            => 'Tokyo, Japan',
+                    'name'                => '',
+                    'organization'        => 'test Inc',
+                    'permanent_id'        => 1,
+                    'profile_image_url'   => $updateStock['profile_image_url'],
+                    'team_only'           => false,
+                    'twitter_screen_name' => '',
+                    'website_url'         => '',
+                ],
+                'page_views_count' => null
+            ];
+
+        return $stock;
     }
 
     /**

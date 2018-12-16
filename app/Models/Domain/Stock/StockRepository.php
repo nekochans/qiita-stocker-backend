@@ -34,4 +34,26 @@ interface StockRepository
      * @param array $articleIdList
      */
     public function delete(string $accountId, array $articleIdList);
+
+    /**
+     * ストックを更新する
+     *
+     * @param StockEntities $stockEntities
+     */
+    public function update(StockEntities $stockEntities);
+    /**
+     * stocks_tags テーブルにデータを保存する
+     *
+     * @param int $stockId
+     * @param array $tags
+     */
+    public function saveStocksTags(int $stockId, array $tags);
+
+    /**
+     * stocks_tags テーブルからデータを削除する
+     *
+     * @param int $stockId
+     * @param array $tags
+     */
+    public function deleteStocksTags(int $stockId, array $tags);
 }

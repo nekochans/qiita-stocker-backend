@@ -16,49 +16,14 @@ class StockEntity
      *
      * @var int
      */
-    private $Id;
+    private $id;
 
     /**
-     * 記事ID
+     * StockValue
      *
-     * @var string
+     * @var StockValue
      */
-    private $articleId;
-
-    /**
-     * タイトル
-     *
-     * @var string
-     */
-    private $title;
-
-    /**
-     * ユーザID
-     *
-     * @var string
-     */
-    private $userId;
-
-    /**
-     * プロフィール画像URL
-     *
-     * @var string
-     */
-    private $profileImageUrl;
-
-    /**
-     * 記事作成日時
-     *
-     * @var \DateTime
-     */
-    private $articleCreatedAt;
-
-    /**
-     * タグ
-     *
-     * @var string[]
-     */
-    private $tags;
+    private $stockValue;
 
     /**
      * StockEntity constructor.
@@ -67,12 +32,7 @@ class StockEntity
     public function __construct(StockEntityBuilder $builder)
     {
         $this->id = $builder->getId();
-        $this->articleId = $builder->getArticleId();
-        $this->title = $builder->getTitle();
-        $this->userId = $builder->getUserId();
-        $this->profileImageUrl = $builder->getProfileImageUrl();
-        $this->articleCreatedAt = $builder->getArticleCreatedAt();
-        $this->tags = $builder->getTags();
+        $this->stockValue = $builder->getStockValue();
     }
 
     /**
@@ -80,54 +40,36 @@ class StockEntity
      */
     public function getId(): int
     {
-        return $this->Id;
+        return $this->id;
     }
 
     /**
-     * @return string
+     * @return StockValue
      */
-    public function getArticleId(): string
+    public function getStockValue(): StockValue
     {
-        return $this->articleId;
+        return $this->stockValue;
     }
 
     /**
-     * @return string
+     * ストックが更新されているか確認する
+     *
+     * @param StockValue $stockValue
+     * @return bool
      */
-    public function getTitle(): string
+    public function isUpdatedExceptTag(StockValue $stockValue): bool
     {
-        return $this->title;
-    }
+        $isChanged = false;
 
-    /**
-     * @return string
-     */
-    public function getUserId(): string
-    {
-        return $this->userId;
-    }
+        if ($this->getStockValue()->getTitle() !== $stockValue->getTitle() ||
+            $this->getStockValue()->getUserId() !== $stockValue->getUserId() ||
+            $this->getStockValue()->getProfileImageUrl() !== $stockValue->getProfileImageUrl() ||
+            $this->getStockValue()->getArticleCreatedAt() != $stockValue->getArticleCreatedAt() ||
+            $this->getStockValue()->getArticleId() !== $stockValue->getArticleId()
+        ) {
+            $isChanged = true;
+        }
 
-    /**
-     * @return string
-     */
-    public function getProfileImageUrl(): string
-    {
-        return $this->profileImageUrl;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getArticleCreatedAt(): \DateTime
-    {
-        return $this->articleCreatedAt;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getTags(): array
-    {
-        return $this->tags;
+        return $isChanged;
     }
 }

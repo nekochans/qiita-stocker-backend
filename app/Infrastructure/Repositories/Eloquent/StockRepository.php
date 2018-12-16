@@ -11,6 +11,7 @@ use App\Models\Domain\Stock\StockValue;
 use App\Models\Domain\Stock\StockEntity;
 use App\Models\Domain\Stock\StockValues;
 use App\Models\Domain\Stock\StockEntities;
+use App\Models\Domain\Stock\StockValueBuilder;
 use App\Models\Domain\Stock\StockEntityBuilder;
 
 /**
@@ -57,22 +58,6 @@ class StockRepository implements \App\Models\Domain\Stock\StockRepository
     }
 
     /**
-     * stocks_tags テーブルにデータを保存する
-     *
-     * @param int $stockId
-     * @param array $tags
-     */
-    private function saveStocksTags(int $stockId, array $tags)
-    {
-        foreach ($tags as $tag) {
-            $stockTag = new StockTag();
-            $stockTag->stock_id = $stockId;
-            $stockTag->name = $tag;
-            $stockTag->save();
-        }
-    }
-
-    /**
      * ストック一覧を取得する
      *
      * @param string $accountId
@@ -96,7 +81,7 @@ class StockRepository implements \App\Models\Domain\Stock\StockRepository
      * @param array $stock
      * @return StockEntity
      */
-    private function buildStockEntity(array $stock)
+    private function buildStockEntity(array $stock): StockEntity
     {
         $stockTags = StockTag::where('stock_id', $stock['id'])->get();
 
@@ -105,14 +90,18 @@ class StockRepository implements \App\Models\Domain\Stock\StockRepository
         });
 
         $articleCreatedAt = new \DateTime($stock['article_created_at']);
+        $stockValueBuilder = new StockValueBuilder();
+        $stockValueBuilder->setArticleId($stock['article_id']);
+        $stockValueBuilder->setTitle($stock['title']);
+        $stockValueBuilder->setUserId($stock['user_id']);
+        $stockValueBuilder->setProfileImageUrl($stock['profile_image_url']);
+        $stockValueBuilder->setArticleCreatedAt($articleCreatedAt);
+        $stockValueBuilder->setTags($stockTagNames->toArray());
+        $stockValue = $stockValueBuilder->build();
+
         $stockEntityBuilder = new StockEntityBuilder();
         $stockEntityBuilder->setId($stock['id']);
-        $stockEntityBuilder->setArticleId($stock['article_id']);
-        $stockEntityBuilder->setTitle($stock['title']);
-        $stockEntityBuilder->setUserId($stock['user_id']);
-        $stockEntityBuilder->setProfileImageUrl($stock['profile_image_url']);
-        $stockEntityBuilder->setArticleCreatedAt($articleCreatedAt);
-        $stockEntityBuilder->setTags($stockTagNames->toArray());
+        $stockEntityBuilder->setStockValue($stockValue);
 
         return $stockEntityBuilder->build();
     }
@@ -131,5 +120,53 @@ class StockRepository implements \App\Models\Domain\Stock\StockRepository
         StockTag::whereIn('stock_id', $stockIdList)->delete();
 
         $stocks->delete();
+    }
+
+    /**
+     * ストックを更新する
+     *
+     * @param StockEntities $stockEntities
+     */
+    public function update(StockEntities $stockEntities)
+    {
+        $stockEntityList = $stockEntities->getStockEntities();
+
+        foreach ($stockEntityList as $stockEntity) {
+            $stock = Stock::find($stockEntity->getId());
+            $stock->article_id = $stockEntity->getStockValue()->getArticleId();
+            $stock->title = $stockEntity->getStockValue()->getTitle();
+            $stock->user_id = $stockEntity->getStockValue()->getUserId();
+            $stock->profile_image_url = $stockEntity->getStockValue()->getProfileImageUrl();
+            $stock->article_created_at = $stockEntity->getStockValue()->getArticleCreatedAt();
+            $stock->save();
+        }
+    }
+
+    /**
+     * stocks_tags テーブルにデータを保存する
+     *
+     * @param int $stockId
+     * @param array $tags
+     */
+    public function saveStocksTags(int $stockId, array $tags)
+    {
+        foreach ($tags as $tag) {
+            $stockTag = new StockTag();
+            $stockTag->stock_id = $stockId;
+            $stockTag->name = $tag;
+            $stockTag->save();
+        }
+    }
+
+    /**
+     * stocks_tags テーブルからデータを削除する
+     *
+     * @param int $stockId
+     * @param array $tags
+     */
+    public function deleteStocksTags(int $stockId, array $tags)
+    {
+        $stockTag = StockTag::where('stock_id', $stockId)->whereIn('name', $tags);
+        $stockTag->delete();
     }
 }
