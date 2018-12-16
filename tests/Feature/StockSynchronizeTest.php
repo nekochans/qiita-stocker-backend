@@ -73,6 +73,15 @@ class StockSynchronizeTest extends AbstractTestCase
         $jsonResponse->assertHeader('X-Request-Id');
 
         // DBのテーブルに期待した形でデータが入っているか確認する
+        $this->assertDatabaseMissing('stocks', [
+            'id'                       => 1,
+            'account_id'               => $accountId,
+        ]);
+
+        $this->assertDatabaseMissing('stocks_tags', [
+            'id'                       => 1,
+        ]);
+
         $stockIdSequence = 2;
         $stockTagIdSequence = 2;
 
