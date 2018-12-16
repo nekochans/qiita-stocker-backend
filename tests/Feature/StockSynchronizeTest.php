@@ -61,9 +61,16 @@ class StockSynchronizeTest extends AbstractTestCase
 
         $firstPageStocks = $this->createStocksData(100);
         $nextPageStocks = $this->createStocksData(1);
-        $nextPageUpdateStock = $this->createUpdateStockData($updateStock);
+        $nextPageUpdateStock = $this->createStocksData(1, $updateStock);
+        $nextPageUpdateStock[0]['tags'] = [
+            0 => [
+                'name'     => 'insert.tag',
+                'versions' => [
+                ],
+            ]
+        ];
 
-        array_push($nextPageStocks, $nextPageUpdateStock);
+        $nextPageStocks = array_merge($nextPageStocks, $nextPageUpdateStock);
 
         $totalStocks = array_merge($firstPageStocks, $nextPageStocks);
 
@@ -173,11 +180,21 @@ class StockSynchronizeTest extends AbstractTestCase
      * ストックのデータを作成する
      *
      * @param int $count
+     * @param array $updateStock
      * @return array
      */
-    private function createStocksData(int $count) :array
+    private function createStocksData(int $count, array $updateStock = []) :array
     {
         $faker = Faker::create();
+        if (!$updateStock) {
+            $updateStock = [
+                'article_id'               => $faker->unique()->regexify('[a-z0-9]{20}'),
+                'title'                    => $faker->sentence,
+                'user_id'                  => $faker->userName,
+                'profile_image_url'        => $faker->url,
+                'article_created_at'       => $faker->dateTimeThisDecade->format('Y-m-d H:i:s')
+            ];
+        }
 
         $stocks = [];
         for ($i = 0; $i < $count; $i++) {
@@ -186,9 +203,9 @@ class StockSynchronizeTest extends AbstractTestCase
                 'body'            => '# Example',
                 'coediting'       => false,
                 'comments_count'  => 0,
-                'created_at'      => '2018-12-12T09:00:43+09:00',
+                'created_at'      => $updateStock['article_created_at'],
                 'group'           => null,
-                'id'              => $faker->unique()->regexify('[a-z0-9]{20}'),
+                'id'              => $updateStock['article_id'],
                 'likes_count'     => 50,
                 'private'         => false,
                 'reactions_count' => 0,
@@ -202,7 +219,7 @@ class StockSynchronizeTest extends AbstractTestCase
                             'versions' => [],
                             ],
                     ],
-                'title'      => $faker->sentence,
+                'title'      => $updateStock['title'],
                 'updated_at' => $faker->dateTimeThisDecade,
                 'url'        => 'https://qiita.com/yaotti/items/4bd431809afb1bb99e4f',
                 'user'       => [
@@ -211,14 +228,14 @@ class StockSynchronizeTest extends AbstractTestCase
                         'followees_count'     => 100,
                         'followers_count'     => 200,
                         'github_login_name'   => '',
-                        'id'                  => $faker->userName,
+                        'id'                  => $updateStock['user_id'],
                         'items_count'         => 300,
                         'linkedin_id'         => '',
                         'location'            => 'Tokyo, Japan',
                         'name'                => '',
                         'organization'        => 'test Inc',
                         'permanent_id'        => 1,
-                        'profile_image_url'   => $faker->url,
+                        'profile_image_url'   => $updateStock['profile_image_url'],
                         'team_only'           => false,
                         'twitter_screen_name' => '',
                         'website_url'         => '',
@@ -230,61 +247,6 @@ class StockSynchronizeTest extends AbstractTestCase
         }
 
         return $stocks;
-    }
-
-    /**
-     * ストックの更新用データを作成する
-     *
-     * @param array $updateStock
-     * @return array
-     */
-    private function createUpdateStockData(array $updateStock) :array
-    {
-        $faker = Faker::create();
-
-        $stock = [
-                'rendered_body'   => '<h1>Example</h1>',
-                'body'            => '# Example',
-                'coediting'       => false,
-                'comments_count'  => 0,
-                'created_at'      => $updateStock['article_created_at'],
-                'group'           => null,
-                'id'              => $updateStock['article_id'],
-                'likes_count'     => 50,
-                'private'         => false,
-                'reactions_count' => 0,
-                'tags'            => [
-                    0 => [
-                        'name'     => 'insert.tag',
-                        'versions' => [
-                        ],
-                    ]
-                ],
-                'title'      => $updateStock['title'],
-                'updated_at' => $faker->dateTimeThisDecade,
-                'url'        => 'https://qiita.com/yaotti/items/4bd431809afb1bb99e4f',
-                'user'       => [
-                    'description'         => 'Hello, world.',
-                    'facebook_id'         => '',
-                    'followees_count'     => 100,
-                    'followers_count'     => 200,
-                    'github_login_name'   => '',
-                    'id'                  => $updateStock['user_id'],
-                    'items_count'         => 300,
-                    'linkedin_id'         => '',
-                    'location'            => 'Tokyo, Japan',
-                    'name'                => '',
-                    'organization'        => 'test Inc',
-                    'permanent_id'        => 1,
-                    'profile_image_url'   => $updateStock['profile_image_url'],
-                    'team_only'           => false,
-                    'twitter_screen_name' => '',
-                    'website_url'         => '',
-                ],
-                'page_views_count' => null
-            ];
-
-        return $stock;
     }
 
     /**
