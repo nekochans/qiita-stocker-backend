@@ -6,16 +6,21 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use GuzzleHttp\Client;
 use App\Eloquents\Stock;
 use App\Eloquents\Account;
 use App\Eloquents\Category;
 use App\Eloquents\StockTag;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Tests\CreatesApplication;
 use App\Eloquents\AccessToken;
 use App\Eloquents\CategoryName;
+
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
 use App\Eloquents\QiitaUserName;
+use GuzzleHttp\Handler\MockHandler;
 
 /**
  * Class AbstractTestCase
@@ -49,5 +54,24 @@ abstract class AbstractTestCase extends TestCase
         });
 
         parent::tearDown();
+    }
+
+    /**
+     * テスト用のモックを設定する
+     *
+     * @param $responses
+     */
+    protected function setMockGuzzle($responses)
+    {
+        app()->bind(Client::class, function () use ($responses) {
+            $mock = [];
+            foreach ($responses as $response) {
+                $mock[] = new Response($response[0], $response[1] ?? [], $response[2] ?? null);
+            }
+            $mock = new MockHandler($mock);
+            $handler = HandlerStack::create($mock);
+
+            return new Client(['handler' => $handler]);
+        });
     }
 }

@@ -74,13 +74,15 @@ class StockSynchronizeTest extends AbstractTestCase
 
         $totalStocks = array_merge($firstPageStocks, $nextPageStocks);
 
-        $this->exportMockDataFile($firstPageStocks, 'StockSynchronizeTestMockFirst.json');
-        $this->exportMockDataFile($nextPageStocks, 'StockSynchronizeTestMockNext.json');
+        $mockData = [
+            [200, ['total-count' => '101'], json_encode($firstPageStocks)],
+            [200, ['total-count' => '101'], json_encode($nextPageStocks)]
+        ];
+        $this->setMockGuzzle($mockData);
 
         $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
         $accountId = 1;
         factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
-
 
         factory(Stock::class)->create([
             'account_id'               => $accountId,
@@ -166,17 +168,6 @@ class StockSynchronizeTest extends AbstractTestCase
     }
 
     /**
-     * Mockデータをファイルに出力する
-     *
-     * @param array $stocks
-     * @param string $fileName
-     */
-    private function exportMockDataFile(array $stocks, string $fileName)
-    {
-        file_put_contents(dirname(__FILE__) . '/' . $fileName, json_encode($stocks));
-    }
-
-    /**
      * ストックのデータを作成する
      *
      * @param int $count
@@ -247,6 +238,41 @@ class StockSynchronizeTest extends AbstractTestCase
         }
 
         return $stocks;
+    }
+
+    /**
+     * 異常系のテスト
+     * APIのレスポンスがエラーの場合、エラーとなること
+     */
+    public function testErrorApiFailure()
+    {
+        $errorResponse = [
+            'message' => 'Not found',
+            'type'    => 'not_found'
+            ];
+
+        $mockData = [
+            [404, [], json_encode($errorResponse)]
+        ];
+
+        $this->setMockGuzzle($mockData);
+
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
+
+        $jsonResponse = $this->put(
+            '/api/stocks',
+            [],
+            ['Authorization' => 'Bearer '.$loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 503;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => 'Service Unavailable']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
     }
 
     /**
