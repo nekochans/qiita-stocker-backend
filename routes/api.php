@@ -44,4 +44,6 @@ Route::middleware(['cors', 'xRequestId'])->group(function () {
     });
 
     Route::put('stocks', 'StockController@synchronize');
+
+    Route::get('stocks', 'StockController@index');
 });
