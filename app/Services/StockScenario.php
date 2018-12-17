@@ -13,6 +13,7 @@ use App\Models\Domain\LoginSession\LoginSessionEntity;
 use App\Models\Domain\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\LoginSession\LoginSessionRepository;
+use App\Models\Domain\Exceptions\ServiceUnavailableException;
 
 /**
  * Class StockScenario
@@ -73,8 +74,9 @@ class StockScenario
      * ストックを同期する
      *
      * @param array $params
+     * @throws ServiceUnavailableException
+     * @throws UnauthorizedException
      * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
-     * @throws \App\Models\Domain\Exceptions\UnauthorizedException
      */
     public function synchronize(array $params)
     {
@@ -92,7 +94,7 @@ class StockScenario
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         } catch (RequestException $e) {
-            // TODO QiitaAPIでエラーになった場合の処理を追加する
+            throw new ServiceUnavailableException();
         } catch (\PDOException $e) {
             \DB::rollBack();
             throw $e;
