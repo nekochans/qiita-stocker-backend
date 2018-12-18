@@ -59,9 +59,9 @@ class StockIndexTest extends AbstractTestCase
         ];
 
         $totalCount = 9;
-        $link = '<http://127.0.0.1/api/stocks?page=4&per_page=2>; rel="next"';
-        $link .= '<http://127.0.0.1/api/stocks?page=5&per_page=2>; rel="last"';
-        $link .= '<http://127.0.0.1/api/stocks?page=1&per_page=2>; rel="first"';
+        $link = '<http://127.0.0.1/api/stocks?page=4&per_page=2>; rel="next",';
+        $link .= '<http://127.0.0.1/api/stocks?page=5&per_page=2>; rel="last",';
+        $link .= '<http://127.0.0.1/api/stocks?page=1&per_page=2>; rel="first",';
         $link .= '<http://127.0.0.1/api/stocks?page=2&per_page=2>; rel="prev"';
 
         // 実際にJSONResponseに期待したデータが含まれているか確認する
