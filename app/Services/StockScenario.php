@@ -100,4 +100,67 @@ class StockScenario
             throw $e;
         }
     }
+
+    /**
+     * ストック一覧を取得する
+     *
+     * @param array $params
+     * @return array
+     * @throws UnauthorizedException
+     * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
+     */
+    public function index(array $params): array
+    {
+        try {
+            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
+
+            \DB::beginTransaction();
+
+            // TODO StockEntitiesを取得する
+            // TODO ストックの総数を取得する
+            // TODO Linkを作成する
+
+            \DB::commit();
+        } catch (ModelNotFoundException $e) {
+            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+        } catch (\PDOException $e) {
+            \DB::rollBack();
+            throw $e;
+        }
+
+        $stocks = [
+            [
+                'id'                       => 1,
+                'article_id'               => '1234567890abcdefghij',
+                'title'                    => 'タイトル',
+                'user_id'                  => 'test-user',
+                'profile_image_url'        => 'http://test.com/test-image.jpag',
+                'article_created_at'       => '2018-12-01 00:00:00.000000',
+                'tags'                     => ['laravel5.6', 'laravel', 'php']
+            ],
+            [
+                'id'                       => 2,
+                'article_id'               => '1234567890abcdefghij',
+                'title'                    => 'タイトル2',
+                'user_id'                  => 'test-user2',
+                'profile_image_url'        => 'http://test.com/test-image2.jpag',
+                'article_created_at'       => '2018-12-01 00:00:00.000000',
+                'tags'                     => ['laravel5.6', 'laravel', 'php']
+            ]
+        ];
+
+        $totalCount = 9;
+        $link = '<http://127.0.0.1/api/stocks?page=4&per_page=2>; rel="next",';
+        $link .= '<http://127.0.0.1/api/stocks?page=5&per_page=2>; rel="last",';
+        $link .= '<http://127.0.0.1/api/stocks?page=1&per_page=2>; rel="first",';
+        $link .= '<http://127.0.0.1/api/stocks?page=2&per_page=2>; rel="prev"';
+
+        $response = [
+            'stocks'     => $stocks,
+            'totalCount' => $totalCount,
+            'link'       => $link
+        ];
+
+        return $response;
+    }
 }
