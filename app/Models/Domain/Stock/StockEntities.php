@@ -79,7 +79,7 @@ class StockEntities
             }
         }
 
-        $saveStockValues = new StockValues(...$saveStockValueList);
+        $saveStockValues = new StockValues(...array_reverse($saveStockValueList));
         $stockRepository->save($accountId, $saveStockValues);
 
         $updateStockEntities = new StockEntities(...$updateStockEntityList);

@@ -51,12 +51,41 @@ class StockIndexTest extends AbstractTestCase
      */
     public function testSuccess()
     {
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 2;
+
+        factory(Account::class)->create();
+        factory(QiitaAccount::class)->create(['qiita_account_id' => 2, 'account_id' => $accountId]);
+        factory(QiitaUserName::class)->create(['account_id' => $accountId]);
+        factory(AccessToken::class)->create(['account_id' => $accountId]);
+        factory(LoginSession::class)->create(['account_id' => $accountId, 'id' => $loginSession]);
+        factory(Category::class)->create(['account_id' => $accountId]);
+        factory(CategoryName::class)->create(['category_id' => 2]);
+
+        $stockCount = 9;
+        $stockIdSequence = 2;
+        $stockList = $this->createStocks($stockCount, $stockIdSequence);
+
+        for ($i = 0; $i < $stockCount; $i++) {
+            factory(Stock::class)->create([
+                'account_id'               => $accountId,
+                'article_id'               => $stockList[$i]['article_id'],
+                'title'                    => $stockList[$i]['title'],
+                'user_id'                  => $stockList[$i]['user_id'],
+                'profile_image_url'        => $stockList[$i]['profile_image_url'],
+                'article_created_at'       => $stockList[$i]['article_created_at_object'],
+            ]);
+
+            for ($j = 0; $j < count($stockList[$i]['tags']); $j++) {
+                factory(StockTag::class)->create(['stock_id' => $stockIdSequence, 'name' => $stockList[$i]['tags'][$j]]);
+            }
+
+            unset($stockList[$i]['article_created_at_object']);
+            $stockIdSequence += 1;
+        }
+
         $page = 2;
         $perPage = 2;
-        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
-        $accountId = 1;
-
-        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
 
         $uri = sprintf(
             '/api/stocks?page=%d&per_page=%d',
@@ -69,39 +98,53 @@ class StockIndexTest extends AbstractTestCase
             ['Authorization' => 'Bearer ' . $loginSession]
         );
 
-        $stocks = [
-            [
-                'id'                       => 1,
-                'article_id'               => '1234567890abcdefghij',
-                'title'                    => 'タイトル',
-                'user_id'                  => 'test-user',
-                'profile_image_url'        => 'http://test.com/test-image.jpag',
-                'article_created_at'       => '2018-12-01 00:00:00.000000',
-                'tags'                     => ['laravel5.6', 'laravel', 'php']
-            ],
-            [
-                'id'                       => 2,
-                'article_id'               => '1234567890abcdefghij',
-                'title'                    => 'タイトル2',
-                'user_id'                  => 'test-user2',
-                'profile_image_url'        => 'http://test.com/test-image2.jpag',
-                'article_created_at'       => '2018-12-01 00:00:00.000000',
-                'tags'                     => ['laravel5.6', 'laravel', 'php']
-            ]
-        ];
+        $stockList = array_reverse($stockList);
+        $stockList = array_slice($stockList, ($page - 1) * $perPage, $perPage);
 
-        $totalCount = 9;
-        $link = '<http://127.0.0.1/api/stocks?page=4&per_page=2>; rel="next",';
-        $link .= '<http://127.0.0.1/api/stocks?page=5&per_page=2>; rel="last",';
-        $link .= '<http://127.0.0.1/api/stocks?page=1&per_page=2>; rel="first",';
-        $link .= '<http://127.0.0.1/api/stocks?page=2&per_page=2>; rel="prev"';
+        $link = sprintf('<http://127.0.0.1/api/stocks?page=3&per_page=%d>; rel="next", ', $perPage);
+        $link .= sprintf('<http://127.0.0.1/api/stocks?page=5&per_page=%d>; rel="last", ', $perPage);
+        $link .= sprintf('<http://127.0.0.1/api/stocks?page=1&per_page=%d>; rel="first", ', $perPage);
+        $link .= sprintf('<http://127.0.0.1/api/stocks?page=1&per_page=%d>; rel="prev"', $perPage);
 
         // 実際にJSONResponseに期待したデータが含まれているか確認する
-        $jsonResponse->assertJson($stocks);
+        $jsonResponse->assertJson($stockList);
         $jsonResponse->assertStatus(200);
         $jsonResponse->assertHeader('X-Request-Id');
         $jsonResponse->assertHeader('Link', $link);
-        $jsonResponse->assertHeader('Total-Count', $totalCount);
+        $jsonResponse->assertHeader('Total-Count', $stockCount);
+    }
+
+    /**
+     * ストックのデータを作成する
+     *
+     * @param int $count
+     * @param int $stockIdSequence
+     * @return array
+     */
+    private function createStocks(int $count, int $stockIdSequence) :array
+    {
+        $stocks = [];
+        for ($i = 0; $i < $count; $i++) {
+            $secondTag = $i + 1;
+
+            $articleCreatedAtObject = new \DateTime('2018-01-01 00:11:22');
+            $articleCreatedAtArray = (array)$articleCreatedAtObject;
+
+            $stock = [
+                'id'                        => $stockIdSequence,
+                'article_id'                => 'abcdefghij'. str_pad($i, 10, '0'),
+                'title'                     => 'title' . $i,
+                'user_id'                   => 'user-id-' . $i,
+                'profile_image_url'         => 'http://test.com/test-image-updated.jpag'. $i,
+                'article_created_at_object' => $articleCreatedAtObject,
+                'article_created_at'        => $articleCreatedAtArray,
+                'tags'                      => ['tag'. $i, 'tag'. $secondTag]
+            ];
+            array_push($stocks, $stock);
+            $stockIdSequence += 1;
+        }
+
+        return $stocks;
     }
 
     /**

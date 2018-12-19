@@ -143,7 +143,8 @@ class StockSynchronizeTest extends AbstractTestCase
         $stockTagIdSequence = 4;
 
         // ストックが追加されていることを確認
-        for ($i = 0; $i < count($totalStocks) - 1; $i++) {
+        $totalStocks = array_reverse($totalStocks);
+        for ($i = 1; $i < count($totalStocks); $i++) {
             $this->assertDatabaseHas('stocks', [
                 'id'                       => $stockIdSequence,
                 'account_id'               => $accountId,

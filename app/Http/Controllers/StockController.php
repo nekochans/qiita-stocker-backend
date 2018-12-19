@@ -63,8 +63,9 @@ class StockController extends Controller
         $sessionId = $request->bearerToken();
         $params = [
             'sessionId'    => $sessionId,
-            'page'         => $request->header('page'),
-            'perPage'      => $request->header('perPage')
+            'page'         => $request->query('page'),
+            'perPage'      => $request->query('per_page'),
+            'uri'          => env('APP_URL') . $request->getPathInfo()
         ];
 
         $response = $this->stockScenario->index($params);
