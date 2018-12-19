@@ -138,7 +138,7 @@ class StockScenario
                 'title'                    => $stockEntity->getStockValue()->getTitle(),
                 'user_id'                  => $stockEntity->getStockValue()->getUserId(),
                 'profile_image_url'        => $stockEntity->getStockValue()->getProfileImageUrl(),
-                'article_created_at'       => $stockEntity->getStockValue()->getArticleCreatedAt(),
+                'article_created_at'       => $stockEntity->getStockValue()->getArticleCreatedAt()->format('Y-m-d H:i:s.u'),
                 'tags'                     => $stockEntity->getStockValue()->getTags(),
             ];
 

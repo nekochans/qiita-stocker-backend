@@ -137,7 +137,7 @@ class StockIndexTest extends AbstractTestCase
                 'user_id'                   => 'user-id-' . $i,
                 'profile_image_url'         => 'http://test.com/test-image-updated.jpag'. $i,
                 'article_created_at_object' => $articleCreatedAtObject,
-                'article_created_at'        => $articleCreatedAtArray,
+                'article_created_at'        => $articleCreatedAtArray['date'],
                 'tags'                      => ['tag'. $i, 'tag'. $secondTag]
             ];
             array_push($stocks, $stock);
