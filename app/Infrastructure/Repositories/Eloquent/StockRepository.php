@@ -61,11 +61,21 @@ class StockRepository implements \App\Models\Domain\Stock\StockRepository
      * ストック一覧を取得する
      *
      * @param string $accountId
+     * @param null $limit
+     * @param int $offset
      * @return StockEntities
      */
-    public function search(string $accountId): StockEntities
+    public function searchByAccountId(string $accountId, $limit = null, $offset = 0): StockEntities
     {
-        $stocks = Stock::where('account_id', $accountId)->get();
+        if ($limit === null) {
+            $stocks = Stock::where('account_id', $accountId)->orderBy('id', 'desc')->get();
+        } else {
+            $stocks = Stock::where('account_id', $accountId)
+                ->orderBy('id', 'desc')
+                ->offset($offset)
+                ->limit($limit)
+                ->get();
+        }
 
         $stockEntityList = $stocks->map(function (Stock $stock): StockEntity {
             return $this->buildStockEntity($stock->toArray());
@@ -73,6 +83,17 @@ class StockRepository implements \App\Models\Domain\Stock\StockRepository
 
         $stockEntities = new StockEntities(...$stockEntityList->toArray());
         return $stockEntities;
+    }
+
+    /**
+     * ストック一覧の件数を取得する
+     *
+     * @param string $accountId
+     * @return int
+     */
+    public function getCountByAccountId(string $accountId): int
+    {
+        return Stock::where('account_id', $accountId)->count();
     }
 
     /**

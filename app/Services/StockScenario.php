@@ -7,7 +7,9 @@ namespace App\Services;
 
 use App\Models\Domain\QiitaApiRepository;
 use GuzzleHttp\Exception\RequestException;
+use App\Models\Domain\Stock\LinkHeaderValue;
 use App\Models\Domain\Stock\StockRepository;
+use App\Models\Domain\Stock\LinkHeaderService;
 use App\Models\Domain\Account\AccountRepository;
 use App\Models\Domain\LoginSession\LoginSessionEntity;
 use App\Models\Domain\Exceptions\UnauthorizedException;
@@ -87,7 +89,7 @@ class StockScenario
 
             \DB::beginTransaction();
 
-            $stockEntities = $this->stockRepository->search($accountEntity->getAccountId());
+            $stockEntities = $this->stockRepository->searchByAccountId($accountEntity->getAccountId());
             $stockEntities->synchronize($this->stockRepository, $stockValues, $accountEntity->getAccountId());
 
             \DB::commit();
@@ -99,5 +101,98 @@ class StockScenario
             \DB::rollBack();
             throw $e;
         }
+    }
+
+    /**
+     * ストック一覧を取得する
+     *
+     * @param array $params
+     * @return array
+     * @throws UnauthorizedException
+     * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
+     */
+    public function index(array $params): array
+    {
+        try {
+            // TODO page と per_page のバリデーション
+            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
+
+            $limit = $params['perPage'];
+            $offset = ($params['page'] - 1) * $limit;
+
+            $stockEntities = $this->stockRepository->searchByAccountId($accountEntity->getAccountId(), $limit, $offset);
+            $totalCount = $this->stockRepository->getCountByAccountId($accountEntity->getAccountId());
+        } catch (ModelNotFoundException $e) {
+            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+        } catch (\PDOException $e) {
+            throw $e;
+        }
+
+        $stockEntityList = $stockEntities->getStockEntities();
+        $stocks = [];
+
+        foreach ($stockEntityList as $stockEntity) {
+            $stock = [
+                'id'                       => $stockEntity->getId(),
+                'article_id'               => $stockEntity->getStockValue()->getArticleId(),
+                'title'                    => $stockEntity->getStockValue()->getTitle(),
+                'user_id'                  => $stockEntity->getStockValue()->getUserId(),
+                'profile_image_url'        => $stockEntity->getStockValue()->getProfileImageUrl(),
+                'article_created_at'       => $stockEntity->getStockValue()->getArticleCreatedAt(),
+                'tags'                     => $stockEntity->getStockValue()->getTags(),
+            ];
+
+            array_push($stocks, $stock);
+        }
+
+        $linkList = $this->buildLinkHeaderList($params['uri'], $params['page'], $params['perPage'], $totalCount);
+        $link = implode(', ', $linkList);
+
+        $response = [
+            'stocks'     => $stocks,
+            'totalCount' => $totalCount,
+            'link'       => $link
+        ];
+
+        return $response;
+    }
+
+    /**
+     * Linkヘッダーのリストを作成する
+     *
+     * @param string $uriBase
+     * @param int $page
+     * @param int $perPage
+     * @param int $totalCount
+     * @return array
+     */
+    private function buildLinkHeaderList(string $uriBase, int $page, int $perPage, int $totalCount): array
+    {
+        $totalPage = ceil($totalCount / $perPage);
+        $links = [];
+
+        if (LinkHeaderService::hasNextPage($page, $totalPage)) {
+            $nextPage = $page + 1;
+            $nextLinkHeaderValue = new LinkHeaderValue($uriBase, $nextPage, $perPage, 'next');
+            $links[] = $nextLinkHeaderValue->buildLink();
+        }
+
+        if (LinkHeaderService::hasLastPage($page, $totalPage)) {
+            $lastLinkHeaderValue = new LinkHeaderValue($uriBase, $totalPage, $perPage, 'last');
+            $links[] = $lastLinkHeaderValue->buildLink();
+        }
+
+        if (LinkHeaderService::hasFirstPage($page)) {
+            $firstLinkHeaderValue = new LinkHeaderValue($uriBase, 1, $perPage, 'first');
+            $links[] = $firstLinkHeaderValue->buildLink();
+        }
+
+        if (LinkHeaderService::hasPrevPage($page)) {
+            $prevPage = $page - 1;
+            $prevLinkHeaderValue = new LinkHeaderValue($uriBase, $prevPage, $perPage, 'prev');
+            $links[] = $prevLinkHeaderValue->buildLink();
+        }
+
+        return $links;
     }
 }

@@ -23,9 +23,19 @@ interface StockRepository
      * ストック一覧を取得する
      *
      * @param string $accountId
+     * @param null $limit
+     * @param int $offset
      * @return StockEntities
      */
-    public function search(string $accountId): StockEntities;
+    public function searchByAccountId(string $accountId, $limit = null, $offset = 0): StockEntities;
+
+    /**
+     * ストック一覧の件数を取得する
+     *
+     * @param string $accountId
+     * @return int
+     */
+    public function getCountByAccountId(string $accountId): int;
 
     /**
      * ストックを削除する
