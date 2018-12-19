@@ -127,9 +127,14 @@ class LoginSessionScenario
     {
         try {
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
+
+            \DB::beginTransaction();
+            $this->loginSessionRepository->destroy($params['sessionId']);
+            \DB::commit();
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         } catch (\PDOException $e) {
+            \DB::rollBack();
             throw $e;
         }
     }

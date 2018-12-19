@@ -20,9 +20,16 @@ interface LoginSessionRepository
     public function find(string $sessionId): LoginSessionEntity;
 
     /**
-     * ログインセッションを削除する
+     * アカウントに紐づくログインセッションを削除する
      *
      * @param string $accountId
      */
-    public function destroyLoginSessions(string $accountId);
+    public function destroyByAccountId(string $accountId);
+
+    /**
+     * ログインセッションを削除する
+     *
+     * @param string $sessionId
+     */
+    public function destroy(string $sessionId);
 }

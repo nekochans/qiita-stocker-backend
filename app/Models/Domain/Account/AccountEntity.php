@@ -153,7 +153,7 @@ class AccountEntity
         CategoryRepository $categoryRepository
     ) {
         $categoryRepository->destroyAll($this->getAccountId());
-        $loginSessionRepository->destroyLoginSessions($this->getAccountId());
+        $loginSessionRepository->destroyByAccountId($this->getAccountId());
         $accountRepository->destroyAccessToken($this->getAccountId());
         $accountRepository->destroyQiitaAccount($this->getAccountId());
         $accountRepository->destroyQiitaUserName($this->getAccountId());
