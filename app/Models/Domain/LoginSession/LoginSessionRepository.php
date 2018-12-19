@@ -12,6 +12,14 @@ namespace App\Models\Domain\LoginSession;
 interface LoginSessionRepository
 {
     /**
+     * ログインセッションを保存する
+     *
+     * @param LoginSessionEntity $loginSessionEntity
+     * @return mixed
+     */
+    public function save(LoginSessionEntity $loginSessionEntity);
+
+    /**
      * LoginSessionEntityを取得する
      *
      * @param string $sessionId

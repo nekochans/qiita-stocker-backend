@@ -23,14 +23,6 @@ interface AccountRepository
     public function create(QiitaAccountValue $qiitaAccountValue): AccountEntity;
 
     /**
-     * ログインセッションを保存する
-     *
-     * @param LoginSessionEntity $loginSessionEntity
-     * @return mixed
-     */
-    public function saveLoginSession(LoginSessionEntity $loginSessionEntity);
-
-    /**
      * パーマネントIDからアカウントを取得する
      *
      * @param QiitaAccountValue $qiitaAccountValue

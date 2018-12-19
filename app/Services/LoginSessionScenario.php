@@ -100,8 +100,7 @@ class LoginSessionScenario
             $loginSessionEntityBuilder->setExpiredOn($expiredOn);
             $loginSessionEntity = $loginSessionEntityBuilder->build();
 
-
-            $this->accountRepository->saveLoginSession($loginSessionEntity);
+            $this->loginSessionRepository->save($loginSessionEntity);
 
             \DB::commit();
         } catch (\PDOException $e) {

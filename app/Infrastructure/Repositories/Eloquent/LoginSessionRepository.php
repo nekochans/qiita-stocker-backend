@@ -16,6 +16,22 @@ use App\Models\Domain\LoginSession\LoginSessionEntityBuilder;
 class LoginSessionRepository implements \App\Models\Domain\LoginSession\LoginSessionRepository
 {
     /**
+     * ログインセッションを保存する
+     *
+     * @param LoginSessionEntity $loginSessionEntity
+     * @return mixed
+     */
+    public function save(LoginSessionEntity $loginSessionEntity)
+    {
+        $loginSession = new LoginSession();
+        $loginSession->id = $loginSessionEntity->getSessionId();
+        $loginSession->account_id = $loginSessionEntity->getAccountId();
+        $loginSession->expired_on = $loginSessionEntity->getExpiredOn();
+
+        $loginSession->save();
+    }
+
+    /**
      * LoginSessionEntityを取得する
      *
      * @param string $sessionId
