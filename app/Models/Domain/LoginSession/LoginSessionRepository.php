@@ -12,6 +12,14 @@ namespace App\Models\Domain\LoginSession;
 interface LoginSessionRepository
 {
     /**
+     * ログインセッションを保存する
+     *
+     * @param LoginSessionEntity $loginSessionEntity
+     * @return mixed
+     */
+    public function save(LoginSessionEntity $loginSessionEntity);
+
+    /**
      * LoginSessionEntityを取得する
      *
      * @param string $sessionId
@@ -20,9 +28,16 @@ interface LoginSessionRepository
     public function find(string $sessionId): LoginSessionEntity;
 
     /**
-     * ログインセッションを削除する
+     * アカウントに紐づくログインセッションを削除する
      *
      * @param string $accountId
      */
-    public function destroyLoginSessions(string $accountId);
+    public function destroyByAccountId(string $accountId);
+
+    /**
+     * ログインセッションを削除する
+     *
+     * @param string $sessionId
+     */
+    public function destroy(string $sessionId);
 }

@@ -52,9 +52,18 @@ class LoginSessionController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
+     * @throws \App\Models\Domain\Exceptions\UnauthorizedException
      */
     public function destroy(Request $request): JsonResponse
     {
+        $sessionId = $request->bearerToken();
+        $params = [
+            'sessionId' => $sessionId
+        ];
+
+        $this->loginSessionScenario->destroy($params);
+
         return response()->json()->setStatusCode(204);
     }
 }

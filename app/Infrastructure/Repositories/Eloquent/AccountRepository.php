@@ -96,22 +96,6 @@ class AccountRepository implements \App\Models\Domain\Account\AccountRepository
     }
 
     /**
-     * ログインセッションを保存する
-     *
-     * @param LoginSessionEntity $loginSessionEntity
-     * @return mixed
-     */
-    public function saveLoginSession(LoginSessionEntity $loginSessionEntity)
-    {
-        $loginSession = new LoginSession();
-        $loginSession->id = $loginSessionEntity->getSessionId();
-        $loginSession->account_id = $loginSessionEntity->getAccountId();
-        $loginSession->expired_on = $loginSessionEntity->getExpiredOn();
-
-        $loginSession->save();
-    }
-
-    /**
      * パーマネントIDからアカウントを取得する
      *
      * @param QiitaAccountValue $qiitaAccountValue

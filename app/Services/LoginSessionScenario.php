@@ -11,7 +11,11 @@ use App\Models\Domain\Account\AccountEntity;
 use App\Models\Domain\QiitaAccountValueBuilder;
 use App\Models\Domain\Account\AccountRepository;
 use App\Models\Domain\Exceptions\ValidationException;
+use App\Models\Domain\LoginSession\LoginSessionEntity;
+use App\Models\Domain\Exceptions\UnauthorizedException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\Exceptions\AccountNotFoundException;
+use App\Models\Domain\LoginSession\LoginSessionRepository;
 use App\Models\Domain\LoginSession\LoginSessionEntityBuilder;
 use App\Models\Domain\LoginSession\LoginSessionSpecification;
 
@@ -21,6 +25,8 @@ use App\Models\Domain\LoginSession\LoginSessionSpecification;
  */
 class LoginSessionScenario
 {
+    use Authentication;
+
     /**
      * AccountRepository
      *
@@ -29,12 +35,21 @@ class LoginSessionScenario
     private $accountRepository;
 
     /**
+     * LoginSessionRepository
+     *
+     * @var
+     */
+    private $loginSessionRepository;
+
+    /**
      * LoginSessionScenario constructor.
      * @param AccountRepository $accountRepository
+     * @param LoginSessionRepository $loginSessionRepository
      */
-    public function __construct(AccountRepository $accountRepository)
+    public function __construct(AccountRepository $accountRepository, LoginSessionRepository $loginSessionRepository)
     {
         $this->accountRepository = $accountRepository;
+        $this->loginSessionRepository = $loginSessionRepository;
     }
 
     /**
@@ -85,8 +100,7 @@ class LoginSessionScenario
             $loginSessionEntityBuilder->setExpiredOn($expiredOn);
             $loginSessionEntity = $loginSessionEntityBuilder->build();
 
-
-            $this->accountRepository->saveLoginSession($loginSessionEntity);
+            $this->loginSessionRepository->save($loginSessionEntity);
 
             \DB::commit();
         } catch (\PDOException $e) {
@@ -99,5 +113,28 @@ class LoginSessionScenario
         ];
 
         return $responseArray;
+    }
+
+    /**
+     * ログインセッションを削除する
+     *
+     * @param array $params
+     * @throws UnauthorizedException
+     * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
+     */
+    public function destroy(array $params)
+    {
+        try {
+            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
+
+            \DB::beginTransaction();
+            $this->loginSessionRepository->destroy($params['sessionId']);
+            \DB::commit();
+        } catch (ModelNotFoundException $e) {
+            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+        } catch (\PDOException $e) {
+            \DB::rollBack();
+            throw $e;
+        }
     }
 }
