@@ -51,6 +51,11 @@ class LoginSessionDestroyTest extends AbstractTestCase
         // 実際にJSONResponseに期待したデータが含まれているか確認する
         $jsonResponse->assertStatus(204);
         $jsonResponse->assertHeader('X-Request-Id');
+
+        // DBのテーブルに期待した形でデータが入っているか確認する
+        $this->assertDatabaseMissing('login_sessions', [
+            'id'   => $loginSession,
+        ]);
     }
 
     /**
