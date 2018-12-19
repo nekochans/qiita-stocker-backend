@@ -1,6 +1,6 @@
 <?php
 /**
- * LoginSessionTest
+ * LoginSessionCreateTest
  */
 
 namespace Tests\Feature;
@@ -13,10 +13,10 @@ use App\Eloquents\QiitaUserName;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
- * Class LoginSessionTest
+ * Class LoginSessionCreateTest
  * @package Tests\Feature
  */
-class LoginSessionTest extends AbstractTestCase
+class LoginSessionCreateTest extends AbstractTestCase
 {
     use RefreshDatabase;
 

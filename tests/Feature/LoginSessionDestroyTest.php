@@ -1,6 +1,6 @@
 <?php
 /**
- * LoginSessionDestroy
+ * LoginSessionDestroyTest
  */
 
 namespace Tests\Feature;
@@ -13,10 +13,10 @@ use App\Eloquents\QiitaUserName;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
- * Class LoginSessionDestroy
+ * Class LoginSessionDestroyTest
  * @package Tests\Feature
  */
-class LoginSessionDestroy extends AbstractTestCase
+class LoginSessionDestroyTest extends AbstractTestCase
 {
     use RefreshDatabase;
 
