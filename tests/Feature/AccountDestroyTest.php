@@ -63,7 +63,6 @@ class AccountDestroyTest extends AbstractTestCase
             '/api/accounts',
             [],
             ['Authorization' => 'Bearer '.$loginSession]
-
         );
 
         $jsonResponse->assertStatus(204);

@@ -29,6 +29,8 @@ Route::middleware(['cors', 'xRequestId'])->group(function () {
 
     Route::post('login-sessions', 'LoginSessionController@create');
 
+    Route::delete('login-sessions', 'LoginSessionController@destroy');
+
     Route::options('categories/{id?}', function () {
         return response()->json();
     });
