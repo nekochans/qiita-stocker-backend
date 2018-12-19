@@ -46,4 +46,15 @@ class LoginSessionController extends Controller
 
         return response()->json($sessionId)->setStatusCode(201);
     }
+
+    /**
+     * ログインセッションを削除する
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function destroy(Request $request): JsonResponse
+    {
+        return response()->json()->setStatusCode(204);
+    }
 }
