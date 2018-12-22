@@ -7,13 +7,11 @@ namespace App\Infrastructure\Repositories\Eloquent;
 
 use App\Eloquents\Account;
 use App\Eloquents\AccessToken;
-use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
 use App\Eloquents\QiitaUserName;
 use App\Models\Domain\QiitaAccountValue;
 use App\Models\Domain\Account\AccountEntity;
 use App\Models\Domain\Account\AccountEntityBuilder;
-use App\Models\Domain\LoginSession\LoginSessionEntity;
 
 /**
  * Class AccountRepository
