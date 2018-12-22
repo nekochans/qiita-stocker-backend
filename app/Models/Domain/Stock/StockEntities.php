@@ -123,4 +123,14 @@ class StockEntities
             $stockRepository->saveStocksTags($stockEntity->getId(), $insertTagList);
         }
     }
+
+    /**
+     * ストック取得時のバリデーションエラーの場合に使用するメッセージ
+     *
+     * @return string
+     */
+    public static function searchStocksErrorMessage(): string
+    {
+        return '不正なリクエストが行われました。';
+    }
 }

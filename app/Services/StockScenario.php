@@ -6,11 +6,14 @@
 namespace App\Services;
 
 use App\Models\Domain\QiitaApiRepository;
+use App\Models\Domain\Stock\StockEntities;
 use GuzzleHttp\Exception\RequestException;
 use App\Models\Domain\Stock\LinkHeaderValue;
 use App\Models\Domain\Stock\StockRepository;
 use App\Models\Domain\Stock\LinkHeaderService;
+use App\Models\Domain\Stock\StockSpecification;
 use App\Models\Domain\Account\AccountRepository;
+use App\Models\Domain\Exceptions\ValidationException;
 use App\Models\Domain\LoginSession\LoginSessionEntity;
 use App\Models\Domain\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -109,12 +112,17 @@ class StockScenario
      * @param array $params
      * @return array
      * @throws UnauthorizedException
+     * @throws ValidationException
      * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
      */
     public function index(array $params): array
     {
         try {
-            // TODO page と per_page のバリデーション
+            $errors = StockSpecification::canSearchStocks($params);
+            if ($errors) {
+                throw new ValidationException(StockEntities::searchStocksErrorMessage(), $errors);
+            }
+
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
 
             $limit = $params['perPage'];

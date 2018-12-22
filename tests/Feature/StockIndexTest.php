@@ -211,4 +211,108 @@ class StockIndexTest extends AbstractTestCase
         $jsonResponse->assertStatus($expectedErrorCode);
         $jsonResponse->assertHeader('X-Request-Id');
     }
+
+    /**
+     * 異常系のテスト
+     * ストック取得時のクエリパラメータ page のバリデーション
+     *
+     * @param $page
+     * @dataProvider pageProvider
+     */
+    public function testErrorPageValidation($page)
+    {
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId]);
+
+        $uri = sprintf(
+            '/api/stocks?page=%s&per_page=%d',
+            $page,
+            2
+        );
+
+        $jsonResponse = $this->get(
+            $uri,
+            ['Authorization' => 'Bearer ' . $loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 422;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
+    }
+
+    /**
+     * page のデータプロバイダ
+     *
+     * @return array
+     */
+    public function pageProvider()
+    {
+        return [
+            'emptyString'        => [''],
+            'null'               => [null],
+            'string'             => ['a'],
+            'symbol'             => ['1/'],
+            'multiByte'          => ['１'],
+            'negativeNumber'     => [-1],
+            'double'             => [1.1],
+            'lessThanMin'        => [0],
+            'greaterThanMax'     => [101],
+        ];
+    }
+
+    /**
+     * 異常系のテスト
+     * ストック取得時のクエリパラメータ perPage のバリデーション
+     *
+     * @param $perPage
+     * @dataProvider perPageProvider
+     */
+    public function testErrorPerPageValidation($perPage)
+    {
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId]);
+
+        $uri = sprintf(
+            '/api/stocks?page=%d&per_page=%s',
+            1,
+            $perPage
+        );
+
+        $jsonResponse = $this->get(
+            $uri,
+            ['Authorization' => 'Bearer ' . $loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 422;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
+    }
+
+    /**
+     * perPage のデータプロバイダ
+     *
+     * @return array
+     */
+    public function perPageProvider()
+    {
+        return [
+            'emptyString'        => [''],
+            'null'               => [null],
+            'string'             => ['a'],
+            'symbol'             => ['1;'],
+            'multiByte'          => ['１'],
+            'negativeNumber'     => [-1],
+            'double'             => [1.1],
+            'lessThanMin'        => [0],
+            'greaterThanMax'     => [101],
+        ];
+    }
 }
