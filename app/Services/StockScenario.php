@@ -112,6 +112,7 @@ class StockScenario
      *
      * @param array $params
      * @return array
+     * @throws ServiceUnavailableException
      * @throws UnauthorizedException
      * @throws ValidationException
      * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
@@ -129,6 +130,8 @@ class StockScenario
             $fetchStocksValue = $this->qiitaApiRepository->fetchStock($accountEntity->getUserName(), $params['page'], $params['perPage']);
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+        } catch (RequestException $e) {
+            throw new ServiceUnavailableException();
         } catch (\PDOException $e) {
             throw $e;
         }

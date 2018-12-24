@@ -179,6 +179,43 @@ class StockIndexTest extends AbstractTestCase
 
     /**
      * 異常系のテスト
+     * APIのレスポンスがエラーの場合、エラーとなること
+     */
+    public function testErrorApiFailure()
+    {
+        $errorResponse = [
+            'message' => 'Not found',
+            'type'    => 'not_found'
+        ];
+
+        $mockData = [[404, [], json_encode($errorResponse)]];
+        $this->setMockGuzzle($mockData);
+
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
+
+        $uri = sprintf(
+            '/api/stocks?page=%d&per_page=%d',
+            1,
+            20
+        );
+
+        $jsonResponse = $this->get(
+            $uri,
+            ['Authorization' => 'Bearer ' . $loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 503;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => 'Service Unavailable']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
+    }
+
+    /**
+     * 異常系のテスト
      * Authorizationが存在しない場合エラーとなること
      */
     public function testErrorLoginSessionNull()
