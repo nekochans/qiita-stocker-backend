@@ -83,28 +83,29 @@ class StockScenario
      * @throws UnauthorizedException
      * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
      */
-    public function synchronize(array $params)
-    {
-        try {
-            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
-
-            $stockValues = $this->qiitaApiRepository->fetchStock($accountEntity->getUserName());
-
-            \DB::beginTransaction();
-
-            $stockEntities = $this->stockRepository->searchByAccountId($accountEntity->getAccountId());
-            $stockEntities->synchronize($this->stockRepository, $stockValues, $accountEntity->getAccountId());
-
-            \DB::commit();
-        } catch (ModelNotFoundException $e) {
-            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
-        } catch (RequestException $e) {
-            throw new ServiceUnavailableException();
-        } catch (\PDOException $e) {
-            \DB::rollBack();
-            throw $e;
-        }
-    }
+    // TODO 削除する
+//    public function synchronize(array $params)
+//    {
+//        try {
+//            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
+//
+//            $stockValues = $this->qiitaApiRepository->fetchStock($accountEntity->getUserName());
+//
+//            \DB::beginTransaction();
+//
+//            $stockEntities = $this->stockRepository->searchByAccountId($accountEntity->getAccountId());
+//            $stockEntities->synchronize($this->stockRepository, $stockValues, $accountEntity->getAccountId());
+//
+//            \DB::commit();
+//        } catch (ModelNotFoundException $e) {
+//            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+//        } catch (RequestException $e) {
+//            throw new ServiceUnavailableException();
+//        } catch (\PDOException $e) {
+//            \DB::rollBack();
+//            throw $e;
+//        }
+//    }
 
     /**
      * ストック一覧を取得する
@@ -118,47 +119,42 @@ class StockScenario
     public function index(array $params): array
     {
         try {
-            $errors = StockSpecification::canSearchStocks($params);
+            $errors = StockSpecification::canfetchStocks($params);
             if ($errors) {
                 throw new ValidationException(StockEntities::searchStocksErrorMessage(), $errors);
             }
 
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
 
-            $limit = $params['perPage'];
-            $offset = ($params['page'] - 1) * $limit;
-
-            $stockEntities = $this->stockRepository->searchByAccountId($accountEntity->getAccountId(), $limit, $offset);
-            $totalCount = $this->stockRepository->getCountByAccountId($accountEntity->getAccountId());
+            $fetchResponse = $this->qiitaApiRepository->fetchStock($accountEntity->getUserName(), $params['page'], $params['perPage']);
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         } catch (\PDOException $e) {
             throw $e;
         }
 
-        $stockEntityList = $stockEntities->getStockEntities();
+        $stockValueList = $fetchResponse['stockValues']->getStockValues();
         $stocks = [];
 
-        foreach ($stockEntityList as $stockEntity) {
+        foreach ($stockValueList as $stockValue) {
             $stock = [
-                'id'                       => $stockEntity->getId(),
-                'article_id'               => $stockEntity->getStockValue()->getArticleId(),
-                'title'                    => $stockEntity->getStockValue()->getTitle(),
-                'user_id'                  => $stockEntity->getStockValue()->getUserId(),
-                'profile_image_url'        => $stockEntity->getStockValue()->getProfileImageUrl(),
-                'article_created_at'       => $stockEntity->getStockValue()->getArticleCreatedAt()->format('Y-m-d H:i:s.u'),
-                'tags'                     => $stockEntity->getStockValue()->getTags(),
+                'article_id'               => $stockValue->getArticleId(),
+                'title'                    => $stockValue->getTitle(),
+                'user_id'                  => $stockValue->getUserId(),
+                'profile_image_url'        => $stockValue->getProfileImageUrl(),
+                'article_created_at'       => $stockValue->getArticleCreatedAt()->format('Y-m-d H:i:s.u'),
+                'tags'                     => $stockValue->getTags(),
             ];
 
             array_push($stocks, $stock);
         }
 
-        $linkList = $this->buildLinkHeaderList($params['uri'], $params['page'], $params['perPage'], $totalCount);
+        $linkList = $this->buildLinkHeaderList($params['uri'], $params['page'], $params['perPage'], $fetchResponse['totalCount']);
         $link = implode(', ', $linkList);
 
         $response = [
             'stocks'     => $stocks,
-            'totalCount' => $totalCount,
+            'totalCount' => $fetchResponse['totalCount'],
             'link'       => $link
         ];
 

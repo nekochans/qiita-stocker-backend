@@ -19,28 +19,18 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
      * ストック一覧を取得する
      *
      * @param string $qiitaUserName
-     * @return StockValues
+     * @param int $page
+     * @param int $perPage
+     * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function fetchStock(string $qiitaUserName): StockValues
+    public function fetchStock(string $qiitaUserName, int $page, int $perPage): array
     {
-        $firstPage = 1;
-        $perPage = 100;
-        $response = $this->requestToStockApi($qiitaUserName, $firstPage, $perPage);
+        $response = $this->requestToStockApi($qiitaUserName, $page, $perPage);
 
         $responseArray = json_decode($response->getBody());
 
         $stockTotalCount = $response->getHeader('total-count');
-        $requestTotalCount = ceil($stockTotalCount[0] / $perPage);
-
-        for ($nextPage = $firstPage + 1; $nextPage <= $requestTotalCount; $nextPage++) {
-            $response = $this->requestToStockApi($qiitaUserName, $nextPage, $perPage);
-
-            $stockList = json_decode($response->getBody());
-            foreach ($stockList as $stock) {
-                array_push($responseArray, $stock);
-            }
-        }
 
         $stockValues = [];
         foreach ($responseArray as $stock) {
@@ -48,7 +38,14 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
             array_push($stockValues, $stockValue);
         }
 
-        return new StockValues(...$stockValues);
+        $stockValues = new StockValues(...$stockValues);
+
+        $response = [
+            'stockValues' => $stockValues,
+            'totalCount'  => $stockTotalCount[0]
+        ];
+
+        return $response;
     }
 
     /**
