@@ -17,7 +17,7 @@ class StockSpecification
      * @param array $requestArray
      * @return array
      */
-    public static function canSearchStocks(array $requestArray): array
+    public static function canfetchStocks(array $requestArray): array
     {
         $validator = \Validator::make($requestArray, [
             'page'       => 'required|integer|min:1|max:100',

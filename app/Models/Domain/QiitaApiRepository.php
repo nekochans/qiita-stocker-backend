@@ -5,7 +5,7 @@
 
 namespace App\Models\Domain;
 
-use App\Models\Domain\Stock\StockValues;
+use App\Models\Domain\Stock\FetchStockValues;
 
 /**
  * Interface QiitaApiRepository
@@ -17,7 +17,9 @@ interface QiitaApiRepository
      * ストック一覧を取得する
      *
      * @param string $qiitaUserName
-     * @return StockValues
+     * @param int $page
+     * @param int $perPage
+     * @return FetchStockValues
      */
-    public function fetchStock(string $qiitaUserName): StockValues;
+    public function fetchStock(string $qiitaUserName, int $page, int $perPage): FetchStockValues;
 }
