@@ -126,14 +126,14 @@ class StockScenario
 
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
 
-            $fetchResponse = $this->qiitaApiRepository->fetchStock($accountEntity->getUserName(), $params['page'], $params['perPage']);
+            $fetchStocksValue = $this->qiitaApiRepository->fetchStock($accountEntity->getUserName(), $params['page'], $params['perPage']);
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         } catch (\PDOException $e) {
             throw $e;
         }
 
-        $stockValueList = $fetchResponse['stockValues']->getStockValues();
+        $stockValueList = $fetchStocksValue->getStockValues();
         $stocks = [];
 
         foreach ($stockValueList as $stockValue) {
@@ -149,12 +149,12 @@ class StockScenario
             array_push($stocks, $stock);
         }
 
-        $linkList = $this->buildLinkHeaderList($params['uri'], $params['page'], $params['perPage'], $fetchResponse['totalCount']);
+        $linkList = $this->buildLinkHeaderList($params['uri'], $params['page'], $params['perPage'], $fetchStocksValue->getTotalCount());
         $link = implode(', ', $linkList);
 
         $response = [
             'stocks'     => $stocks,
-            'totalCount' => $fetchResponse['totalCount'],
+            'totalCount' => $fetchStocksValue->getTotalCount(),
             'link'       => $link
         ];
 

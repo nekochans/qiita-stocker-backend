@@ -6,7 +6,7 @@
 namespace App\Infrastructure\Repositories\Api;
 
 use App\Models\Domain\Stock\StockValue;
-use App\Models\Domain\Stock\StockValues;
+use App\Models\Domain\Stock\FetchStockValues;
 use App\Models\Domain\Stock\StockValueBuilder;
 
 /**
@@ -21,10 +21,10 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
      * @param string $qiitaUserName
      * @param int $page
      * @param int $perPage
-     * @return array
+     * @return FetchStockValues
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function fetchStock(string $qiitaUserName, int $page, int $perPage): array
+    public function fetchStock(string $qiitaUserName, int $page, int $perPage): FetchStockValues
     {
         $response = $this->requestToStockApi($qiitaUserName, $page, $perPage);
 
@@ -38,14 +38,7 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
             array_push($stockValues, $stockValue);
         }
 
-        $stockValues = new StockValues(...$stockValues);
-
-        $response = [
-            'stockValues' => $stockValues,
-            'totalCount'  => $stockTotalCount[0]
-        ];
-
-        return $response;
+        return new FetchStockValues($stockTotalCount[0], ...$stockValues);
     }
 
     /**

@@ -5,6 +5,8 @@
 
 namespace App\Models\Domain;
 
+use App\Models\Domain\Stock\FetchStockValues;
+
 /**
  * Interface QiitaApiRepository
  * @package App\Models\Domain
@@ -17,7 +19,7 @@ interface QiitaApiRepository
      * @param string $qiitaUserName
      * @param int $page
      * @param int $perPage
-     * @return array
+     * @return FetchStockValues
      */
-    public function fetchStock(string $qiitaUserName, int $page, int $perPage): array;
+    public function fetchStock(string $qiitaUserName, int $page, int $perPage): FetchStockValues;
 }
