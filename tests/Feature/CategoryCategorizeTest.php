@@ -28,7 +28,7 @@ class CategoryCategorizeTest extends AbstractTestCase
         $jsonResponse = $this->postJson(
             '/api/categories/stocks',
             [
-                'categoryId' => $categoryId,
+                'id' => $categoryId,
                 'articleIds' => ['d210ddc2cb1bfeea9331','d210ddc2cb1bfeea9332','d210ddc2cb1bfeea9333']
             ],
             ['Authorization' => 'Bearer ' . $loginSession]
