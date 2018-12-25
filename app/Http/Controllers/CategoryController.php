@@ -123,8 +123,6 @@ class CategoryController extends Controller
         $params = array_merge($params, $requestArray);
         $this->categoryScenario->categorize($params);
 
-        // TODO シナリオクラス作成
-
         return response()->json()->setStatusCode(201);
     }
 }
