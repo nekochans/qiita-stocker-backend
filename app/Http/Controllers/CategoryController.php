@@ -100,4 +100,27 @@ class CategoryController extends Controller
 
         return response()->json($category)->setStatusCode(200);
     }
+
+
+    /**
+     * 指定されたカテゴリとストックのリレーションを作成する
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function categorize(Request $request): JsonResponse
+    {
+        $requestArray = $request->json()->all();
+
+        $sessionId = $request->bearerToken();
+        $params = [
+            'sessionId' => $sessionId
+        ];
+
+        $params = array_merge($params, $requestArray);
+
+        // TODO シナリオクラス作成
+
+        return response()->json()->setStatusCode(201);
+    }
 }
