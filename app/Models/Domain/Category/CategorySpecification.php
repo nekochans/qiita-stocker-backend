@@ -46,4 +46,22 @@ class CategorySpecification
         }
         return [];
     }
+
+    /**
+     * CategoryEntity が作成可能か確認する
+     *
+     * @param array $requestArray
+     * @return array
+     */
+    public static function canCreateCategoriesStocks(array $requestArray): array
+    {
+        $validator = \Validator::make($requestArray, [
+            'articleIds.*'   => 'required|regex:/^[0-9a-f]+$/|min:20|max:20'
+        ]);
+
+        if ($validator->fails()) {
+            return $validator->errors()->toArray();
+        }
+        return [];
+    }
 }

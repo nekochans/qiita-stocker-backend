@@ -16,9 +16,9 @@ use GuzzleHttp\Psr7\Response;
 use Tests\CreatesApplication;
 use App\Eloquents\AccessToken;
 use App\Eloquents\CategoryName;
-
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
+use App\Eloquents\CategoryStock;
 use App\Eloquents\QiitaUserName;
 use GuzzleHttp\Handler\MockHandler;
 
@@ -42,6 +42,7 @@ abstract class AbstractTestCase extends TestCase
         QiitaUserName::truncate();
         Category::truncate();
         CategoryName::truncate();
+        CategoryStock::truncate();
         Stock::truncate();
         StockTag::truncate();
         \DB::statement('SET FOREIGN_KEY_CHECKS=1');

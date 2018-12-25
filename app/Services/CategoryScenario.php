@@ -192,4 +192,50 @@ class CategoryScenario
 
         return $category;
     }
+
+    /**
+     * カテゴリとストックのリレーションを作成する
+     *
+     * @param array $params
+     * @throws CategoryNotFoundException
+     * @throws LoginSessionExpiredException
+     * @throws UnauthorizedException
+     * @throws ValidationException
+     */
+    public function categorize(array $params)
+    {
+        try {
+            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
+        } catch (ModelNotFoundException $e) {
+            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+        } catch (\PDOException $e) {
+            throw $e;
+        }
+
+        try {
+            $errors = CategorySpecification::canSetCategoryEntityId($params);
+            if ($errors) {
+                throw new ValidationException(CategoryEntity::categoryIdValidationErrorMessage(), $errors);
+            }
+
+            $errors = CategorySpecification::canCreateCategoriesStocks($params);
+            if ($errors) {
+                throw new ValidationException(CategoryEntity::createCategoriesStocksValidationErrorMessage(), $errors);
+            }
+
+            $categoryEntity = $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
+
+            \DB::beginTransaction();
+
+            // TODO カテゴリIDとarticleIDの組み合わせが存在しなかった場合、リレーションを作成する
+            $this->categoryRepository->createCategoriesStocks($categoryEntity, $params['articleIds']);
+
+            \DB::commit();
+        } catch (ModelNotFoundException $e) {
+            throw new CategoryNotFoundException(CategoryEntity::categoryNotFoundMessage());
+        } catch (\PDOException $e) {
+            \DB::rollBack();
+            throw $e;
+        }
+    }
 }

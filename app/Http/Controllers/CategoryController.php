@@ -107,6 +107,10 @@ class CategoryController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws \App\Models\Domain\Exceptions\CategoryNotFoundException
+     * @throws \App\Models\Domain\Exceptions\UnauthorizedException
+     * @throws \App\Models\Domain\Exceptions\ValidationException
+     * @throws \App\Models\Domain\exceptions\LoginSessionExpiredException
      */
     public function categorize(Request $request): JsonResponse
     {
@@ -118,8 +122,7 @@ class CategoryController extends Controller
         ];
 
         $params = array_merge($params, $requestArray);
-
-        // TODO シナリオクラス作成
+        $this->categoryScenario->categorize($params);
 
         return response()->json()->setStatusCode(201);
     }

@@ -7,6 +7,7 @@ namespace App\Infrastructure\Repositories\Eloquent;
 
 use App\Eloquents\Category;
 use App\Eloquents\CategoryName;
+use App\Eloquents\CategoryStock;
 use App\Models\Domain\Account\AccountEntity;
 use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Category\CategoryEntities;
@@ -139,7 +140,6 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
         return $this->buildCategoryEntity($params);
     }
 
-
     /**
      * カテゴリ名を更新する
      *
@@ -152,5 +152,21 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
         $categoryName->name = $categoryEntity->getCategoryNameValue()->getName();
 
         $categoryName->save();
+    }
+
+    /**
+     * カテゴリとストックのリレーションを作成する
+     *
+     * @param CategoryEntity $categoryEntity
+     * @param array $articleIdList
+     */
+    public function createCategoriesStocks(CategoryEntity $categoryEntity, array $articleIdList)
+    {
+        foreach ($articleIdList as $articleId) {
+            $categoryStock = new CategoryStock();
+            $categoryStock->category_id = $categoryEntity->getId();
+            $categoryStock->article_id = $articleId;
+            $categoryStock->save();
+        }
     }
 }
