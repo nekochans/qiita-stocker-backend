@@ -52,4 +52,12 @@ interface CategoryRepository
      * @param CategoryEntity $categoryEntity
      */
     public function updateName(CategoryEntity $categoryEntity);
+
+    /**
+     * カテゴリとストックのリレーションを作成する
+     *
+     * @param CategoryEntity $categoryEntity
+     * @param array $articleIdList
+     */
+    public function createCategoriesStocks(CategoryEntity $categoryEntity, array $articleIdList);
 }
