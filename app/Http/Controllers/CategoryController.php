@@ -109,6 +109,7 @@ class CategoryController extends Controller
      * @return JsonResponse
      * @throws \App\Models\Domain\Exceptions\CategoryNotFoundException
      * @throws \App\Models\Domain\Exceptions\UnauthorizedException
+     * @throws \App\Models\Domain\Exceptions\ValidationException
      * @throws \App\Models\Domain\exceptions\LoginSessionExpiredException
      */
     public function categorize(Request $request): JsonResponse

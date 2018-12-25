@@ -200,6 +200,7 @@ class CategoryScenario
      * @throws CategoryNotFoundException
      * @throws LoginSessionExpiredException
      * @throws UnauthorizedException
+     * @throws ValidationException
      */
     public function categorize(array $params)
     {
@@ -212,7 +213,10 @@ class CategoryScenario
         }
 
         try {
-            // TODO idのバリデーション
+            $errors = CategorySpecification::canSetCategoryEntityId($params);
+            if ($errors) {
+                throw new ValidationException(CategoryEntity::categoryIdValidationErrorMessage(), $errors);
+            }
             // TODO articleIdsのバリデーション
             $categoryEntity = $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
 

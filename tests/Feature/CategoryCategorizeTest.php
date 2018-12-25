@@ -201,4 +201,54 @@ class CategoryCategorizeTest extends AbstractTestCase
         $jsonResponse->assertStatus($expectedErrorCode);
         $jsonResponse->assertHeader('X-Request-Id');
     }
+
+    /**
+     * 異常系のテスト
+     * カテゴリ更新時のカテゴリIDのバリデーション
+     *
+     * @param $categoryId
+     * @dataProvider categoryIdProvider
+     */
+    public function testErrorCategoryIdValidation($categoryId)
+    {
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
+
+        $articleIds = ['d210ddc2cb1bfeea9331','d210ddc2cb1bfeea9332','d210ddc2cb1bfeea9333'];
+        $jsonResponse = $this->postJson(
+            '/api/categories/stocks',
+            [
+                'id'         => $categoryId,
+                'articleIds' => $articleIds
+            ],
+            ['Authorization' => 'Bearer ' . $loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 422;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
+    }
+
+    /**
+     * カテゴリIDのデータプロバイダ
+     *
+     * @return array
+     */
+    public function categoryIdProvider()
+    {
+        // カテゴリIDが設定されていない場合はルーティングされないので考慮しない
+        return [
+            'string'             => ['a'],
+            'symbol'             => ['1@'],
+            'multiByte'          => ['１'],
+            'negativeNumber'     => [-1],
+            'double'             => [1.1],
+            'lessThanMin'        => [0],
+            'greaterThanMax'     => [18446744073709551615],
+        ];
+    }
 }
