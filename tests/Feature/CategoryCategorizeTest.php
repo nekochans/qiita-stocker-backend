@@ -204,7 +204,7 @@ class CategoryCategorizeTest extends AbstractTestCase
 
     /**
      * 異常系のテスト
-     * カテゴリ更新時のカテゴリIDのバリデーション
+     * カテゴリIDのバリデーション
      *
      * @param $categoryId
      * @dataProvider categoryIdProvider
@@ -240,8 +240,10 @@ class CategoryCategorizeTest extends AbstractTestCase
      */
     public function categoryIdProvider()
     {
-        // カテゴリIDが設定されていない場合はルーティングされないので考慮しない
         return [
+            'emptyString'        => [''],
+            'null'               => [null],
+            'emptyArray'         => [[]],
             'string'             => ['a'],
             'symbol'             => ['1@'],
             'multiByte'          => ['１'],
@@ -249,6 +251,60 @@ class CategoryCategorizeTest extends AbstractTestCase
             'double'             => [1.1],
             'lessThanMin'        => [0],
             'greaterThanMax'     => [18446744073709551615],
+        ];
+    }
+
+    /**
+     * 異常系のテスト
+     * ArticleIDのバリデーション
+     *
+     * @param $articleId
+     * @dataProvider articleIdProvider
+     */
+    public function testErrorArticleIdValidation($articleId)
+    {
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
+
+        $articleIds = ['d210ddc2cb1bfeea9331'];
+        array_push($articleIds, $articleId);
+
+        \Log::debug($articleIds);
+
+        $jsonResponse = $this->postJson(
+            '/api/categories/stocks',
+            [
+                'id'         => 1,
+                'articleIds' => $articleIds
+            ],
+            ['Authorization' => 'Bearer ' . $loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 422;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
+    }
+
+    /**
+     * ArticleIDのデータプロバイダ
+     *
+     * @return array
+     */
+    public function articleIdProvider()
+    {
+        return [
+            'emptyString'             => [''],
+            'null'                    => [null],
+            'emptyArray'              => [[]],
+            'symbol'                  => ['a210ddc2cb1bfeea933@'],
+            'multiByte'               => ['１１１１１１１１１１１１１１１１１１１１'],
+            'tooShortLength'          => ['a210ddc2cb1bfeea933'],
+            'tooLongLength'           => ['a210ddc2cb1bfeea93311'],
+            'f-z'                     => ['gz10ddc2cb1bfeea9331']
         ];
     }
 }

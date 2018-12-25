@@ -217,7 +217,12 @@ class CategoryScenario
             if ($errors) {
                 throw new ValidationException(CategoryEntity::categoryIdValidationErrorMessage(), $errors);
             }
-            // TODO articleIdsのバリデーション
+
+            $errors = CategorySpecification::canCreateCategoriesStocks($params);
+            if ($errors) {
+                throw new ValidationException(CategoryEntity::createCategoriesStocksValidationErrorMessage(), $errors);
+            }
+
             $categoryEntity = $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
 
             \DB::beginTransaction();

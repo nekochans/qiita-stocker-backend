@@ -70,4 +70,14 @@ class CategoryEntity
     {
         return '不正なリクエストが行われました。';
     }
+
+    /**
+     * カテゴリが作成されていなかった場合に使用するメッセージ
+     *
+     * @return string
+     */
+    public static function createCategoriesStocksValidationErrorMessage(): string
+    {
+        return '不正なリクエストが行われました。';
+    }
 }
