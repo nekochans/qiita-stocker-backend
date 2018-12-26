@@ -52,6 +52,17 @@ class CategoryEntity
     }
 
     /**
+     * カテゴリが持つストックのリストを取得する
+     *
+     * @param CategoryRepository $categoryRepository
+     * @return array
+     */
+    public function searchHadStockList(CategoryRepository $categoryRepository): array
+    {
+        return $categoryRepository->searchCategoriesStocksByCategoryId($this);
+    }
+
+    /**
      * カテゴリIDのバリデーションエラー時に利用するメッセージ
      *
      * @return string

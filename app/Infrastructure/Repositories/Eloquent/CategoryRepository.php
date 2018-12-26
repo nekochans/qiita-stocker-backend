@@ -169,4 +169,21 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
             $categoryStock->save();
         }
     }
+
+    /**
+     * カテゴリとストックのリレーションを取得する
+     *
+     * @param CategoryEntity $categoryEntity
+     * @return array
+     */
+    public function searchCategoriesStocksByCategoryId(CategoryEntity $categoryEntity): array
+    {
+        $categoryStocks = CategoryStock::where('category_id', $categoryEntity->getId())->get();
+
+        $stockArticleIds = $categoryStocks->map(function (CategoryStock $categoryStock): string {
+            return $categoryStock->article_id;
+        });
+
+        return $stockArticleIds->toArray();
+    }
 }

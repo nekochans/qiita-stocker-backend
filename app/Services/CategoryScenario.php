@@ -225,10 +225,22 @@ class CategoryScenario
 
             $categoryEntity = $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
 
+            $stockArticleIdList = $categoryEntity->searchHadStockList($this->categoryRepository);
+
             \DB::beginTransaction();
 
-            // TODO カテゴリIDとarticleIDの組み合わせが存在しなかった場合、リレーションを作成する
-            $this->categoryRepository->createCategoriesStocks($categoryEntity, $params['articleIds']);
+            // TODO ArticleIDが他のカテゴリに紐づいている場合の処理を追加
+
+            $saveArticleIds = [];
+            foreach ($params['articleIds'] as $articleId) {
+                if (!in_array($articleId, $stockArticleIdList)) {
+                    array_push($saveArticleIds, $articleId);
+                }
+            }
+
+            if ($saveArticleIds) {
+                $this->categoryRepository->createCategoriesStocks($categoryEntity, $saveArticleIds);
+            }
 
             \DB::commit();
         } catch (ModelNotFoundException $e) {
