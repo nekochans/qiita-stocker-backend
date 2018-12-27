@@ -49,10 +49,12 @@ class CategoryCategorizeTest extends AbstractTestCase
     {
         $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
         $accountId = 1;
-        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
-
         $categoryId = 1;
-        $articleIds = ['d210ddc2cb1bfeea9331','d210ddc2cb1bfeea9332','d210ddc2cb1bfeea9333'];
+        $savedArticleId = 'd210ddc2cb1bfeea9331';
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
+        factory(CategoryStock::class)->create(['category_id' => $categoryId, 'article_id' => $savedArticleId]);
+
+        $articleIds = ['d210ddc2cb1bfeea9332',$savedArticleId,'d210ddc2cb1bfeea9333'];
         $jsonResponse = $this->postJson(
             '/api/categories/stocks',
             [
@@ -67,16 +69,24 @@ class CategoryCategorizeTest extends AbstractTestCase
         $jsonResponse->assertHeader('X-Request-Id');
 
         // DBのテーブルに期待した形でデータが入っているか確認する
-        $idSequence = 2;
-        for ($i = 0; $i < count($articleIds); $i++) {
-            $this->assertDatabaseHas('categories_stocks', [
-                'id'                => $idSequence,
-                'category_id'       => $categoryId,
-                'article_id'        => $articleIds[$i],
-                'lock_version'      => 0,
-            ]);
-            $idSequence += 1;
-        }
+        $this->assertDatabaseHas('categories_stocks', [
+            'id'                => 2,
+            'category_id'       => $categoryId,
+            'article_id'        => $savedArticleId,
+            'lock_version'      => 0,
+        ]);
+        $this->assertDatabaseHas('categories_stocks', [
+            'id'                => 3,
+            'category_id'       => $categoryId,
+            'article_id'        => $articleIds[0],
+            'lock_version'      => 0,
+        ]);
+        $this->assertDatabaseHas('categories_stocks', [
+            'id'                => 4,
+            'category_id'       => $categoryId,
+            'article_id'        => $articleIds[2],
+            'lock_version'      => 0,
+        ]);
     }
 
     /**
