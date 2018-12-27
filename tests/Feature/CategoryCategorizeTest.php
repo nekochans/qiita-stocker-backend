@@ -330,9 +330,12 @@ class CategoryCategorizeTest extends AbstractTestCase
 
     /**
      * 異常系のテスト
-     * ArticleIDのリストが空だった場合エラーになること
+     * ArticleIdsのバリデーション
+     *
+     * @param $articleIds
+     * @dataProvider articleIdsProvider
      */
-    public function testErrorArticleIdsValidation()
+    public function testErrorArticleIdsValidation($articleIds)
     {
         $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
         $accountId = 1;
@@ -342,7 +345,7 @@ class CategoryCategorizeTest extends AbstractTestCase
             '/api/categories/stocks',
             [
                 'id'         => 1,
-                'articleIds' => []
+                'articleIds' => $articleIds
             ],
             ['Authorization' => 'Bearer ' . $loginSession]
         );
@@ -353,5 +356,20 @@ class CategoryCategorizeTest extends AbstractTestCase
         $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。']);
         $jsonResponse->assertStatus($expectedErrorCode);
         $jsonResponse->assertHeader('X-Request-Id');
+    }
+
+    /**
+     * ArticleIDのデータプロバイダ
+     *
+     * @return array
+     */
+    public function articleIdsProvider()
+    {
+        return [
+            'emptyArray'                   => [[]],
+            'emptyString'                  => [''],
+            'notArray'                     => ['a210ddc2cb1bfeea9331'],
+            'tooLongLengthArray'           => [array_fill(0, 21, 'a210ddc2cb1bfeea9332')]
+        ];
     }
 }
