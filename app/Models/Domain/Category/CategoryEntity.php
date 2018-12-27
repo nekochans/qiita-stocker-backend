@@ -107,8 +107,9 @@ class CategoryEntity
             }
         }
 
-        if ($saveArticleIds) {
-            $categoryRepository->createCategoriesStocks($this, $saveArticleIds);
+        $uniqueSaveArticleIds = array_unique($saveArticleIds);
+        if ($uniqueSaveArticleIds) {
+            $categoryRepository->createCategoriesStocks($this, $uniqueSaveArticleIds);
         }
     }
 
