@@ -5,6 +5,8 @@
 
 namespace App\Models\Domain\Category;
 
+use App\Models\Domain\Account\AccountEntity;
+
 /**
  * Class CategoryEntity
  * @package App\Models\Domain
@@ -52,14 +54,62 @@ class CategoryEntity
     }
 
     /**
+     * ストックをカテゴライズする
+     *
+     * @param CategoryRepository $categoryRepository
+     * @param AccountEntity $accountEntity
+     * @param array $articleIds
+     */
+    public function categorize(CategoryRepository $categoryRepository, AccountEntity $accountEntity, array $articleIds)
+    {
+        $this->destroyRelation($categoryRepository, $accountEntity, $articleIds);
+        $this->createRelation($categoryRepository, $articleIds);
+    }
+
+    /**
      * カテゴリが持つストックのリストを取得する
      *
      * @param CategoryRepository $categoryRepository
      * @return array
      */
-    public function searchHadStockList(CategoryRepository $categoryRepository): array
+    private function searchHadStockList(CategoryRepository $categoryRepository): array
     {
         return $categoryRepository->searchCategoriesStocksByCategoryId($this);
+    }
+
+    /**
+     * 既存のストックとその他のカテゴリとのリレーションを削除する
+     *
+     * @param CategoryRepository $categoryRepository
+     * @param AccountEntity $accountEntity
+     * @param array $articleIds
+     */
+    private function destroyRelation(CategoryRepository $categoryRepository, AccountEntity $accountEntity, array $articleIds)
+    {
+        $categorizedArticleIds = $categoryRepository->searchCategoriesStocksByArticleId($accountEntity, $this, $articleIds);
+        $categoryRepository->destroyCategoriesStocks($categorizedArticleIds);
+    }
+
+    /**
+     * カテゴリとストックのリレーションを作成する
+     *
+     * @param CategoryRepository $categoryRepository
+     * @param array $articleIds
+     */
+    private function createRelation(CategoryRepository $categoryRepository, array $articleIds)
+    {
+        $stockArticleIdList = $this->searchHadStockList($categoryRepository);
+
+        $saveArticleIds = [];
+        foreach ($articleIds as $articleId) {
+            if (!in_array($articleId, $stockArticleIdList)) {
+                array_push($saveArticleIds, $articleId);
+            }
+        }
+
+        if ($saveArticleIds) {
+            $categoryRepository->createCategoriesStocks($this, $saveArticleIds);
+        }
     }
 
     /**

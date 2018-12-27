@@ -227,21 +227,8 @@ class CategoryScenario
             $categoryEntity = $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
 
             \DB::beginTransaction();
-            $savedArticleIds = $this->categoryRepository->searchCategoriesStocksByArticleId($accountEntity, $categoryEntity, $params['articleIds']);
-            $this->categoryRepository->destroyCategoriesStocks($savedArticleIds);
 
-            $stockArticleIdList = $categoryEntity->searchHadStockList($this->categoryRepository);
-
-            $saveArticleIds = [];
-            foreach ($params['articleIds'] as $articleId) {
-                if (!in_array($articleId, $stockArticleIdList)) {
-                    array_push($saveArticleIds, $articleId);
-                }
-            }
-
-            if ($saveArticleIds) {
-                $this->categoryRepository->createCategoriesStocks($categoryEntity, $saveArticleIds);
-            }
+            $categoryEntity->categorize($this->categoryRepository, $accountEntity, $params['articleIds']);
 
             \DB::commit();
         } catch (ModelNotFoundException $e) {
