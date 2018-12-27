@@ -56,6 +56,7 @@ class CategorySpecification
     public static function canCreateCategoriesStocks(array $requestArray): array
     {
         $validator = \Validator::make($requestArray, [
+            'articleIds'     => 'required|array|max:20',
             'articleIds.*'   => 'required|regex:/^[0-9a-f]+$/|min:20|max:20'
         ]);
 

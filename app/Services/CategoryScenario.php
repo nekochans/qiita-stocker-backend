@@ -218,7 +218,6 @@ class CategoryScenario
                 throw new ValidationException(CategoryEntity::categoryIdValidationErrorMessage(), $errors);
             }
 
-            // TODO カテゴライズするストックの上限を設定する
             $errors = CategorySpecification::canCreateCategoriesStocks($params);
             if ($errors) {
                 throw new ValidationException(CategoryEntity::createCategoriesStocksValidationErrorMessage(), $errors);
