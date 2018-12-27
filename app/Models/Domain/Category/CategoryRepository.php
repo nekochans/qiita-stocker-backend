@@ -60,4 +60,29 @@ interface CategoryRepository
      * @param array $articleIdList
      */
     public function createCategoriesStocks(CategoryEntity $categoryEntity, array $articleIdList);
+
+    /**
+     * カテゴリとストックのリレーションを取得する
+     *
+     * @param CategoryEntity $categoryEntity
+     * @return array
+     */
+    public function searchCategoriesStocksByCategoryId(CategoryEntity $categoryEntity): array;
+
+    /**
+     * 指定したカテゴリ以外にカテゴライズされているストックのArticleID一覧を取得する
+     *
+     * @param AccountEntity $accountEntity
+     * @param CategoryEntity $categoryEntity
+     * @param array $articleIdList
+     * @return array
+     */
+    public function searchCategoriesStocksByArticleId(AccountEntity $accountEntity, CategoryEntity $categoryEntity, array $articleIdList): array;
+
+    /**
+     * カテゴリとストックのリレーションを削除する
+     *
+     * @param array $categoryStockRelationList
+     */
+    public function destroyCategoriesStocks(array $categoryStockRelationList);
 }

@@ -218,6 +218,7 @@ class CategoryScenario
                 throw new ValidationException(CategoryEntity::categoryIdValidationErrorMessage(), $errors);
             }
 
+            // TODO カテゴライズするストックの上限を設定する
             $errors = CategorySpecification::canCreateCategoriesStocks($params);
             if ($errors) {
                 throw new ValidationException(CategoryEntity::createCategoriesStocksValidationErrorMessage(), $errors);
@@ -227,8 +228,7 @@ class CategoryScenario
 
             \DB::beginTransaction();
 
-            // TODO カテゴリIDとarticleIDの組み合わせが存在しなかった場合、リレーションを作成する
-            $this->categoryRepository->createCategoriesStocks($categoryEntity, $params['articleIds']);
+            $categoryEntity->categorize($this->categoryRepository, $accountEntity, $params['articleIds']);
 
             \DB::commit();
         } catch (ModelNotFoundException $e) {

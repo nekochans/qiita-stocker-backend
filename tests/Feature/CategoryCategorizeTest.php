@@ -52,7 +52,18 @@ class CategoryCategorizeTest extends AbstractTestCase
         factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
 
         $categoryId = 1;
-        $articleIds = ['d210ddc2cb1bfeea9331','d210ddc2cb1bfeea9332','d210ddc2cb1bfeea9333'];
+        $categorizedArticleId = 'd210ddc2cb1bfeea9331';
+        // カテゴリとストックのリレーションが登録済みのデータ
+        factory(CategoryStock::class)->create(['category_id' => $categoryId, 'article_id' => $categorizedArticleId]);
+
+        $otherCategoryId = 2;
+        $recategorizeArticleId = 'd210ddc2cb1bfeea9332';
+        // ストックが他のカテゴリにカテゴライズされているデータ
+        factory(Category::class)->create(['account_id' => $accountId]);
+        factory(CategoryName::class)->create(['category_id' => $otherCategoryId]);
+        factory(CategoryStock::class)->create(['category_id' => $otherCategoryId, 'article_id' => $recategorizeArticleId]);
+
+        $articleIds = [$recategorizeArticleId, $categorizedArticleId,'d210ddc2cb1bfeea9333'];
         $jsonResponse = $this->postJson(
             '/api/categories/stocks',
             [
@@ -67,16 +78,27 @@ class CategoryCategorizeTest extends AbstractTestCase
         $jsonResponse->assertHeader('X-Request-Id');
 
         // DBのテーブルに期待した形でデータが入っているか確認する
-        $idSequence = 2;
-        for ($i = 0; $i < count($articleIds); $i++) {
-            $this->assertDatabaseHas('categories_stocks', [
-                'id'                => $idSequence,
-                'category_id'       => $categoryId,
-                'article_id'        => $articleIds[$i],
-                'lock_version'      => 0,
-            ]);
-            $idSequence += 1;
-        }
+        $this->assertDatabaseMissing('categories_stocks', [
+            'category_id'       => $otherCategoryId,
+            'article_id'        => $recategorizeArticleId,
+            'lock_version'      => 0,
+        ]);
+        $this->assertDatabaseHas('categories_stocks', [
+            'category_id'       => $categoryId,
+            'article_id'        => $recategorizeArticleId,
+            'lock_version'      => 0,
+        ]);
+
+        $this->assertDatabaseHas('categories_stocks', [
+            'category_id'       => $categoryId,
+            'article_id'        => $categorizedArticleId,
+            'lock_version'      => 0,
+        ]);
+        $this->assertDatabaseHas('categories_stocks', [
+            'category_id'       => $categoryId,
+            'article_id'        => $articleIds[2],
+            'lock_version'      => 0,
+        ]);
     }
 
     /**
@@ -269,8 +291,6 @@ class CategoryCategorizeTest extends AbstractTestCase
 
         $articleIds = ['d210ddc2cb1bfeea9331'];
         array_push($articleIds, $articleId);
-
-        \Log::debug($articleIds);
 
         $jsonResponse = $this->postJson(
             '/api/categories/stocks',
