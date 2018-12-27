@@ -218,6 +218,7 @@ class CategoryScenario
                 throw new ValidationException(CategoryEntity::categoryIdValidationErrorMessage(), $errors);
             }
 
+            // TODO カテゴライズするストックの上限を設定する
             $errors = CategorySpecification::canCreateCategoriesStocks($params);
             if ($errors) {
                 throw new ValidationException(CategoryEntity::createCategoriesStocksValidationErrorMessage(), $errors);
@@ -225,11 +226,11 @@ class CategoryScenario
 
             $categoryEntity = $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
 
-            $stockArticleIdList = $categoryEntity->searchHadStockList($this->categoryRepository);
-
             \DB::beginTransaction();
+            $savedArticleIds = $this->categoryRepository->searchCategoriesStocksByArticleId($accountEntity, $categoryEntity, $params['articleIds']);
+            $this->categoryRepository->destroyCategoriesStocks($savedArticleIds);
 
-            // TODO ArticleIDが他のカテゴリに紐づいている場合の処理を追加
+            $stockArticleIdList = $categoryEntity->searchHadStockList($this->categoryRepository);
 
             $saveArticleIds = [];
             foreach ($params['articleIds'] as $articleId) {

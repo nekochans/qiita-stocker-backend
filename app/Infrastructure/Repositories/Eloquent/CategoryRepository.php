@@ -186,4 +186,37 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
 
         return $stockArticleIds->toArray();
     }
+
+    /**
+     * 指定したカテゴリ以外にカテゴライズされているストックのArticleID一覧を取得する
+     *
+     * @param AccountEntity $accountEntity
+     * @param CategoryEntity $categoryEntity
+     * @param array $articleIdList
+     * @return array
+     */
+    public function searchCategoriesStocksByArticleId(AccountEntity $accountEntity, CategoryEntity $categoryEntity, array $articleIdList): array
+    {
+        $categories = Category::select('categories_stocks.id')
+            ->where('categories.account_id', $accountEntity->getAccountId())
+            ->where('categories.id', '<>', $categoryEntity->getId())
+            ->join('categories_stocks', function ($join) use ($articleIdList) {
+                $join->on('categories.id', '=', 'categories_stocks.category_id')
+                    ->whereIn('categories_stocks.article_id', $articleIdList);
+            })
+            ->get();
+
+        $stockArticleIds = $categories->pluck('id');
+        return $stockArticleIds->toArray();
+    }
+
+    /**
+     * カテゴリとストックのリレーションを削除する
+     *
+     * @param array $categoryStockRelationList
+     */
+    public function destroyCategoriesStocks(array $categoryStockRelationList)
+    {
+        CategoryStock::destroy($categoryStockRelationList);
+    }
 }
