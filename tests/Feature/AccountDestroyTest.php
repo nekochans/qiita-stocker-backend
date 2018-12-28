@@ -11,6 +11,7 @@ use App\Eloquents\AccessToken;
 use App\Eloquents\CategoryName;
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
+use App\Eloquents\CategoryStock;
 use App\Eloquents\QiitaUserName;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -34,6 +35,7 @@ class AccountDestroyTest extends AbstractTestCase
             $categories = factory(Category::class, 2)->create(['account_id' => $account->id]);
             $categories->each(function ($category) {
                 factory(CategoryName::class)->create(['category_id' => $category->id]);
+                factory(CategoryStock::class)->create(['category_id' => $category->id]);
             });
         });
     }
@@ -58,6 +60,7 @@ class AccountDestroyTest extends AbstractTestCase
 
         factory(Category::class)->create(['account_id' => $accountId]);
         factory(CategoryName::class)->create(['category_id' => 3]);
+        factory(CategoryStock::class)->create(['category_id' => 3]);
 
         $jsonResponse = $this->delete(
             '/api/accounts',
@@ -119,6 +122,16 @@ class AccountDestroyTest extends AbstractTestCase
             'category_id'   => 2,
         ]);
         $this->assertDatabaseHas('categories_names', [
+            'category_id'   => 3,
+        ]);
+
+        $this->assertDatabaseMissing('categories_stocks', [
+            'category_id'   => 1,
+        ]);
+        $this->assertDatabaseMissing('categories_stocks', [
+            'category_id'   => 2,
+        ]);
+        $this->assertDatabaseHas('categories_stocks', [
             'category_id'   => 3,
         ]);
     }
