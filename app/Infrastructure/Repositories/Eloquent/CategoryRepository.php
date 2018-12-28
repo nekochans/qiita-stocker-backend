@@ -116,6 +116,7 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
 
         $categoryIdList = $categories->get()->pluck('id');
         CategoryName::whereIn('category_id', $categoryIdList)->delete();
+        CategoryStock::whereIn('category_id', $categoryIdList)->delete();
 
         $categories->delete();
     }
