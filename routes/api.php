@@ -47,6 +47,12 @@ Route::middleware(['cors', 'xRequestId'])->group(function () {
 
     Route::get('stocks', 'StockController@index');
 
+    Route::options('stocks/categories/{id?}', function () {
+        return response()->json();
+    });
+
+    Route::get('stocks/categories/{id}', 'StockController@showCategorized');
+
     Route::options('categories/stocks', function () {
         return response()->json();
     });
