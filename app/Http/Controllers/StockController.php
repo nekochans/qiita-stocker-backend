@@ -79,4 +79,46 @@ class StockController extends Controller
             ->header('Total-Count', $response['totalCount'])
             ->header('Link', $response['link']);
     }
+
+    /**
+     * カテゴライズされたストック一覧を取得する
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function showCategorized(Request $request): JsonResponse
+    {
+        $stocks = [
+            [
+                'id'                       => '1',
+                'article_id'               => '1234567890abcdefghij',
+                'title'                    => 'タイトル',
+                'user_id'                  => 'test-user',
+                'profile_image_url'        => 'http://test.com/test-image.jpag',
+                'article_created_at'       => '2018-12-01 00:00:00.000000',
+                'tags'                     => ['laravel5.6', 'laravel', 'php']
+            ],
+            [
+                'id'                       => '2',
+                'article_id'               => '1234567890abcdefghij',
+                'title'                    => 'タイトル2',
+                'user_id'                  => 'test-user2',
+                'profile_image_url'        => 'http://test.com/test-image2.jpag',
+                'article_created_at'       => '2018-12-01 00:00:00.000000',
+                'tags'                     => ['laravel5.6', 'laravel', 'php']
+            ]
+        ];
+
+        $totalCount = 9;
+        $link = '<http://127.0.0.1/api/stocks/categories/1?page=4&per_page=2>; rel="next", ';
+        $link .= '<http://127.0.0.1/api/stocks/categories/1?page=5&per_page=2>; rel="last", ';
+        $link .= '<http://127.0.0.1/api/stocks/categories/1?page=1&per_page=2>; rel="first", ';
+        $link .= '<http://127.0.0.1/api/stocks/categories/1?page=2&per_page=2>; rel="prev"';
+
+        return response()
+            ->json($stocks)
+            ->setStatusCode(200)
+            ->header('Total-Count', $totalCount)
+            ->header('Link', $link);
+    }
 }
