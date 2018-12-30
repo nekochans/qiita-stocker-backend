@@ -10,14 +10,17 @@ use App\Models\Domain\Stock\StockEntities;
 use GuzzleHttp\Exception\RequestException;
 use App\Models\Domain\Stock\LinkHeaderValue;
 use App\Models\Domain\Stock\StockRepository;
+use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Stock\LinkHeaderService;
 use App\Models\Domain\Stock\StockSpecification;
 use App\Models\Domain\Account\AccountRepository;
+use App\Models\Domain\Category\CategoryRepository;
 use App\Models\Domain\Exceptions\ValidationException;
 use App\Models\Domain\LoginSession\LoginSessionEntity;
 use App\Models\Domain\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\LoginSession\LoginSessionRepository;
+use App\Models\Domain\Exceptions\CategoryNotFoundException;
 use App\Models\Domain\Exceptions\ServiceUnavailableException;
 
 /**
@@ -56,6 +59,14 @@ class StockScenario
      */
     private $qiitaApiRepository;
 
+
+    /**
+     * CategoryRepository
+     *
+     * @var
+     */
+    private $categoryRepository;
+
     /**
      * StockScenario constructor.
      * @param AccountRepository $accountRepository
@@ -63,16 +74,26 @@ class StockScenario
      * @param StockRepository $stockRepository
      * @param QiitaApiRepository $qiitaApiRepository
      */
+    /**
+     * StockScenario constructor.
+     * @param AccountRepository $accountRepository
+     * @param LoginSessionRepository $loginSessionRepository
+     * @param StockRepository $stockRepository
+     * @param QiitaApiRepository $qiitaApiRepository
+     * @param CategoryRepository $categoryRepository
+     */
     public function __construct(
         AccountRepository $accountRepository,
         LoginSessionRepository $loginSessionRepository,
         StockRepository $stockRepository,
-        QiitaApiRepository $qiitaApiRepository
+        QiitaApiRepository $qiitaApiRepository,
+        CategoryRepository $categoryRepository
     ) {
         $this->accountRepository = $accountRepository;
         $this->loginSessionRepository = $loginSessionRepository;
         $this->stockRepository = $stockRepository;
         $this->qiitaApiRepository = $qiitaApiRepository;
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -169,6 +190,7 @@ class StockScenario
      *
      * @param array $params
      * @return array
+     * @throws CategoryNotFoundException
      * @throws UnauthorizedException
      * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
      */
@@ -176,16 +198,23 @@ class StockScenario
     {
         try {
             // TODO カテゴリID, page, perPage のバリデーション
-
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
-
-            // TODO カテゴリIDからカテゴリとストックのリレーションを取得する
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         } catch (\PDOException $e) {
             throw $e;
         }
 
+        try {
+            $categoryEntity = $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
+
+            // TODO カテゴリIDからカテゴリとストックのリレーションを取得する
+        } catch (ModelNotFoundException $e) {
+            throw new CategoryNotFoundException(CategoryEntity::categoryNotFoundMessage());
+        } catch (\PDOException $e) {
+            \DB::rollBack();
+            throw $e;
+        }
 
 
         $stocks = [

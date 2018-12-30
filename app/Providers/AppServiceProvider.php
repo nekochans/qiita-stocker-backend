@@ -101,7 +101,8 @@ class AppServiceProvider extends ServiceProvider
                     $this->app->make(AccountRepository::class),
                     $this->app->make(LoginSessionRepository::class),
                     $this->app->make(StockRepository::class),
-                    $this->app->make(QiitaApiRepository::class)
+                    $this->app->make(QiitaApiRepository::class),
+                    $this->app->make(CategoryRepository::class)
                 );
             }
         );

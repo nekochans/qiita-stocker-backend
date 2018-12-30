@@ -72,7 +72,7 @@ class CategoryEntity
      * @param CategoryRepository $categoryRepository
      * @return array
      */
-    private function searchHadStockList(CategoryRepository $categoryRepository): array
+    public function searchHadStockList(CategoryRepository $categoryRepository): array
     {
         return $categoryRepository->searchCategoriesStocksByCategoryId($this);
     }

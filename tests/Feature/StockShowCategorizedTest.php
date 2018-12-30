@@ -107,6 +107,40 @@ class StockShowCategorizedTest extends AbstractTestCase
 
     /**
      * 異常系のテスト
+     * 指定したカテゴリがアカウントに紐づかない場合エラーとなること
+     */
+    public function testErrorCategoryNotFound()
+    {
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
+
+        $categoryId = 2;
+        $page = 2;
+        $perPage = 2;
+
+        $uri = sprintf(
+            '/api/stocks/categories/%d?page=%d&per_page=%d',
+            $categoryId,
+            $page,
+            $perPage
+        );
+
+        $jsonResponse = $this->get(
+            $uri,
+            ['Authorization' => 'Bearer ' . $loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 404;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
+    }
+
+    /**
+     * 異常系のテスト
      * Authorizationが存在しない場合エラーとなること
      */
     public function testErrorLoginSessionNull()
