@@ -91,4 +91,12 @@ interface CategoryRepository
      * @param array $categoryStockRelationList
      */
     public function destroyCategoriesStocks(array $categoryStockRelationList);
+
+    /**
+     * カテゴリとストックのリレーションの件数を取得する
+     *
+     * @param string $categoryId
+     * @return int
+     */
+    public function getCountCategoriesStocksByCategoryId(string $categoryId): int;
 }

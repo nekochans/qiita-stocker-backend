@@ -249,4 +249,15 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
     {
         CategoryStock::destroy($categoryStockRelationList);
     }
+
+    /**
+     * カテゴリとストックのリレーションの件数を取得する
+     *
+     * @param string $categoryId
+     * @return int
+     */
+    public function getCountCategoriesStocksByCategoryId(string $categoryId): int
+    {
+        return CategoryStock::where('category_id', $categoryId)->count();
+    }
 }

@@ -51,16 +51,18 @@ class StockShowCategorizedTest extends AbstractTestCase
         $categoryId = 1;
         factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
 
-        $page = 1;
-        $perPage = 20;
+        $page = 3;
+        $perPage = 10;
+        $totalCount = 45;
         $idSequence = 1;
 
-        $stockList = $this->createStocks($perPage, $idSequence);
+        $stockList = $this->createStocks($totalCount, $idSequence);
 
         foreach ($stockList as $stock) {
             factory(CategoryStock::class)->create(['category_id' => $categoryId, 'article_id' => $stock['article_id']]);
         }
 
+        $stockList = array_slice($stockList, 20, $perPage);
         $mockData = [];
         foreach ($stockList as $stock) {
             $fetchStock = $this->createFetchStocksData($stock);
@@ -80,20 +82,19 @@ class StockShowCategorizedTest extends AbstractTestCase
             ['Authorization' => 'Bearer ' . $loginSession]
         );
 
-        $link = sprintf('<http://127.0.0.1/api/stocks/categories/%d?page=3&per_page=%d>; rel="next", ', $categoryId, $perPage);
+        $link = sprintf('<http://127.0.0.1/api/stocks/categories/%d?page=4&per_page=%d>; rel="next", ', $categoryId, $perPage);
         $link .= sprintf('<http://127.0.0.1/api/stocks/categories/%d?page=5&per_page=%d>; rel="last", ', $categoryId, $perPage);
         $link .= sprintf('<http://127.0.0.1/api/stocks/categories/%d?page=1&per_page=%d>; rel="first", ', $categoryId, $perPage);
-        $link .= sprintf('<http://127.0.0.1/api/stocks/categories/%d?page=1&per_page=%d>; rel="prev"', $categoryId, $perPage);
+        $link .= sprintf('<http://127.0.0.1/api/stocks/categories/%d?page=2&per_page=%d>; rel="prev"', $categoryId, $perPage);
 
 
         // 実際にJSONResponseに期待したデータが含まれているか確認する
         $jsonResponse->assertJson($stockList);
         $jsonResponse->assertStatus(200);
         $jsonResponse->assertHeader('X-Request-Id');
-//        $jsonResponse->assertHeader('Link', $link);
-        $jsonResponse->assertHeader('Total-Count', $perPage);
+        $jsonResponse->assertHeader('Link', $link);
+        $jsonResponse->assertHeader('Total-Count', $totalCount);
     }
-
 
     /**
      * ストックのデータを作成する

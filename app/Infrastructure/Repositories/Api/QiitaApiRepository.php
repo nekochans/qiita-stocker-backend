@@ -117,11 +117,8 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
             $uri = sprintf('https://qiita.com/api/v2/items/%s', $stockArticleId);
             $promises[] = $this->getClient()->requestAsync('GET', $uri);
         }
-        \Log::debug('犬');
 
         $responses = \GuzzleHttp\Promise\all($promises)->wait();
-
-        \Log::debug('猫');
 
         $stockValues = [];
         foreach ($responses as $response) {

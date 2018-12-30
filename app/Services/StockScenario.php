@@ -73,13 +73,6 @@ class StockScenario
      * @param LoginSessionRepository $loginSessionRepository
      * @param StockRepository $stockRepository
      * @param QiitaApiRepository $qiitaApiRepository
-     */
-    /**
-     * StockScenario constructor.
-     * @param AccountRepository $accountRepository
-     * @param LoginSessionRepository $loginSessionRepository
-     * @param StockRepository $stockRepository
-     * @param QiitaApiRepository $qiitaApiRepository
      * @param CategoryRepository $categoryRepository
      */
     public function __construct(
@@ -212,8 +205,11 @@ class StockScenario
             $offset = ($params['page'] - 1) * $limit;
 
             $categoryStockEntities = $categoryEntity->searchHasCategoryStockEntities($this->categoryRepository, $limit, $offset);
+            $totalCount = $this->categoryRepository->getCountCategoriesStocksByCategoryId($categoryEntity->getId());
 
             $stockValues = $this->qiitaApiRepository->fetchItems($categoryStockEntities);
+
+            // TODO APIでエラーが返ってきた場合の処理
         } catch (ModelNotFoundException $e) {
             throw new CategoryNotFoundException(CategoryEntity::categoryNotFoundMessage());
         } catch (\PDOException $e) {
@@ -222,7 +218,7 @@ class StockScenario
         }
 
         $stockValueList = $stockValues->getStockValues();
-        $totalCount = count($stockValueList);
+
         $linkList = $this->buildLinkHeaderList($params['uri'], $params['page'], $params['perPage'], $totalCount);
         $link = implode(', ', $linkList);
 
