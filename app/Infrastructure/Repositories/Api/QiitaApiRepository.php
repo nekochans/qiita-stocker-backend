@@ -134,10 +134,7 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
         $stockValues = [];
         foreach ($responses as $response) {
             $stock = json_decode($response->getBody());
-
-
             $stockValue = $this->buildStockValue($stock);
-
             array_push($stockValues, $stockValue);
         }
 
