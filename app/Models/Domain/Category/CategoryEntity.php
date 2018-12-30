@@ -70,9 +70,9 @@ class CategoryEntity
      * カテゴリが持つストックのリストを取得する
      *
      * @param CategoryRepository $categoryRepository
-     * @return array
+     * @return CategoryStockEntities
      */
-    public function searchHadStockList(CategoryRepository $categoryRepository): array
+    public function searchHasCategoryStockEntities(CategoryRepository $categoryRepository): CategoryStockEntities
     {
         return $categoryRepository->searchCategoriesStocksByCategoryId($this);
     }
@@ -98,7 +98,8 @@ class CategoryEntity
      */
     private function createRelation(CategoryRepository $categoryRepository, array $articleIds)
     {
-        $stockArticleIdList = $this->searchHadStockList($categoryRepository);
+        $categoryStockEntities = $this->searchHasCategoryStockEntities($categoryRepository);
+        $stockArticleIdList = $categoryStockEntities->buildArticleIdList();
 
         $saveArticleIds = [];
         foreach ($articleIds as $articleId) {

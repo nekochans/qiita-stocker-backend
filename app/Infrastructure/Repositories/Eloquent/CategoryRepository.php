@@ -12,7 +12,10 @@ use App\Models\Domain\Account\AccountEntity;
 use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Category\CategoryEntities;
 use App\Models\Domain\Category\CategoryNameValue;
+use App\Models\Domain\Category\CategoryStockEntity;
 use App\Models\Domain\Category\CategoryEntityBuilder;
+use App\Models\Domain\Category\CategoryStockEntities;
+use App\Models\Domain\Category\CategoryStockEntityBuilder;
 
 /**
  * Class CategoryRepository
@@ -175,18 +178,35 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
      * カテゴリとストックのリレーションを取得する
      *
      * @param CategoryEntity $categoryEntity
-     * @return array
+     * @return CategoryStockEntities
      */
-    public function searchCategoriesStocksByCategoryId(CategoryEntity $categoryEntity): array
+    public function searchCategoriesStocksByCategoryId(CategoryEntity $categoryEntity): CategoryStockEntities
     {
         $categoryStocks = CategoryStock::where('category_id', $categoryEntity->getId())->get();
 
-        $stockArticleIds = $categoryStocks->map(function (CategoryStock $categoryStock): string {
-            return $categoryStock->article_id;
+        $categoryStockEntityList = $categoryStocks->map(function (CategoryStock $categoryStock): CategoryStockEntity {
+            return $this->buildCategoryStockEntity($categoryStock->toArray());
         });
 
-        return $stockArticleIds->toArray();
+        return new CategoryStockEntities(...$categoryStockEntityList->toArray());
     }
+
+    /**
+     * CategoryStockEntityを作成する
+     *
+     * @param array $categoryStock
+     * @return CategoryStockEntity
+     */
+    private function buildCategoryStockEntity(array $categoryStock): CategoryStockEntity
+    {
+        $categoryStockEntityBuilder = new CategoryStockEntityBuilder();
+        $categoryStockEntityBuilder->setId($categoryStock['id']);
+        $categoryStockEntityBuilder->setCategoryId($categoryStock['category_id']);
+        $categoryStockEntityBuilder->setArticleId($categoryStock['article_id']);
+
+        return $categoryStockEntityBuilder->build();
+    }
+
 
     /**
      * 指定したカテゴリ以外にカテゴライズされているストックのArticleID一覧を取得する

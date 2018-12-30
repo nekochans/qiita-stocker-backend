@@ -65,9 +65,9 @@ interface CategoryRepository
      * カテゴリとストックのリレーションを取得する
      *
      * @param CategoryEntity $categoryEntity
-     * @return array
+     * @return CategoryStockEntities
      */
-    public function searchCategoriesStocksByCategoryId(CategoryEntity $categoryEntity): array;
+    public function searchCategoriesStocksByCategoryId(CategoryEntity $categoryEntity): CategoryStockEntities;
 
     /**
      * 指定したカテゴリ以外にカテゴライズされているストックのArticleID一覧を取得する

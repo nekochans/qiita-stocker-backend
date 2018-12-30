@@ -63,8 +63,8 @@ class StockIndexTest extends AbstractTestCase
 
         $fetchStockList = [];
         foreach ($stockList as $stock) {
-            $fetchStoc = $this->createFetchStocksData($stock);
-            array_push($fetchStockList, $fetchStoc);
+            $fetchStock = $this->createFetchStocksData($stock);
+            array_push($fetchStockList, $fetchStock);
         }
 
         $mockData = [[200, ['total-count' => $stockCount], json_encode($fetchStockList)]];

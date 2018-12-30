@@ -6,8 +6,10 @@
 namespace App\Infrastructure\Repositories\Api;
 
 use App\Models\Domain\Stock\StockValue;
+use App\Models\Domain\Stock\StockValues;
 use App\Models\Domain\Stock\FetchStockValues;
 use App\Models\Domain\Stock\StockValueBuilder;
+use App\Models\Domain\Category\CategoryStockEntities;
 
 /**
  * Class QiitaApiRepository
@@ -24,7 +26,7 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
      * @return FetchStockValues
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function fetchStock(string $qiitaUserName, int $page, int $perPage): FetchStockValues
+    public function fetchStocks(string $qiitaUserName, int $page, int $perPage): FetchStockValues
     {
         $response = $this->requestToStockApi($qiitaUserName, $page, $perPage);
 
@@ -98,5 +100,39 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
             array_push($tagNames, $tagName);
         }
         return $tagNames;
+    }
+
+    /**
+     * アイテム一覧を取得する
+     *
+     * @param CategoryStockEntities $categoryStockEntities
+     * @return StockValues
+     */
+    public function fetchItems(CategoryStockEntities $categoryStockEntities): StockValues
+    {
+        $stockArticleIdList = $categoryStockEntities->buildArticleIdList();
+
+        $promises = [];
+        foreach ($stockArticleIdList as $stockArticleId) {
+            $uri = sprintf('https://qiita.com/api/v2/items/%s', $stockArticleId);
+            $promises[] = $this->getClient()->requestAsync('GET', $uri);
+        }
+        \Log::debug('犬');
+
+        $responses = \GuzzleHttp\Promise\all($promises)->wait();
+
+        \Log::debug('猫');
+
+        $stockValues = [];
+        foreach ($responses as $response) {
+            $stock = json_decode($response->getBody());
+
+
+            $stockValue = $this->buildStockValue($stock);
+
+            array_push($stockValues, $stockValue);
+        }
+
+        return new StockValues(...$stockValues);
     }
 }

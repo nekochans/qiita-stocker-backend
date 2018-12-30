@@ -148,7 +148,7 @@ class StockScenario
 
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
 
-            $fetchStocksValue = $this->qiitaApiRepository->fetchStock($accountEntity->getUserName(), $params['page'], $params['perPage']);
+            $fetchStocksValue = $this->qiitaApiRepository->fetchStocks($accountEntity->getUserName(), $params['page'], $params['perPage']);
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         } catch (RequestException $e) {
@@ -208,7 +208,10 @@ class StockScenario
         try {
             $categoryEntity = $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
 
-            // TODO カテゴリIDからカテゴリとストックのリレーションを取得する
+            // TODO pageとperPageを指定する
+            $categoryStockEntities = $categoryEntity->searchHasCategoryStockEntities($this->categoryRepository);
+
+            $stockValues = $this->qiitaApiRepository->fetchItems($categoryStockEntities);
         } catch (ModelNotFoundException $e) {
             throw new CategoryNotFoundException(CategoryEntity::categoryNotFoundMessage());
         } catch (\PDOException $e) {
@@ -216,33 +219,28 @@ class StockScenario
             throw $e;
         }
 
+        $stockValueList = $stockValues->getStockValues();
+        $totalCount = count($stockValueList);
+        $linkList = $this->buildLinkHeaderList($params['uri'], $params['page'], $params['perPage'], $totalCount);
+        $link = implode(', ', $linkList);
 
-        $stocks = [
-            [
-                'id'                       => '1',
-                'article_id'               => '1234567890abcdefghij',
-                'title'                    => 'タイトル',
-                'user_id'                  => 'test-user',
-                'profile_image_url'        => 'http://test.com/test-image.jpag',
-                'article_created_at'       => '2018-12-01 00:00:00.000000',
-                'tags'                     => ['laravel5.6', 'laravel', 'php']
-            ],
-            [
-                'id'                       => '2',
-                'article_id'               => '1234567890abcdefghij',
-                'title'                    => 'タイトル2',
-                'user_id'                  => 'test-user2',
-                'profile_image_url'        => 'http://test.com/test-image2.jpag',
-                'article_created_at'       => '2018-12-01 00:00:00.000000',
-                'tags'                     => ['laravel5.6', 'laravel', 'php']
-            ]
-        ];
+        $articleIdList = $categoryStockEntities->buildArticleIdList();
+        $CategoryStockEntityList = $categoryStockEntities->getCategoryStockEntities();
 
-        $totalCount = 9;
-        $link = '<http://127.0.0.1/api/stocks/categories/1?page=4&per_page=2>; rel="next", ';
-        $link .= '<http://127.0.0.1/api/stocks/categories/1?page=5&per_page=2>; rel="last", ';
-        $link .= '<http://127.0.0.1/api/stocks/categories/1?page=1&per_page=2>; rel="first", ';
-        $link .= '<http://127.0.0.1/api/stocks/categories/1?page=2&per_page=2>; rel="prev"';
+        $stocks = [];
+        foreach ($stockValueList as $stockValue) {
+            $key = array_search($stockValue->getArticleId(), $articleIdList);
+            $stock = [
+                'id'                       => $CategoryStockEntityList[$key]->getId(),
+                'article_id'               => $stockValue->getArticleId(),
+                'title'                    => $stockValue->getTitle(),
+                'user_id'                  => $stockValue->getUserId(),
+                'profile_image_url'        => $stockValue->getProfileImageUrl(),
+                'article_created_at'       => $stockValue->getArticleCreatedAt()->format('Y-m-d H:i:s.u'),
+                'tags'                     => $stockValue->getTags(),
+            ];
+            array_push($stocks, $stock);
+        }
 
         $response = [
             'stocks'     => $stocks,
