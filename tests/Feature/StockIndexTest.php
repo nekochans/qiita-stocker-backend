@@ -15,7 +15,6 @@ use App\Eloquents\CategoryName;
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
 use App\Eloquents\QiitaUserName;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
@@ -64,8 +63,8 @@ class StockIndexTest extends AbstractTestCase
 
         $fetchStockList = [];
         foreach ($stockList as $stock) {
-            $fetchStoc = $this->createFetchStocksData($stock);
-            array_push($fetchStockList, $fetchStoc);
+            $fetchStock = $this->createFetchStocksData($stock);
+            array_push($fetchStockList, $fetchStock);
         }
 
         $mockData = [[200, ['total-count' => $stockCount], json_encode($fetchStockList)]];

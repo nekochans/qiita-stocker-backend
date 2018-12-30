@@ -65,9 +65,11 @@ interface CategoryRepository
      * カテゴリとストックのリレーションを取得する
      *
      * @param CategoryEntity $categoryEntity
-     * @return array
+     * @param null $limit
+     * @param int $offset
+     * @return CategoryStockEntities
      */
-    public function searchCategoriesStocksByCategoryId(CategoryEntity $categoryEntity): array;
+    public function searchCategoriesStocksByCategoryId(CategoryEntity $categoryEntity, $limit = null, $offset = 0): CategoryStockEntities;
 
     /**
      * 指定したカテゴリ以外にカテゴライズされているストックのArticleID一覧を取得する
@@ -77,7 +79,11 @@ interface CategoryRepository
      * @param array $articleIdList
      * @return array
      */
-    public function searchCategoriesStocksByArticleId(AccountEntity $accountEntity, CategoryEntity $categoryEntity, array $articleIdList): array;
+    public function searchCategoriesStocksByArticleId(
+        AccountEntity $accountEntity,
+        CategoryEntity $categoryEntity,
+        array $articleIdList
+    ): array;
 
     /**
      * カテゴリとストックのリレーションを削除する
@@ -85,4 +91,12 @@ interface CategoryRepository
      * @param array $categoryStockRelationList
      */
     public function destroyCategoriesStocks(array $categoryStockRelationList);
+
+    /**
+     * カテゴリとストックのリレーションの件数を取得する
+     *
+     * @param string $categoryId
+     * @return int
+     */
+    public function getCountCategoriesStocksByCategoryId(string $categoryId): int;
 }

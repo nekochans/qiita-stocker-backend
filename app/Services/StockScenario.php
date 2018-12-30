@@ -10,14 +10,17 @@ use App\Models\Domain\Stock\StockEntities;
 use GuzzleHttp\Exception\RequestException;
 use App\Models\Domain\Stock\LinkHeaderValue;
 use App\Models\Domain\Stock\StockRepository;
+use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Stock\LinkHeaderService;
 use App\Models\Domain\Stock\StockSpecification;
 use App\Models\Domain\Account\AccountRepository;
+use App\Models\Domain\Category\CategoryRepository;
 use App\Models\Domain\Exceptions\ValidationException;
 use App\Models\Domain\LoginSession\LoginSessionEntity;
 use App\Models\Domain\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\LoginSession\LoginSessionRepository;
+use App\Models\Domain\Exceptions\CategoryNotFoundException;
 use App\Models\Domain\Exceptions\ServiceUnavailableException;
 
 /**
@@ -56,23 +59,34 @@ class StockScenario
      */
     private $qiitaApiRepository;
 
+
+    /**
+     * CategoryRepository
+     *
+     * @var
+     */
+    private $categoryRepository;
+
     /**
      * StockScenario constructor.
      * @param AccountRepository $accountRepository
      * @param LoginSessionRepository $loginSessionRepository
      * @param StockRepository $stockRepository
      * @param QiitaApiRepository $qiitaApiRepository
+     * @param CategoryRepository $categoryRepository
      */
     public function __construct(
         AccountRepository $accountRepository,
         LoginSessionRepository $loginSessionRepository,
         StockRepository $stockRepository,
-        QiitaApiRepository $qiitaApiRepository
+        QiitaApiRepository $qiitaApiRepository,
+        CategoryRepository $categoryRepository
     ) {
         $this->accountRepository = $accountRepository;
         $this->loginSessionRepository = $loginSessionRepository;
         $this->stockRepository = $stockRepository;
         $this->qiitaApiRepository = $qiitaApiRepository;
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -127,7 +141,7 @@ class StockScenario
 
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
 
-            $fetchStocksValue = $this->qiitaApiRepository->fetchStock($accountEntity->getUserName(), $params['page'], $params['perPage']);
+            $fetchStocksValue = $this->qiitaApiRepository->fetchStocks($accountEntity, $params['page'], $params['perPage']);
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         } catch (RequestException $e) {
@@ -158,6 +172,78 @@ class StockScenario
         $response = [
             'stocks'     => $stocks,
             'totalCount' => $fetchStocksValue->getTotalCount(),
+            'link'       => $link
+        ];
+
+        return $response;
+    }
+
+    /**
+     * カテゴライズされたストック一覧を取得する
+     *
+     * @param array $params
+     * @return array
+     * @throws CategoryNotFoundException
+     * @throws ServiceUnavailableException
+     * @throws UnauthorizedException
+     * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
+     */
+    public function showCategorized(array $params): array
+    {
+        try {
+            // TODO カテゴリID, page, perPage のバリデーション
+            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
+        } catch (ModelNotFoundException $e) {
+            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+        } catch (\PDOException $e) {
+            throw $e;
+        }
+
+        try {
+            $categoryEntity = $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
+
+            $limit = $params['perPage'];
+            $offset = ($params['page'] - 1) * $limit;
+
+            $categoryStockEntities = $categoryEntity->searchHasCategoryStockEntities($this->categoryRepository, $limit, $offset);
+            $totalCount = $this->categoryRepository->getCountCategoriesStocksByCategoryId($categoryEntity->getId());
+
+            $stockValues = $this->qiitaApiRepository->fetchItems($accountEntity, $categoryStockEntities);
+        } catch (ModelNotFoundException $e) {
+            throw new CategoryNotFoundException(CategoryEntity::categoryNotFoundMessage());
+        } catch (RequestException $e) {
+            throw new ServiceUnavailableException();
+        } catch (\PDOException $e) {
+            \DB::rollBack();
+            throw $e;
+        }
+
+        $stockValueList = $stockValues->getStockValues();
+
+        $linkList = $this->buildLinkHeaderList($params['uri'], $params['page'], $params['perPage'], $totalCount);
+        $link = implode(', ', $linkList);
+
+        $articleIdList = $categoryStockEntities->buildArticleIdList();
+        $CategoryStockEntityList = $categoryStockEntities->getCategoryStockEntities();
+
+        $stocks = [];
+        foreach ($stockValueList as $stockValue) {
+            $key = array_search($stockValue->getArticleId(), $articleIdList);
+            $stock = [
+                'id'                       => $CategoryStockEntityList[$key]->getId(),
+                'article_id'               => $stockValue->getArticleId(),
+                'title'                    => $stockValue->getTitle(),
+                'user_id'                  => $stockValue->getUserId(),
+                'profile_image_url'        => $stockValue->getProfileImageUrl(),
+                'article_created_at'       => $stockValue->getArticleCreatedAt()->format('Y-m-d H:i:s.u'),
+                'tags'                     => $stockValue->getTags(),
+            ];
+            array_push($stocks, $stock);
+        }
+
+        $response = [
+            'stocks'     => $stocks,
+            'totalCount' => $totalCount,
             'link'       => $link
         ];
 
