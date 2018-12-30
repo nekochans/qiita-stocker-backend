@@ -85,7 +85,9 @@ class StockController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws \App\Models\Domain\Exceptions\CategoryNotFoundException
      * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
+     * @throws \App\Models\Domain\Exceptions\ServiceUnavailableException
      * @throws \App\Models\Domain\Exceptions\UnauthorizedException
      */
     public function showCategorized(Request $request): JsonResponse

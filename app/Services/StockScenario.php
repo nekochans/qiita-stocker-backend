@@ -184,6 +184,7 @@ class StockScenario
      * @param array $params
      * @return array
      * @throws CategoryNotFoundException
+     * @throws ServiceUnavailableException
      * @throws UnauthorizedException
      * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
      */
@@ -208,10 +209,10 @@ class StockScenario
             $totalCount = $this->categoryRepository->getCountCategoriesStocksByCategoryId($categoryEntity->getId());
 
             $stockValues = $this->qiitaApiRepository->fetchItems($categoryStockEntities);
-
-            // TODO APIでエラーが返ってきた場合の処理
         } catch (ModelNotFoundException $e) {
             throw new CategoryNotFoundException(CategoryEntity::categoryNotFoundMessage());
+        } catch (RequestException $e) {
+            throw new ServiceUnavailableException();
         } catch (\PDOException $e) {
             \DB::rollBack();
             throw $e;
