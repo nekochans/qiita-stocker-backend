@@ -7,6 +7,7 @@ namespace App\Infrastructure\Repositories\Api;
 
 use App\Models\Domain\Stock\StockValue;
 use App\Models\Domain\Stock\StockValues;
+use App\Models\Domain\Account\AccountEntity;
 use App\Models\Domain\Stock\FetchStockValues;
 use App\Models\Domain\Stock\StockValueBuilder;
 use App\Models\Domain\Category\CategoryStockEntities;
@@ -20,15 +21,15 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
     /**
      * ストック一覧を取得する
      *
-     * @param string $qiitaUserName
+     * @param AccountEntity $accountEntity
      * @param int $page
      * @param int $perPage
      * @return FetchStockValues
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function fetchStocks(string $qiitaUserName, int $page, int $perPage): FetchStockValues
+    public function fetchStocks(AccountEntity $accountEntity, int $page, int $perPage): FetchStockValues
     {
-        $response = $this->requestToStockApi($qiitaUserName, $page, $perPage);
+        $response = $this->requestToStockApi($accountEntity->getUserName(), $accountEntity->getAccessToken(), $page, $perPage);
 
         $responseArray = json_decode($response->getBody());
 
@@ -47,12 +48,13 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
      * Stock APIにリクエストを行う
      *
      * @param string $qiitaUserName
+     * @param string $accessToken
      * @param int $page
      * @param int $perPage
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    private function requestToStockApi(string $qiitaUserName, int $page, int $perPage)
+    private function requestToStockApi(string $qiitaUserName, string $accessToken, int $page, int $perPage)
     {
         $uri = sprintf(
             'https://qiita.com/api/v2/users/%s/stocks?page=%d&per_page=%d',
@@ -61,7 +63,11 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
             $perPage
         );
 
-        return $this->getClient()->request('GET', $uri);
+        return $this->getClient()->request(
+            'GET',
+            $uri,
+            ['headers' => ['Authorization' => 'Bearer '. $accessToken]]
+        );
     }
 
     /**
@@ -105,17 +111,22 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
     /**
      * アイテム一覧を取得する
      *
+     * @param AccountEntity $accountEntity
      * @param CategoryStockEntities $categoryStockEntities
      * @return StockValues
      */
-    public function fetchItems(CategoryStockEntities $categoryStockEntities): StockValues
+    public function fetchItems(AccountEntity $accountEntity, CategoryStockEntities $categoryStockEntities): StockValues
     {
         $stockArticleIdList = $categoryStockEntities->buildArticleIdList();
 
         $promises = [];
         foreach ($stockArticleIdList as $stockArticleId) {
             $uri = sprintf('https://qiita.com/api/v2/items/%s', $stockArticleId);
-            $promises[] = $this->getClient()->requestAsync('GET', $uri);
+            $promises[] = $this->getClient()->requestAsync(
+                'GET',
+                $uri,
+                ['headers' => ['Authorization' => 'Bearer '. $accountEntity->getAccessToken()]]
+            );
         }
 
         $responses = \GuzzleHttp\Promise\all($promises)->wait();

@@ -141,7 +141,7 @@ class StockScenario
 
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
 
-            $fetchStocksValue = $this->qiitaApiRepository->fetchStocks($accountEntity->getUserName(), $params['page'], $params['perPage']);
+            $fetchStocksValue = $this->qiitaApiRepository->fetchStocks($accountEntity, $params['page'], $params['perPage']);
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         } catch (RequestException $e) {
@@ -208,7 +208,7 @@ class StockScenario
             $categoryStockEntities = $categoryEntity->searchHasCategoryStockEntities($this->categoryRepository, $limit, $offset);
             $totalCount = $this->categoryRepository->getCountCategoriesStocksByCategoryId($categoryEntity->getId());
 
-            $stockValues = $this->qiitaApiRepository->fetchItems($categoryStockEntities);
+            $stockValues = $this->qiitaApiRepository->fetchItems($accountEntity, $categoryStockEntities);
         } catch (ModelNotFoundException $e) {
             throw new CategoryNotFoundException(CategoryEntity::categoryNotFoundMessage());
         } catch (RequestException $e) {
