@@ -15,7 +15,6 @@ use App\Eloquents\CategoryName;
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
 use App\Eloquents\QiitaUserName;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
