@@ -70,11 +70,13 @@ class CategoryEntity
      * カテゴリが持つストックのリストを取得する
      *
      * @param CategoryRepository $categoryRepository
+     * @param int $limit
+     * @param int $offset
      * @return CategoryStockEntities
      */
-    public function searchHasCategoryStockEntities(CategoryRepository $categoryRepository): CategoryStockEntities
+    public function searchHasCategoryStockEntities(CategoryRepository $categoryRepository, $limit = null, $offset = 0): CategoryStockEntities
     {
-        return $categoryRepository->searchCategoriesStocksByCategoryId($this);
+        return $categoryRepository->searchCategoriesStocksByCategoryId($this, $limit, $offset);
     }
 
     /**

@@ -208,8 +208,10 @@ class StockScenario
         try {
             $categoryEntity = $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
 
-            // TODO pageとperPageを指定する
-            $categoryStockEntities = $categoryEntity->searchHasCategoryStockEntities($this->categoryRepository);
+            $limit = $params['perPage'];
+            $offset = ($params['page'] - 1) * $limit;
+
+            $categoryStockEntities = $categoryEntity->searchHasCategoryStockEntities($this->categoryRepository, $limit, $offset);
 
             $stockValues = $this->qiitaApiRepository->fetchItems($categoryStockEntities);
         } catch (ModelNotFoundException $e) {

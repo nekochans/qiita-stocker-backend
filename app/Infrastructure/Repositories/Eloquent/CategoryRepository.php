@@ -178,11 +178,20 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
      * カテゴリとストックのリレーションを取得する
      *
      * @param CategoryEntity $categoryEntity
+     * @param null $limit
+     * @param int $offset
      * @return CategoryStockEntities
      */
-    public function searchCategoriesStocksByCategoryId(CategoryEntity $categoryEntity): CategoryStockEntities
+    public function searchCategoriesStocksByCategoryId(CategoryEntity $categoryEntity, $limit = null, $offset = 0): CategoryStockEntities
     {
-        $categoryStocks = CategoryStock::where('category_id', $categoryEntity->getId())->get();
+        if ($limit === null) {
+            $categoryStocks = CategoryStock::where('category_id', $categoryEntity->getId())->get();
+        } else {
+            $categoryStocks = CategoryStock::where('category_id', $categoryEntity->getId())
+                ->offset($offset)
+                ->limit($limit)
+                ->get();
+        }
 
         $categoryStockEntityList = $categoryStocks->map(function (CategoryStock $categoryStock): CategoryStockEntity {
             return $this->buildCategoryStockEntity($categoryStock->toArray());
