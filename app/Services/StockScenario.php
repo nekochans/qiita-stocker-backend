@@ -134,7 +134,7 @@ class StockScenario
     public function index(array $params): array
     {
         try {
-            $errors = StockSpecification::canfetchStocks($params);
+            $errors = StockSpecification::canFetchStocks($params);
             if ($errors) {
                 throw new ValidationException(StockEntities::searchStocksErrorMessage(), $errors);
             }
@@ -186,12 +186,17 @@ class StockScenario
      * @throws CategoryNotFoundException
      * @throws ServiceUnavailableException
      * @throws UnauthorizedException
+     * @throws ValidationException
      * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
      */
     public function showCategorized(array $params): array
     {
         try {
-            // TODO カテゴリID, page, perPage のバリデーション
+            $errors = StockSpecification::canFetchCategorizedStocks($params);
+            if ($errors) {
+                throw new ValidationException(StockEntities::searchStocksErrorMessage(), $errors);
+            }
+
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());

@@ -337,4 +337,171 @@ class StockShowCategorizedTest extends AbstractTestCase
         $jsonResponse->assertStatus($expectedErrorCode);
         $jsonResponse->assertHeader('X-Request-Id');
     }
+
+    /**
+     * 異常系のテスト
+     * ストック取得時のクエリパラメータ page のバリデーション
+     *
+     * @param $page
+     * @dataProvider pageProvider
+     */
+    public function testErrorPageValidation($page)
+    {
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId]);
+
+        $categoryId = 1;
+        $perPage = 20;
+
+        $uri = sprintf(
+            '/api/stocks/categories/%d?page=%s&per_page=%d',
+            $categoryId,
+            $page,
+            $perPage
+        );
+
+        $jsonResponse = $this->get(
+            $uri,
+            ['Authorization' => 'Bearer ' . $loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 422;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
+    }
+
+    /**
+     * page のデータプロバイダ
+     *
+     * @return array
+     */
+    public function pageProvider()
+    {
+        return [
+            'emptyString'        => [''],
+            'null'               => [null],
+            'string'             => ['a'],
+            'symbol'             => ['1/'],
+            'multiByte'          => ['１'],
+            'negativeNumber'     => [-1],
+            'double'             => [1.1],
+            'lessThanMin'        => [0],
+            'greaterThanMax'     => [101],
+        ];
+    }
+
+    /**
+     * 異常系のテスト
+     * ストック取得時のクエリパラメータ perPage のバリデーション
+     *
+     * @param $perPage
+     * @dataProvider perPageProvider
+     */
+    public function testErrorPerPageValidation($perPage)
+    {
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId]);
+
+        $categoryId = 1;
+        $page = 1;
+
+        $uri = sprintf(
+            '/api/stocks/categories/%d?page=%d&per_page=%s',
+            $categoryId,
+            $page,
+            $perPage
+        );
+
+        $jsonResponse = $this->get(
+            $uri,
+            ['Authorization' => 'Bearer ' . $loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 422;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
+    }
+
+    /**
+     * perPage のデータプロバイダ
+     *
+     * @return array
+     */
+    public function perPageProvider()
+    {
+        return [
+            'emptyString'        => [''],
+            'null'               => [null],
+            'string'             => ['a'],
+            'symbol'             => ['1;'],
+            'multiByte'          => ['１'],
+            'negativeNumber'     => [-1],
+            'double'             => [1.1],
+            'lessThanMin'        => [0],
+            'greaterThanMax'     => [101],
+        ];
+    }
+
+    /**
+     * 異常系のテスト
+     * カテゴリ更新時のカテゴリIDのバリデーション
+     *
+     * @param $categoryId
+     * @dataProvider categoryIdProvider
+     */
+    public function testErrorCategoryIdValidation($categoryId)
+    {
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
+
+        $page = 1;
+        $perPage = 20;
+
+        $uri = sprintf(
+            '/api/stocks/categories/%s?page=%d&per_page=%d',
+            $categoryId,
+            $page,
+            $perPage
+        );
+
+        $jsonResponse = $this->get(
+            $uri,
+            ['Authorization' => 'Bearer ' . $loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 422;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
+    }
+
+    /**
+     * カテゴリIDのデータプロバイダ
+     *
+     * @return array
+     */
+    public function categoryIdProvider()
+    {
+        // カテゴリIDが設定されていない場合はルーティングされないので考慮しない
+        return [
+            'string'             => ['a'],
+            'symbol'             => ['1@'],
+            'multiByte'          => ['１'],
+            'negativeNumber'     => [-1],
+            'double'             => [1.1],
+            'lessThanMin'        => [0],
+            'greaterThanMax'     => [18446744073709551615],
+        ];
+    }
 }
