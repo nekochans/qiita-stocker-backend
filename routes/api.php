@@ -41,6 +41,8 @@ Route::middleware(['cors', 'xRequestId'])->group(function () {
 
     Route::patch('categories/{id}', 'CategoryController@update');
 
+    Route::delete('categories/{id}', 'CategoryController@destroy');
+
     Route::options('stocks', function () {
         return response()->json();
     });

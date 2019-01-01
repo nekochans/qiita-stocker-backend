@@ -101,6 +101,25 @@ class CategoryController extends Controller
         return response()->json($category)->setStatusCode(200);
     }
 
+    /**
+     * カテゴリを削除する
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function destroy(Request $request): JsonResponse
+    {
+        $requestArray = $request->json()->all();
+
+        $sessionId = $request->bearerToken();
+        $params = [
+            'sessionId' => $sessionId
+        ];
+
+        $params = array_merge($params, $requestArray);
+
+        return response()->json()->setStatusCode(204);
+    }
 
     /**
      * 指定されたカテゴリとストックのリレーションを作成する
