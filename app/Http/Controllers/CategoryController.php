@@ -106,6 +106,10 @@ class CategoryController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws \App\Models\Domain\Exceptions\CategoryNotFoundException
+     * @throws \App\Models\Domain\Exceptions\UnauthorizedException
+     * @throws \App\Models\Domain\Exceptions\ValidationException
+     * @throws \App\Models\Domain\exceptions\LoginSessionExpiredException
      */
     public function destroy(Request $request): JsonResponse
     {
@@ -115,9 +119,9 @@ class CategoryController extends Controller
         $params = [
             'sessionId' => $sessionId
         ];
-
         $params = array_merge($params, $requestArray);
 
+        $this->categoryScenario->destroy($params);
         return response()->json()->setStatusCode(204);
     }
 
