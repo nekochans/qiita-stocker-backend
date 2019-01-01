@@ -113,15 +113,14 @@ class CategoryController extends Controller
      */
     public function destroy(Request $request): JsonResponse
     {
-        $requestArray = $request->json()->all();
-
         $sessionId = $request->bearerToken();
         $params = [
-            'sessionId' => $sessionId
+            'sessionId'    => $sessionId,
+            'id'           => $request->id,
         ];
-        $params = array_merge($params, $requestArray);
 
         $this->categoryScenario->destroy($params);
+        
         return response()->json()->setStatusCode(204);
     }
 

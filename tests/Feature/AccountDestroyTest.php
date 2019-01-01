@@ -71,7 +71,6 @@ class AccountDestroyTest extends AbstractTestCase
         $jsonResponse->assertStatus(204);
         $jsonResponse->assertHeader('X-Request-Id');
 
-
         // DBのテーブルに期待した形でデータが入っているか確認する
         $this->assertDatabaseMissing('accounts', [
             'id'           => $destroyedAccountId,

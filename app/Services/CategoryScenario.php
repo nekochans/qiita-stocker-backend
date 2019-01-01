@@ -197,6 +197,7 @@ class CategoryScenario
      * カテゴリを削除する
      *
      * @param array $params
+     * @throws CategoryNotFoundException
      * @throws LoginSessionExpiredException
      * @throws UnauthorizedException
      */
@@ -207,6 +208,21 @@ class CategoryScenario
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         } catch (\PDOException $e) {
+            throw $e;
+        }
+
+        try {
+            $categoryEntity = $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
+
+            \DB::beginTransaction();
+
+            // TODO カテゴリの削除処理
+
+            \DB::commit();
+        } catch (ModelNotFoundException $e) {
+            throw new CategoryNotFoundException(CategoryEntity::categoryNotFoundMessage());
+        } catch (\PDOException $e) {
+            \DB::rollBack();
             throw $e;
         }
     }
