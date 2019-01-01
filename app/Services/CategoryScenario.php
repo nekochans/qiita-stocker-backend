@@ -200,6 +200,7 @@ class CategoryScenario
      * @throws CategoryNotFoundException
      * @throws LoginSessionExpiredException
      * @throws UnauthorizedException
+     * @throws ValidationException
      */
     public function destroy(array $params)
     {
@@ -212,6 +213,11 @@ class CategoryScenario
         }
 
         try {
+            $errors = CategorySpecification::canSetCategoryEntityId($params);
+            if ($errors) {
+                throw new ValidationException(CategoryEntity::categoryIdValidationErrorMessage(), $errors);
+            }
+
             $categoryEntity = $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
 
             \DB::beginTransaction();
