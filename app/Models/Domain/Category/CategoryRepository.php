@@ -38,6 +38,12 @@ interface CategoryRepository
     public function destroyAll(string $accountId);
 
     /**
+     * カテゴリを削除する
+     * @param CategoryEntity $categoryEntity
+     */
+    public function destroy(CategoryEntity $categoryEntity);
+
+    /**
      * カテゴリを取得する
      *
      * @param string $categoryId

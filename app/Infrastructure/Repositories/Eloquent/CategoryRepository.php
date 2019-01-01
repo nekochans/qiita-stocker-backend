@@ -125,6 +125,17 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
     }
 
     /**
+     * カテゴリを削除する
+     * @param CategoryEntity $categoryEntity
+     */
+    public function destroy(CategoryEntity $categoryEntity)
+    {
+        CategoryName::where('category_id', $categoryEntity->getId())->delete();
+        CategoryStock::where('category_id', $categoryEntity->getId())->delete();
+        Category::destroy($categoryEntity->getId());
+    }
+
+    /**
      * カテゴリを取得する
      *
      * @param string $categoryId

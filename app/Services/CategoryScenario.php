@@ -194,6 +194,46 @@ class CategoryScenario
     }
 
     /**
+     * カテゴリを削除する
+     *
+     * @param array $params
+     * @throws CategoryNotFoundException
+     * @throws LoginSessionExpiredException
+     * @throws UnauthorizedException
+     * @throws ValidationException
+     */
+    public function destroy(array $params)
+    {
+        try {
+            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
+        } catch (ModelNotFoundException $e) {
+            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+        } catch (\PDOException $e) {
+            throw $e;
+        }
+
+        try {
+            $errors = CategorySpecification::canSetCategoryEntityId($params);
+            if ($errors) {
+                throw new ValidationException(CategoryEntity::categoryIdValidationErrorMessage(), $errors);
+            }
+
+            $categoryEntity = $accountEntity->findHasCategoryEntity($this->categoryRepository, $params['id']);
+
+            \DB::beginTransaction();
+
+            $this->categoryRepository->destroy($categoryEntity);
+
+            \DB::commit();
+        } catch (ModelNotFoundException $e) {
+            throw new CategoryNotFoundException(CategoryEntity::categoryNotFoundMessage());
+        } catch (\PDOException $e) {
+            \DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
      * カテゴリとストックのリレーションを作成する
      *
      * @param array $params
