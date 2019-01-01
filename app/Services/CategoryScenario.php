@@ -222,7 +222,7 @@ class CategoryScenario
 
             \DB::beginTransaction();
 
-            // TODO カテゴリの削除処理
+            $this->categoryRepository->destroy($categoryEntity);
 
             \DB::commit();
         } catch (ModelNotFoundException $e) {

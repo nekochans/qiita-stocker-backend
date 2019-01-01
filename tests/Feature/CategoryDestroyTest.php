@@ -46,9 +46,20 @@ class CategoryDestroyTest extends AbstractTestCase
      */
     public function testSuccess()
     {
+        $otherAccountId = 2;
+        $otherCategoryId = 2;
+        factory(Account::class)->create();
+        factory(QiitaAccount::class)->create(['qiita_account_id' => 2, 'account_id' => $otherAccountId]);
+        factory(QiitaUserName::class)->create(['account_id' => $otherAccountId]);
+        factory(AccessToken::class)->create(['account_id' => $otherAccountId]);
+        factory(LoginSession::class)->create(['account_id' => $otherAccountId]);
+        factory(Category::class)->create(['account_id' => $otherAccountId]);
+        factory(CategoryName::class)->create(['category_id' => $otherCategoryId]);
+        factory(CategoryStock::class)->create(['category_id' => $otherCategoryId]);
+
         $categoryId = 1;
-        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
         $accountId = 1;
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
         factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
 
         $jsonResponse = $this->delete(
@@ -59,6 +70,28 @@ class CategoryDestroyTest extends AbstractTestCase
 
         $jsonResponse->assertStatus(204);
         $jsonResponse->assertHeader('X-Request-Id');
+
+        // DBのテーブルに期待した形でデータが入っているか確認する
+        $this->assertDatabaseMissing('categories', [
+            'account_id'   => $accountId,
+        ]);
+        $this->assertDatabaseHas('categories', [
+            'account_id'   => $otherAccountId,
+        ]);
+
+        $this->assertDatabaseMissing('categories_names', [
+            'category_id'   => $categoryId,
+        ]);
+        $this->assertDatabaseHas('categories_names', [
+            'category_id'   => $otherCategoryId,
+        ]);
+
+        $this->assertDatabaseMissing('categories_stocks', [
+            'category_id'   => $categoryId,
+        ]);
+        $this->assertDatabaseHas('categories_stocks', [
+            'category_id'   => $otherCategoryId,
+        ]);
     }
 
     /**
