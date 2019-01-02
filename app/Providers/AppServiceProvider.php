@@ -35,8 +35,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('App\Services\WeatherService');
-
         $this->app->bind(
             AccountRepository::class,
             \App\Infrastructure\Repositories\Eloquent\AccountRepository::class

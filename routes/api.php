@@ -13,8 +13,6 @@
 */
 
 Route::middleware(['cors', 'xRequestId'])->group(function () {
-    Route::get('weather', 'WeatherController@index');
-
     Route::options('accounts', function () {
         return response()->json();
     });
