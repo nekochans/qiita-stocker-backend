@@ -7,10 +7,8 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use GuzzleHttp\Client;
-use App\Eloquents\Stock;
 use App\Eloquents\Account;
 use App\Eloquents\Category;
-use App\Eloquents\StockTag;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\CreatesApplication;
@@ -43,8 +41,6 @@ abstract class AbstractTestCase extends TestCase
         Category::truncate();
         CategoryName::truncate();
         CategoryStock::truncate();
-        Stock::truncate();
-        StockTag::truncate();
         \DB::statement('SET FOREIGN_KEY_CHECKS=1');
     }
 

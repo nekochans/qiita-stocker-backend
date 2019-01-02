@@ -5,11 +5,10 @@
 
 namespace App\Services;
 
+use App\Models\Domain\Stock\StockValues;
 use App\Models\Domain\QiitaApiRepository;
-use App\Models\Domain\Stock\StockEntities;
 use GuzzleHttp\Exception\RequestException;
 use App\Models\Domain\Stock\LinkHeaderValue;
-use App\Models\Domain\Stock\StockRepository;
 use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Stock\LinkHeaderService;
 use App\Models\Domain\Stock\StockSpecification;
@@ -46,13 +45,6 @@ class StockScenario
     private $loginSessionRepository;
 
     /**
-     * StockRepository
-     *
-     * @var
-     */
-    private $stockRepository;
-
-    /**
      * QiitaApiRepository
      *
      * @var
@@ -71,55 +63,20 @@ class StockScenario
      * StockScenario constructor.
      * @param AccountRepository $accountRepository
      * @param LoginSessionRepository $loginSessionRepository
-     * @param StockRepository $stockRepository
      * @param QiitaApiRepository $qiitaApiRepository
      * @param CategoryRepository $categoryRepository
      */
     public function __construct(
         AccountRepository $accountRepository,
         LoginSessionRepository $loginSessionRepository,
-        StockRepository $stockRepository,
         QiitaApiRepository $qiitaApiRepository,
         CategoryRepository $categoryRepository
     ) {
         $this->accountRepository = $accountRepository;
         $this->loginSessionRepository = $loginSessionRepository;
-        $this->stockRepository = $stockRepository;
         $this->qiitaApiRepository = $qiitaApiRepository;
         $this->categoryRepository = $categoryRepository;
     }
-
-    /**
-     * ストックを同期する
-     *
-     * @param array $params
-     * @throws ServiceUnavailableException
-     * @throws UnauthorizedException
-     * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
-     */
-    // TODO 削除する
-//    public function synchronize(array $params)
-//    {
-//        try {
-//            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
-//
-//            $stockValues = $this->qiitaApiRepository->fetchStock($accountEntity->getUserName());
-//
-//            \DB::beginTransaction();
-//
-//            $stockEntities = $this->stockRepository->searchByAccountId($accountEntity->getAccountId());
-//            $stockEntities->synchronize($this->stockRepository, $stockValues, $accountEntity->getAccountId());
-//
-//            \DB::commit();
-//        } catch (ModelNotFoundException $e) {
-//            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
-//        } catch (RequestException $e) {
-//            throw new ServiceUnavailableException();
-//        } catch (\PDOException $e) {
-//            \DB::rollBack();
-//            throw $e;
-//        }
-//    }
 
     /**
      * ストック一覧を取得する
@@ -136,7 +93,7 @@ class StockScenario
         try {
             $errors = StockSpecification::canFetchStocks($params);
             if ($errors) {
-                throw new ValidationException(StockEntities::searchStocksErrorMessage(), $errors);
+                throw new ValidationException(StockValues::searchStocksErrorMessage(), $errors);
             }
 
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
@@ -194,7 +151,7 @@ class StockScenario
         try {
             $errors = StockSpecification::canFetchCategorizedStocks($params);
             if ($errors) {
-                throw new ValidationException(StockEntities::searchStocksErrorMessage(), $errors);
+                throw new ValidationException(StockValues::searchStocksErrorMessage(), $errors);
             }
 
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);

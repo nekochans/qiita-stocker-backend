@@ -33,4 +33,14 @@ class StockValues
     {
         return $this->stockValues;
     }
+
+    /**
+     * ストック取得時のバリデーションエラーの場合に使用するメッセージ
+     *
+     * @return string
+     */
+    public static function searchStocksErrorMessage(): string
+    {
+        return '不正なリクエストが行われました。';
+    }
 }
