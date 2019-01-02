@@ -5,10 +5,8 @@
 
 namespace Tests\Feature;
 
-use App\Eloquents\Stock;
 use App\Eloquents\Account;
 use App\Eloquents\Category;
-use App\Eloquents\StockTag;
 use Faker\Factory as Faker;
 use App\Eloquents\AccessToken;
 use App\Eloquents\CategoryName;
@@ -37,10 +35,6 @@ class StockIndexTest extends AbstractTestCase
             $categories = factory(Category::class)->create(['account_id' => $account->id]);
             $categories->each(function ($category) {
                 factory(CategoryName::class)->create(['category_id' => $category->id]);
-            });
-            $stocks = factory(Stock::class)->create(['account_id' => $account->id]);
-            $stocks->each(function ($stock) {
-                factory(StockTag::class)->create(['stock_id' => $stock->id]);
             });
         });
     }
