@@ -10,7 +10,6 @@ use App\Services\LoginSessionScenario;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Domain\QiitaApiRepository;
-use App\Models\Domain\Stock\StockRepository;
 use App\Models\Domain\Account\AccountRepository;
 use App\Models\Domain\Category\CategoryRepository;
 use App\Infrastructure\Repositories\Api\Repository;
@@ -48,11 +47,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             CategoryRepository::class,
             \App\Infrastructure\Repositories\Eloquent\CategoryRepository::class
-        );
-
-        $this->app->bind(
-            StockRepository::class,
-            \App\Infrastructure\Repositories\Eloquent\StockRepository::class
         );
 
         $this->app->bind(
@@ -98,7 +92,6 @@ class AppServiceProvider extends ServiceProvider
                 return new StockScenario(
                     $this->app->make(AccountRepository::class),
                     $this->app->make(LoginSessionRepository::class),
-                    $this->app->make(StockRepository::class),
                     $this->app->make(QiitaApiRepository::class),
                     $this->app->make(CategoryRepository::class)
                 );

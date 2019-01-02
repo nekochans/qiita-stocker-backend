@@ -30,27 +30,6 @@ class StockController extends Controller
         $this->stockScenario = $stockScenario;
     }
 
-    // TODO 削除する
-//    /**
-//     * ストックを同期する
-//     *
-//     * @param Request $request
-//     * @return JsonResponse
-//     * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
-//     * @throws \App\Models\Domain\Exceptions\ServiceUnavailableException
-//     * @throws \App\Models\Domain\Exceptions\UnauthorizedException
-//     */
-//    public function synchronize(Request $request): JsonResponse
-//    {
-//        $sessionId = $request->bearerToken();
-//        $params = [
-//            'sessionId' => $sessionId
-//        ];
-//
-//        $this->stockScenario->synchronize($params);
-//        return response()->json()->setStatusCode(200);
-//    }
-
     /**
      * ストック一覧を取得する
      *
