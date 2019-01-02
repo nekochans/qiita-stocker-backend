@@ -58,4 +58,9 @@ Route::middleware(['cors', 'xRequestId'])->group(function () {
     });
 
     Route::post('categories/stocks', 'CategoryController@categorize');
+
+    Route::options('statuses', function () {
+        return response()->json();
+    });
+    Route::get('statuses', 'StatusController@index');
 });
