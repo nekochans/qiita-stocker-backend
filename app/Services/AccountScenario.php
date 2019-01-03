@@ -98,9 +98,8 @@ class AccountScenario
 
             $sessionId = Uuid::uuid4();
 
-            // TODO 有効期限を適切な期限に修正
             $expiredOn = new \DateTime();
-            $expiredOn->add(new \DateInterval('PT1H'));
+            $expiredOn->add(new \DateInterval('P30D'));
 
             $loginSessionEntityBuilder = new LoginSessionEntityBuilder();
             $loginSessionEntityBuilder->setAccountId($accountEntity->getAccountId());
