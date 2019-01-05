@@ -7,13 +7,13 @@ namespace Tests\Feature;
 
 use App\Eloquents\Account;
 use App\Eloquents\Category;
+use Faker\Factory as Faker;
 use App\Eloquents\AccessToken;
 use App\Eloquents\CategoryName;
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
 use App\Eloquents\CategoryStock;
 use App\Eloquents\QiitaUserName;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
@@ -44,6 +44,7 @@ class CategoryCategorizeTest extends AbstractTestCase
     /**
      * 正常系のテスト
      * カテゴリとストックのリレーションが作成されること
+     * 全て新規でストックを保存するケース
      */
     public function testSuccess()
     {
@@ -51,19 +52,19 @@ class CategoryCategorizeTest extends AbstractTestCase
         $accountId = 1;
         factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
 
+        $stockList = $this->createStocks(10, 2);
+
+        $mockData = [];
+        $articleIds = [];
+        foreach ($stockList as $stock) {
+            array_push($articleIds, $stock['article_id']);
+
+            $fetchStock = $this->createFetchStocksData($stock);
+            array_push($mockData, [200, [], json_encode($fetchStock)]);
+        }
+        $this->setMockGuzzle($mockData);
+
         $categoryId = 1;
-        $categorizedArticleId = 'd210ddc2cb1bfeea9331';
-        // カテゴリとストックのリレーションが登録済みのデータ
-        factory(CategoryStock::class)->create(['category_id' => $categoryId, 'article_id' => $categorizedArticleId]);
-
-        $otherCategoryId = 2;
-        $recategorizeArticleId = 'd210ddc2cb1bfeea9332';
-        // ストックが他のカテゴリにカテゴライズされているデータ
-        factory(Category::class)->create(['account_id' => $accountId]);
-        factory(CategoryName::class)->create(['category_id' => $otherCategoryId]);
-        factory(CategoryStock::class)->create(['category_id' => $otherCategoryId, 'article_id' => $recategorizeArticleId]);
-
-        $articleIds = [$recategorizeArticleId, $categorizedArticleId,'d210ddc2cb1bfeea9333'];
         $jsonResponse = $this->postJson(
             '/api/categories/stocks',
             [
@@ -78,27 +79,240 @@ class CategoryCategorizeTest extends AbstractTestCase
         $jsonResponse->assertHeader('X-Request-Id');
 
         // DBのテーブルに期待した形でデータが入っているか確認する
-        $this->assertDatabaseMissing('categories_stocks', [
-            'category_id'       => $otherCategoryId,
-            'article_id'        => $recategorizeArticleId,
-            'lock_version'      => 0,
-        ]);
-        $this->assertDatabaseHas('categories_stocks', [
-            'category_id'       => $categoryId,
-            'article_id'        => $recategorizeArticleId,
-            'lock_version'      => 0,
-        ]);
+        foreach ($stockList as $stock) {
+            $this->assertDatabaseHas('categories_stocks', [
+                'id'                        => $stock['id'],
+                'category_id'               => $categoryId,
+                'article_id'                => $stock['article_id'],
+                'title'                     => $stock['title'],
+                'user_id'                   => $stock['user_id'],
+                'profile_image_url'         => $stock['profile_image_url'],
+                'article_created_at'        => $stock['article_created_at'],
+                'tags'                      => json_encode($stock['tags']),
+                'lock_version'              => 0
+            ]);
+        }
+    }
 
-        $this->assertDatabaseHas('categories_stocks', [
-            'category_id'       => $categoryId,
-            'article_id'        => $categorizedArticleId,
-            'lock_version'      => 0,
-        ]);
-        $this->assertDatabaseHas('categories_stocks', [
-            'category_id'       => $categoryId,
-            'article_id'        => $articleIds[2],
-            'lock_version'      => 0,
-        ]);
+    /**
+     * 正常系のテスト
+     *
+     * ストックが他のカテゴリにカテゴライズ済みの場合、
+     * 既存のリレーションが削除され、新しくリレーションが作成されていること
+     */
+    public function testSuccessRecategorize()
+    {
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
+
+        $stockList = $this->createStocks(10, 12);
+
+        // ストックが他のカテゴリにカテゴライズされているデータを作成
+        $otherCategoryId = 2;
+        $mockData = [];
+        $articleIds = [];
+        factory(Category::class)->create(['account_id' => $accountId]);
+        factory(CategoryName::class)->create(['category_id' => $otherCategoryId]);
+
+        foreach ($stockList as $stock) {
+            factory(CategoryStock::class)->create(['category_id' => $otherCategoryId, 'article_id' => $stock['article_id']]);
+
+            array_push($articleIds, $stock['article_id']);
+
+            $fetchStock = $this->createFetchStocksData($stock);
+            array_push($mockData, [200, [], json_encode($fetchStock)]);
+        }
+
+        $this->setMockGuzzle($mockData);
+
+        $categoryId = 1;
+        $jsonResponse = $this->postJson(
+            '/api/categories/stocks',
+            [
+                'id'         => $categoryId,
+                'articleIds' => $articleIds
+            ],
+            ['Authorization' => 'Bearer ' . $loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $jsonResponse->assertStatus(201);
+        $jsonResponse->assertHeader('X-Request-Id');
+
+        // DBのテーブルに期待した形でデータが入っているか確認する
+        foreach ($stockList as $stock) {
+            $this->assertDatabaseHas('categories_stocks', [
+                'id'                        => $stock['id'],
+                'category_id'               => $categoryId,
+                'article_id'                => $stock['article_id'],
+                'title'                     => $stock['title'],
+                'user_id'                   => $stock['user_id'],
+                'profile_image_url'         => $stock['profile_image_url'],
+                'article_created_at'        => $stock['article_created_at'],
+                'tags'                      => json_encode($stock['tags']),
+                'lock_version'              => 0
+            ]);
+        }
+
+        foreach ($stockList as $stock) {
+            $this->assertDatabaseMissing('categories_stocks', [
+                'category_id'               => $otherCategoryId,
+                'article_id'                => $stock['article_id'],
+                'title'                     => $stock['title'],
+                'user_id'                   => $stock['user_id'],
+                'profile_image_url'         => $stock['profile_image_url'],
+                'article_created_at'        => $stock['article_created_at'],
+                'tags'                      => json_encode($stock['tags']),
+                'lock_version'              => 0
+            ]);
+        }
+    }
+
+    /**
+     * 正常系のテスト
+     *
+     * ストックが指定されたカテゴリにカテゴライズ済みの場合、APIへのリクエストが行われないこと
+     */
+    public function testSuccessCategorized()
+    {
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
+
+        $stockList = $this->createStocks(10, 2);
+
+        // ストックが指定したカテゴリに登録ずみのデータを作成
+        $categoryId = 1;
+        $articleIds = [];
+        foreach ($stockList as $stock) {
+            factory(CategoryStock::class)->create(
+                [
+                'category_id'               => $categoryId,
+                'article_id'                => $stock['article_id'],
+                'title'                     => $stock['title'],
+                'user_id'                   => $stock['user_id'],
+                'profile_image_url'         => $stock['profile_image_url'],
+                'article_created_at'        => $stock['article_created_at'],
+                'tags'                      => json_encode($stock['tags'])
+                ]
+            );
+            array_push($articleIds, $stock['article_id']);
+        }
+
+        $jsonResponse = $this->postJson(
+            '/api/categories/stocks',
+            [
+                'id'         => $categoryId,
+                'articleIds' => $articleIds
+            ],
+            ['Authorization' => 'Bearer ' . $loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $jsonResponse->assertStatus(201);
+        $jsonResponse->assertHeader('X-Request-Id');
+
+        // DBのテーブルに期待した形でデータが入っているか確認する
+        foreach ($stockList as $stock) {
+            $this->assertDatabaseHas('categories_stocks', [
+                'id'                        => $stock['id'],
+                'category_id'               => $categoryId,
+                'article_id'                => $stock['article_id'],
+                'title'                     => $stock['title'],
+                'user_id'                   => $stock['user_id'],
+                'profile_image_url'         => $stock['profile_image_url'],
+                'article_created_at'        => $stock['article_created_at'],
+                'tags'                      => json_encode($stock['tags']),
+                'lock_version'              => 0
+            ]);
+        }
+    }
+
+    /**
+     * ストックのデータを作成する
+     *
+     * @param int $count
+     * @param int $idSequence
+     * @return array
+     */
+    private function createStocks(int $count, int $idSequence) :array
+    {
+        $stocks = [];
+        for ($i = 0; $i < $count; $i++) {
+            $secondTag = $i + 1;
+
+            $stock = [
+                'id'                        => $idSequence,
+                'article_id'                => 'abcdefghij'. str_pad($i, 10, '0', STR_PAD_LEFT),
+                'article_id'                => 'aabbccddee'. str_pad($i, 10, '0', STR_PAD_LEFT),
+                'title'                     => 'title' . $i,
+                'user_id'                   => 'user-id-' . $i,
+                'profile_image_url'         => 'http://test.com/test-image-updated.jpag'. $i,
+                'article_created_at'        => '2018-01-01 00:11:22.000000',
+                'tags'                      => ['tag'. $i, 'tag'. $secondTag]
+            ];
+            array_push($stocks, $stock);
+            $idSequence += 1;
+        }
+
+        return $stocks;
+    }
+
+    /**
+     * APIから取得するストックのデータを作成する
+     *
+     * @param array $stock
+     * @return array
+     */
+    private function createFetchStocksData(array $stock) :array
+    {
+        $faker = Faker::create();
+        $tags = [];
+        for ($i = 0; $i < count($stock['tags']); $i++) {
+            $tag = [
+                'name'     => $stock['tags'][$i],
+                'versions' => []
+            ];
+            array_push($tags, $tag);
+        }
+
+        $fetchStock = [
+            'rendered_body'   => '<h1>Example</h1>',
+            'body'            => '# Example',
+            'coediting'       => false,
+            'comments_count'  => 0,
+            'created_at'      => $stock['article_created_at'],
+            'group'           => null,
+            'id'              => $stock['article_id'],
+            'likes_count'     => 50,
+            'private'         => false,
+            'reactions_count' => 0,
+            'tags'            => $tags,
+            'title'           => $stock['title'],
+            'updated_at'      => $faker->dateTimeThisDecade,
+            'url'             => 'https://qiita.com/yaotti/items/4bd431809afb1bb99e4f',
+            'user'            => [
+                'description'         => 'Hello, world.',
+                'facebook_id'         => '',
+                'followees_count'     => 100,
+                'followers_count'     => 200,
+                'github_login_name'   => '',
+                'id'                  => $stock['user_id'],
+                'items_count'         => 300,
+                'linkedin_id'         => '',
+                'location'            => 'Tokyo, Japan',
+                'name'                => '',
+                'organization'        => 'test Inc',
+                'permanent_id'        => 1,
+                'profile_image_url'   => $stock['profile_image_url'],
+                'team_only'           => false,
+                'twitter_screen_name' => '',
+                'website_url'         => '',
+            ],
+            'page_views_count' => null
+        ];
+        return $fetchStock;
     }
 
     /**
