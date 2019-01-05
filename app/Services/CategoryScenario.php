@@ -135,7 +135,7 @@ class CategoryScenario
     }
 
     /**
-     *指定されたカテゴリを更新する
+     * 指定されたカテゴリを更新する
      *
      * @param array $params
      * @return array
