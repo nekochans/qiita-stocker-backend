@@ -8,6 +8,7 @@ namespace App\Infrastructure\Repositories\Eloquent;
 use App\Eloquents\Category;
 use App\Eloquents\CategoryName;
 use App\Eloquents\CategoryStock;
+use App\Models\Domain\Stock\StockValues;
 use App\Models\Domain\Account\AccountEntity;
 use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Category\CategoryEntities;
@@ -173,14 +174,24 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
      * カテゴリとストックのリレーションを作成する
      *
      * @param CategoryEntity $categoryEntity
-     * @param array $articleIdList
+     * @param StockValues $stockValues
+     * @return mixed|void
      */
-    public function createCategoriesStocks(CategoryEntity $categoryEntity, array $articleIdList)
+    public function createCategoriesStocks(CategoryEntity $categoryEntity, StockValues $stockValues)
     {
-        foreach ($articleIdList as $articleId) {
+        $stockValueList = $stockValues->getStockValues();
+
+        foreach ($stockValueList as $stockValue) {
+            $tags = json_encode($stockValue->getTags());
+
             $categoryStock = new CategoryStock();
             $categoryStock->category_id = $categoryEntity->getId();
-            $categoryStock->article_id = $articleId;
+            $categoryStock->article_id = $stockValue->getArticleId();
+            $categoryStock->title = $stockValue->getTitle();
+            $categoryStock->user_id = $stockValue->getUserId();
+            $categoryStock->profile_image_url = $stockValue->getProfileImageUrl();
+            $categoryStock->article_created_at = $stockValue->getArticleCreatedAt();
+            $categoryStock->tags = $tags;
             $categoryStock->save();
         }
     }

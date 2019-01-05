@@ -5,6 +5,7 @@
 
 namespace App\Models\Domain\Category;
 
+use App\Models\Domain\QiitaApiRepository;
 use App\Models\Domain\Account\AccountEntity;
 
 /**
@@ -57,13 +58,18 @@ class CategoryEntity
      * ストックをカテゴライズする
      *
      * @param CategoryRepository $categoryRepository
+     * @param QiitaApiRepository $qiitaApiRepository
      * @param AccountEntity $accountEntity
      * @param array $articleIds
      */
-    public function categorize(CategoryRepository $categoryRepository, AccountEntity $accountEntity, array $articleIds)
-    {
+    public function categorize(
+        CategoryRepository $categoryRepository,
+        QiitaApiRepository $qiitaApiRepository,
+        AccountEntity $accountEntity,
+        array $articleIds
+    ) {
         $this->destroyRelation($categoryRepository, $accountEntity, $articleIds);
-        $this->createRelation($categoryRepository, $articleIds);
+        $this->createRelation($categoryRepository, $qiitaApiRepository, $articleIds, $accountEntity);
     }
 
     /**
@@ -96,10 +102,17 @@ class CategoryEntity
      * カテゴリとストックのリレーションを作成する
      *
      * @param CategoryRepository $categoryRepository
+     * @param QiitaApiRepository $qiitaApiRepository
      * @param array $articleIds
+     * @param AccountEntity $accountEntity
      */
-    private function createRelation(CategoryRepository $categoryRepository, array $articleIds)
-    {
+    private function createRelation(
+        CategoryRepository $categoryRepository,
+        QiitaApiRepository $qiitaApiRepository,
+        array $articleIds,
+        AccountEntity $accountEntity
+    ) {
+        // TODO CategoryStockEntityを修正する
         $categoryStockEntities = $this->searchHasCategoryStockEntities($categoryRepository);
         $stockArticleIdList = $categoryStockEntities->buildArticleIdList();
 
@@ -112,7 +125,9 @@ class CategoryEntity
 
         $uniqueSaveArticleIds = array_unique($saveArticleIds);
         if ($uniqueSaveArticleIds) {
-            $categoryRepository->createCategoriesStocks($this, $uniqueSaveArticleIds);
+            $stockValues = $qiitaApiRepository->fetchItemsByArticleIds($accountEntity, $uniqueSaveArticleIds);
+
+            $categoryRepository->createCategoriesStocks($this, $stockValues);
         }
     }
 

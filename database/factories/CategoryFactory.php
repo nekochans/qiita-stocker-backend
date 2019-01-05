@@ -17,7 +17,12 @@ $factory->define(\App\Eloquents\CategoryName::class, function (Faker $faker) {
 
 $factory->define(\App\Eloquents\CategoryStock::class, function (Faker $faker) {
     return [
-        'category_id'       => '1',
-        'article_id'        => $faker->unique()->regexify('[a-z0-9]{20}'),
-    ];
+        'category_id'              => '1',
+        'article_id'               => $faker->unique()->regexify('[a-z0-9]{20}'),
+        'title'                    => $faker->sentence,
+        'user_id'                  => $faker->userName,
+        'profile_image_url'        => $faker->url,
+        'article_created_at'       => $faker->dateTimeThisDecade,
+        'tags'                     => '',
+        ];
 });
