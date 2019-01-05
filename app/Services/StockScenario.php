@@ -141,7 +141,6 @@ class StockScenario
      * @param array $params
      * @return array
      * @throws CategoryNotFoundException
-     * @throws ServiceUnavailableException
      * @throws UnauthorizedException
      * @throws ValidationException
      * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
@@ -169,36 +168,28 @@ class StockScenario
 
             $categoryStockEntities = $categoryEntity->searchHasCategoryStockEntities($this->categoryRepository, $limit, $offset);
             $totalCount = $this->categoryRepository->getCountCategoriesStocksByCategoryId($categoryEntity->getId());
-
-            $stockValues = $this->qiitaApiRepository->fetchItems($accountEntity, $categoryStockEntities);
         } catch (ModelNotFoundException $e) {
             throw new CategoryNotFoundException(CategoryEntity::categoryNotFoundMessage());
-        } catch (RequestException $e) {
-            throw new ServiceUnavailableException();
         } catch (\PDOException $e) {
             \DB::rollBack();
             throw $e;
         }
 
-        $stockValueList = $stockValues->getStockValues();
+        $CategoryStockEntityList = $categoryStockEntities->getCategoryStockEntities();
 
         $linkList = $this->buildLinkHeaderList($params['uri'], $params['page'], $params['perPage'], $totalCount);
         $link = implode(', ', $linkList);
 
-        $articleIdList = $categoryStockEntities->buildArticleIdList();
-        $CategoryStockEntityList = $categoryStockEntities->getCategoryStockEntities();
-
         $stocks = [];
-        foreach ($stockValueList as $stockValue) {
-            $key = array_search($stockValue->getArticleId(), $articleIdList);
+        foreach ($CategoryStockEntityList as $categoryStockEntity) {
             $stock = [
-                'id'                       => $CategoryStockEntityList[$key]->getId(),
-                'article_id'               => $stockValue->getArticleId(),
-                'title'                    => $stockValue->getTitle(),
-                'user_id'                  => $stockValue->getUserId(),
-                'profile_image_url'        => $stockValue->getProfileImageUrl(),
-                'article_created_at'       => $stockValue->getArticleCreatedAt()->format('Y-m-d H:i:s.u'),
-                'tags'                     => $stockValue->getTags(),
+                'id'                       => $categoryStockEntity->getId(),
+                'article_id'               => $categoryStockEntity->getStockValue()->getArticleId(),
+                'title'                    => $categoryStockEntity->getStockValue()->getTitle(),
+                'user_id'                  => $categoryStockEntity->getStockValue()->getUserId(),
+                'profile_image_url'        => $categoryStockEntity->getStockValue()->getProfileImageUrl(),
+                'article_created_at'       => $categoryStockEntity->getStockValue()->getArticleCreatedAt()->format('Y-m-d H:i:s.u'),
+                'tags'                     => $categoryStockEntity->getStockValue()->getTags(),
             ];
             array_push($stocks, $stock);
         }

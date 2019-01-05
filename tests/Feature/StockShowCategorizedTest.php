@@ -7,7 +7,6 @@ namespace Tests\Feature;
 
 use App\Eloquents\Account;
 use App\Eloquents\Category;
-use Faker\Factory as Faker;
 use App\Eloquents\AccessToken;
 use App\Eloquents\CategoryName;
 use App\Eloquents\LoginSession;
@@ -59,16 +58,19 @@ class StockShowCategorizedTest extends AbstractTestCase
         $stockList = $this->createStocks($totalCount, $idSequence);
 
         foreach ($stockList as $stock) {
-            factory(CategoryStock::class)->create(['category_id' => $categoryId, 'article_id' => $stock['article_id']]);
+            factory(CategoryStock::class)->create([
+                'category_id'               => $categoryId,
+                'article_id'                => $stock['article_id'],
+                'title'                     => $stock['title'],
+                'user_id'                   => $stock['user_id'],
+                'profile_image_url'         => $stock['profile_image_url'],
+                'article_created_at'        => $stock['article_created_at'],
+                'tags'                      => json_encode($stock['tags']),
+                'lock_version'              => 0
+            ]);
         }
 
         $stockList = array_slice($stockList, 20, $perPage);
-        $mockData = [];
-        foreach ($stockList as $stock) {
-            $fetchStock = $this->createFetchStocksData($stock);
-            array_push($mockData, [200, [], json_encode($fetchStock)]);
-        }
-        $this->setMockGuzzle($mockData);
 
         $uri = sprintf(
             '/api/stocks/categories/%d?page=%d&per_page=%d',
@@ -125,102 +127,7 @@ class StockShowCategorizedTest extends AbstractTestCase
         return $stocks;
     }
 
-    /**
-     * APIから取得するストックのデータを作成する
-     *
-     * @param array $stock
-     * @return array
-     */
-    private function createFetchStocksData(array $stock) :array
-    {
-        $faker = Faker::create();
-        $tags = [];
-        for ($i = 0; $i < count($stock['tags']); $i++) {
-            $tag = [
-                'name'     => $stock['tags'][$i],
-                'versions' => []
-            ];
-            array_push($tags, $tag);
-        }
 
-        $fetchStock = [
-            'rendered_body'   => '<h1>Example</h1>',
-            'body'            => '# Example',
-            'coediting'       => false,
-            'comments_count'  => 0,
-            'created_at'      => $stock['article_created_at'],
-            'group'           => null,
-            'id'              => $stock['article_id'],
-            'likes_count'     => 50,
-            'private'         => false,
-            'reactions_count' => 0,
-            'tags'            => $tags,
-            'title'           => $stock['title'],
-            'updated_at'      => $faker->dateTimeThisDecade,
-            'url'             => 'https://qiita.com/yaotti/items/4bd431809afb1bb99e4f',
-            'user'            => [
-                'description'         => 'Hello, world.',
-                'facebook_id'         => '',
-                'followees_count'     => 100,
-                'followers_count'     => 200,
-                'github_login_name'   => '',
-                'id'                  => $stock['user_id'],
-                'items_count'         => 300,
-                'linkedin_id'         => '',
-                'location'            => 'Tokyo, Japan',
-                'name'                => '',
-                'organization'        => 'test Inc',
-                'permanent_id'        => 1,
-                'profile_image_url'   => $stock['profile_image_url'],
-                'team_only'           => false,
-                'twitter_screen_name' => '',
-                'website_url'         => '',
-            ],
-            'page_views_count' => null
-        ];
-        return $fetchStock;
-    }
-
-
-    /**
-     * 異常系のテスト
-     * APIのレスポンスがエラーの場合、エラーとなること
-     */
-    public function testErrorApiFailure()
-    {
-        $errorResponse = [
-            'message' => 'Not found',
-            'type'    => 'not_found'
-        ];
-
-        $mockData = [[404, [], json_encode($errorResponse)]];
-        $this->setMockGuzzle($mockData);
-
-        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
-        $accountId = 1;
-        $categoryId = 1;
-        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
-        factory(CategoryStock::class)->create(['category_id' => $categoryId]);
-
-        $uri = sprintf(
-            '/api/stocks/categories/%d?page=%d&per_page=%d',
-            $categoryId,
-            1,
-            20
-        );
-
-        $jsonResponse = $this->get(
-            $uri,
-            ['Authorization' => 'Bearer ' . $loginSession]
-        );
-
-        // 実際にJSONResponseに期待したデータが含まれているか確認する
-        $expectedErrorCode = 503;
-        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
-        $jsonResponse->assertJson(['message' => 'Service Unavailable']);
-        $jsonResponse->assertStatus($expectedErrorCode);
-        $jsonResponse->assertHeader('X-Request-Id');
-    }
 
     /**
      * 異常系のテスト

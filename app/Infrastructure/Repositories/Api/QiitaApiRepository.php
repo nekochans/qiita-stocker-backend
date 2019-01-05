@@ -10,7 +10,6 @@ use App\Models\Domain\Stock\StockValues;
 use App\Models\Domain\Account\AccountEntity;
 use App\Models\Domain\Stock\FetchStockValues;
 use App\Models\Domain\Stock\StockValueBuilder;
-use App\Models\Domain\Category\CategoryStockEntities;
 
 /**
  * Class QiitaApiRepository
@@ -106,39 +105,6 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
             array_push($tagNames, $tagName);
         }
         return $tagNames;
-    }
-
-    /**
-     * アイテム一覧を取得する
-     *
-     * @param AccountEntity $accountEntity
-     * @param CategoryStockEntities $categoryStockEntities
-     * @return StockValues
-     */
-    public function fetchItems(AccountEntity $accountEntity, CategoryStockEntities $categoryStockEntities): StockValues
-    {
-        $stockArticleIdList = $categoryStockEntities->buildArticleIdList();
-
-        $promises = [];
-        foreach ($stockArticleIdList as $stockArticleId) {
-            $uri = sprintf('https://qiita.com/api/v2/items/%s', $stockArticleId);
-            $promises[] = $this->getClient()->requestAsync(
-                'GET',
-                $uri,
-                ['headers' => ['Authorization' => 'Bearer '. $accountEntity->getAccessToken()]]
-            );
-        }
-
-        $responses = \GuzzleHttp\Promise\all($promises)->wait();
-
-        $stockValues = [];
-        foreach ($responses as $response) {
-            $stock = json_decode($response->getBody());
-            $stockValue = $this->buildStockValue($stock);
-            array_push($stockValues, $stockValue);
-        }
-
-        return new StockValues(...$stockValues);
     }
 
     /**

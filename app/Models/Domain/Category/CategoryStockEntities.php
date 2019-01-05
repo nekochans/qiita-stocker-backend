@@ -45,7 +45,7 @@ class CategoryStockEntities
 
         $stockArticleIdList = [];
         foreach ($categoryStockEntityList as $categoryStockEntity) {
-            array_push($stockArticleIdList, $categoryStockEntity->getArticleId());
+            array_push($stockArticleIdList, $categoryStockEntity->getStockValue()->getArticleId());
         }
         return $stockArticleIdList;
     }

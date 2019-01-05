@@ -5,6 +5,8 @@
 
 namespace App\Models\Domain\Category;
 
+use App\Models\Domain\Stock\StockValue;
+
 /**
  * Class CategoryStockEntityBuilder
  * @package App\Models\Domain\Category
@@ -12,7 +14,7 @@ namespace App\Models\Domain\Category;
 class CategoryStockEntityBuilder
 {
     /**
-     * カテゴリID
+     * ID
      *
      * @var int
      */
@@ -26,11 +28,11 @@ class CategoryStockEntityBuilder
     private $categoryId;
 
     /**
-     * Article ID
+     * StockValue
      *
-     * @var string
+     * @var StockValue
      */
-    private $articleId;
+    private $stockValue;
 
     /**
      * @return int
@@ -65,19 +67,19 @@ class CategoryStockEntityBuilder
     }
 
     /**
-     * @return string
+     * @return StockValue
      */
-    public function getArticleId(): string
+    public function getStockValue(): StockValue
     {
-        return $this->articleId;
+        return $this->stockValue;
     }
 
     /**
-     * @param string $articleId
+     * @param StockValue $stockValue
      */
-    public function setArticleId(string $articleId): void
+    public function setStockValue(StockValue $stockValue): void
     {
-        $this->articleId = $articleId;
+        $this->stockValue = $stockValue;
     }
 
     public function build()
