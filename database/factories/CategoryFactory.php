@@ -23,6 +23,6 @@ $factory->define(\App\Eloquents\CategoryStock::class, function (Faker $faker) {
         'user_id'                  => $faker->userName,
         'profile_image_url'        => $faker->url,
         'article_created_at'       => $faker->dateTimeThisDecade,
-        'tags'                     => '',
+        'tags'                     => json_encode(['testTag']),
         ];
 });

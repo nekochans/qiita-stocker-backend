@@ -11,6 +11,7 @@ use App\Eloquents\CategoryStock;
 use App\Models\Domain\Stock\StockValues;
 use App\Models\Domain\Account\AccountEntity;
 use App\Models\Domain\Category\CategoryEntity;
+use App\Models\Domain\Stock\StockValueBuilder;
 use App\Models\Domain\Category\CategoryEntities;
 use App\Models\Domain\Category\CategoryNameValue;
 use App\Models\Domain\Category\CategoryStockEntity;
@@ -230,10 +231,22 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
      */
     private function buildCategoryStockEntity(array $categoryStock): CategoryStockEntity
     {
+        $tags = json_decode($categoryStock['tags'], true);
+        $articleCreatedAt = new \DateTime($categoryStock['article_created_at']);
+
+        $stockValueBuilder = new StockValueBuilder();
+        $stockValueBuilder->setArticleId($categoryStock['article_id']);
+        $stockValueBuilder->setTitle($categoryStock['title']);
+        $stockValueBuilder->setUserId($categoryStock['user_id']);
+        $stockValueBuilder->setProfileImageUrl($categoryStock['profile_image_url']);
+        $stockValueBuilder->setArticleCreatedAt($articleCreatedAt);
+        $stockValueBuilder->setTags($tags);
+        $stockValue = $stockValueBuilder->build();
+
         $categoryStockEntityBuilder = new CategoryStockEntityBuilder();
         $categoryStockEntityBuilder->setId($categoryStock['id']);
         $categoryStockEntityBuilder->setCategoryId($categoryStock['category_id']);
-        $categoryStockEntityBuilder->setArticleId($categoryStock['article_id']);
+        $categoryStockEntityBuilder->setStockValue($stockValue);
 
         return $categoryStockEntityBuilder->build();
     }

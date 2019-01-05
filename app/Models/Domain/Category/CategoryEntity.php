@@ -112,7 +112,6 @@ class CategoryEntity
         array $articleIds,
         AccountEntity $accountEntity
     ) {
-        // TODO CategoryStockEntityを修正する
         $categoryStockEntities = $this->searchHasCategoryStockEntities($categoryRepository);
         $stockArticleIdList = $categoryStockEntities->buildArticleIdList();
 

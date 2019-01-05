@@ -6,6 +6,7 @@
 namespace App\Services;
 
 use App\Models\Domain\QiitaApiRepository;
+use GuzzleHttp\Exception\RequestException;
 use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Account\AccountRepository;
 use App\Models\Domain\Category\CategoryNameValue;
@@ -18,6 +19,7 @@ use App\Models\Domain\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\LoginSession\LoginSessionRepository;
 use App\Models\Domain\Exceptions\CategoryNotFoundException;
+use App\Models\Domain\Exceptions\ServiceUnavailableException;
 use App\Models\Domain\exceptions\LoginSessionExpiredException;
 
 class CategoryScenario
@@ -250,6 +252,7 @@ class CategoryScenario
      * @param array $params
      * @throws CategoryNotFoundException
      * @throws LoginSessionExpiredException
+     * @throws ServiceUnavailableException
      * @throws UnauthorizedException
      * @throws ValidationException
      */
@@ -283,6 +286,9 @@ class CategoryScenario
             \DB::commit();
         } catch (ModelNotFoundException $e) {
             throw new CategoryNotFoundException(CategoryEntity::categoryNotFoundMessage());
+        } catch (RequestException $e) {
+            \DB::rollBack();
+            throw new ServiceUnavailableException();
         } catch (\PDOException $e) {
             \DB::rollBack();
             throw $e;
