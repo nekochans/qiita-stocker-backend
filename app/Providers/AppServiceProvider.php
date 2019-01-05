@@ -81,7 +81,8 @@ class AppServiceProvider extends ServiceProvider
                 return new CategoryScenario(
                     $this->app->make(AccountRepository::class),
                     $this->app->make(LoginSessionRepository::class),
-                    $this->app->make(CategoryRepository::class)
+                    $this->app->make(CategoryRepository::class),
+                    $this->app->make(QiitaApiRepository::class)
                 );
             }
         );

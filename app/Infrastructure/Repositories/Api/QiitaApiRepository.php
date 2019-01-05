@@ -140,4 +140,35 @@ class QiitaApiRepository extends Repository implements \App\Models\Domain\QiitaA
 
         return new StockValues(...$stockValues);
     }
+
+    /**
+     * ArticleIDのリストからアイテム一覧を取得する
+     *
+     * @param AccountEntity $accountEntity
+     * @param array $stockArticleIdList
+     * @return StockValues
+     */
+    public function fetchItemsByArticleIds(AccountEntity $accountEntity, array $stockArticleIdList): StockValues
+    {
+        $promises = [];
+        foreach ($stockArticleIdList as $articleId) {
+            $uri = sprintf('https://qiita.com/api/v2/items/%s', $articleId);
+            $promises[] = $this->getClient()->requestAsync(
+                'GET',
+                $uri,
+                ['headers' => ['Authorization' => 'Bearer '. $accountEntity->getAccessToken()]]
+            );
+        }
+
+        $responses = \GuzzleHttp\Promise\all($promises)->wait();
+
+        $stockValues = [];
+        foreach ($responses as $response) {
+            $stock = json_decode($response->getBody());
+            $stockValue = $this->buildStockValue($stock);
+            array_push($stockValues, $stockValue);
+        }
+
+        return new StockValues(...$stockValues);
+    }
 }

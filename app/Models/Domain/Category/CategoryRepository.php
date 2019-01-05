@@ -5,6 +5,7 @@
 
 namespace App\Models\Domain\Category;
 
+use App\Models\Domain\Stock\StockValues;
 use App\Models\Domain\Account\AccountEntity;
 
 /**
@@ -63,9 +64,10 @@ interface CategoryRepository
      * カテゴリとストックのリレーションを作成する
      *
      * @param CategoryEntity $categoryEntity
-     * @param array $articleIdList
+     * @param StockValues $stockValues
+     * @return mixed
      */
-    public function createCategoriesStocks(CategoryEntity $categoryEntity, array $articleIdList);
+    public function createCategoriesStocks(CategoryEntity $categoryEntity, StockValues $stockValues);
 
     /**
      * カテゴリとストックのリレーションを取得する

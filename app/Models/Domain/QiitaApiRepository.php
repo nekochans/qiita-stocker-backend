@@ -34,4 +34,13 @@ interface QiitaApiRepository
      * @return StockValues
      */
     public function fetchItems(AccountEntity $accountEntity, CategoryStockEntities $categoryStockEntities): StockValues;
+
+    /**
+     * ArticleIDのリストからアイテム一覧を取得する
+     *
+     * @param AccountEntity $accountEntity
+     * @param array $stockArticleIdList
+     * @return StockValues
+     */
+    public function fetchItemsByArticleIds(AccountEntity $accountEntity, array $stockArticleIdList): StockValues;
 }

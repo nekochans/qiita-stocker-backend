@@ -5,6 +5,7 @@
 
 namespace App\Services;
 
+use App\Models\Domain\QiitaApiRepository;
 use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Account\AccountRepository;
 use App\Models\Domain\Category\CategoryNameValue;
@@ -45,19 +46,29 @@ class CategoryScenario
     private $categoryRepository;
 
     /**
+     * QiitaApiRepository
+     *
+     * @var
+     */
+    private $qiitaApiRepository;
+
+    /**
      * CategoryScenario constructor.
      * @param AccountRepository $accountRepository
      * @param LoginSessionRepository $loginSessionRepository
      * @param CategoryRepository $categoryRepository
+     * @param QiitaApiRepository $qiitaApiRepository
      */
     public function __construct(
         AccountRepository $accountRepository,
         LoginSessionRepository $loginSessionRepository,
-        CategoryRepository $categoryRepository
+        CategoryRepository $categoryRepository,
+        QiitaApiRepository $qiitaApiRepository
     ) {
         $this->accountRepository = $accountRepository;
         $this->loginSessionRepository = $loginSessionRepository;
         $this->categoryRepository = $categoryRepository;
+        $this->qiitaApiRepository = $qiitaApiRepository;
     }
 
     /**
@@ -267,7 +278,7 @@ class CategoryScenario
 
             \DB::beginTransaction();
 
-            $categoryEntity->categorize($this->categoryRepository, $accountEntity, $params['articleIds']);
+            $categoryEntity->categorize($this->categoryRepository, $this->qiitaApiRepository, $accountEntity, $params['articleIds']);
 
             \DB::commit();
         } catch (ModelNotFoundException $e) {
