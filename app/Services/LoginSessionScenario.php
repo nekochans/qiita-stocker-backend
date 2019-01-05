@@ -89,9 +89,7 @@ class LoginSessionScenario
             }
 
             $sessionId = Uuid::uuid4();
-
-            $expiredOn = new \DateTime();
-            $expiredOn->add(new \DateInterval('P30D'));
+            $expiredOn = LoginSessionSpecification::loginSessionExpiration();
 
             $loginSessionEntityBuilder = new LoginSessionEntityBuilder();
             $loginSessionEntityBuilder->setAccountId($accountEntity->getAccountId());

@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\Exceptions\AccountCreatedException;
 use App\Models\Domain\LoginSession\LoginSessionRepository;
 use App\Models\Domain\LoginSession\LoginSessionEntityBuilder;
+use App\Models\Domain\LoginSession\LoginSessionSpecification;
 use App\Models\Domain\Exceptions\LoginSessionExpiredException;
 
 /**
@@ -98,8 +99,7 @@ class AccountScenario
 
             $sessionId = Uuid::uuid4();
 
-            $expiredOn = new \DateTime();
-            $expiredOn->add(new \DateInterval('P30D'));
+            $expiredOn = LoginSessionSpecification::loginSessionExpiration();
 
             $loginSessionEntityBuilder = new LoginSessionEntityBuilder();
             $loginSessionEntityBuilder->setAccountId($accountEntity->getAccountId());
