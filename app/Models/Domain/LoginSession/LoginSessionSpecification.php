@@ -30,4 +30,17 @@ class LoginSessionSpecification
         }
         return [];
     }
+
+    /**
+     * ログインセッションの有効期限を取得する
+     *
+     * @return \DateTime
+     * @throws \Exception
+     */
+    public static function loginSessionExpiration(): \DateTime
+    {
+        $expiredOn = new \DateTime();
+
+        return $expiredOn->add(new \DateInterval('P30D'));
+    }
 }

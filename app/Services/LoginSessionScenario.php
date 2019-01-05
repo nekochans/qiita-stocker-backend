@@ -89,10 +89,7 @@ class LoginSessionScenario
             }
 
             $sessionId = Uuid::uuid4();
-
-            // TODO 有効期限を適切な期限に修正
-            $expiredOn = new \DateTime();
-            $expiredOn->add(new \DateInterval('PT1H'));
+            $expiredOn = LoginSessionSpecification::loginSessionExpiration();
 
             $loginSessionEntityBuilder = new LoginSessionEntityBuilder();
             $loginSessionEntityBuilder->setAccountId($accountEntity->getAccountId());
