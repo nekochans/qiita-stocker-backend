@@ -99,6 +99,14 @@ class StockScenario
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
 
             $fetchStocksValue = $this->qiitaApiRepository->fetchStocks($accountEntity, $params['page'], $params['perPage']);
+
+            $stockValueList = $fetchStocksValue->getStockValues();
+            $stockArticleIdList = [];
+            foreach ($stockValueList as $stockValue) {
+                array_push($stockArticleIdList, $stockValue->getArticleId());
+            }
+
+            $categoryArticleIds = $this->categoryRepository->searchCategoriesStocksAllByArticleId($accountEntity, $stockArticleIdList);
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         } catch (RequestException $e) {
@@ -107,18 +115,27 @@ class StockScenario
             throw $e;
         }
 
-        $stockValueList = $fetchStocksValue->getStockValues();
         $stocks = [];
 
         foreach ($stockValueList as $stockValue) {
             $stock = [
-                'article_id'               => $stockValue->getArticleId(),
-                'title'                    => $stockValue->getTitle(),
-                'user_id'                  => $stockValue->getUserId(),
-                'profile_image_url'        => $stockValue->getProfileImageUrl(),
-                'article_created_at'       => $stockValue->getArticleCreatedAt()->format('Y-m-d H:i:s.u'),
-                'tags'                     => $stockValue->getTags(),
+                'stock' => [
+                    'article_id'               => $stockValue->getArticleId(),
+                    'title'                    => $stockValue->getTitle(),
+                    'user_id'                  => $stockValue->getUserId(),
+                    'profile_image_url'        => $stockValue->getProfileImageUrl(),
+                    'article_created_at'       => $stockValue->getArticleCreatedAt()->format('Y-m-d H:i:s.u'),
+                    'tags'                     => $stockValue->getTags(),
+                ]
             ];
+
+            $keyIndex = array_search($stockValue->getArticleId(), array_column($categoryArticleIds, 'article_id'));
+            if ($keyIndex !== false) {
+                $stock['category'] = [
+                    'categoryId' => $categoryArticleIds[$keyIndex]['id'],
+                    'name'       => $categoryArticleIds[$keyIndex]['name'],
+                ];
+            }
 
             array_push($stocks, $stock);
         }
