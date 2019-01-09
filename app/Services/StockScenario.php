@@ -126,8 +126,7 @@ class StockScenario
                     'profile_image_url'        => $stockValue->getProfileImageUrl(),
                     'article_created_at'       => $stockValue->getArticleCreatedAt()->format('Y-m-d H:i:s.u'),
                     'tags'                     => $stockValue->getTags(),
-                ],
-                'category' => null
+                ]
             ];
 
             $keyIndex = array_search($stockValue->getArticleId(), array_column($categoryArticleIds, 'article_id'));

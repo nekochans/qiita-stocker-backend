@@ -61,7 +61,6 @@ class StockIndexTest extends AbstractTestCase
         $fetchStockList = [];
         foreach ($stockList as $stock) {
             $expectedStock['stock'] = $stock;
-            $expectedStock['category'] = null;
             $expectedStockList[] = $expectedStock;
 
             $fetchStock = $this->createFetchStocksData($stock);
