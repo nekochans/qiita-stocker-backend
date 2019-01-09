@@ -12,6 +12,7 @@ use App\Eloquents\AccessToken;
 use App\Eloquents\CategoryName;
 use App\Eloquents\LoginSession;
 use App\Eloquents\QiitaAccount;
+use App\Eloquents\CategoryStock;
 use App\Eloquents\QiitaUserName;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -35,6 +36,7 @@ class StockIndexTest extends AbstractTestCase
             $categories = factory(Category::class)->create(['account_id' => $account->id]);
             $categories->each(function ($category) {
                 factory(CategoryName::class)->create(['category_id' => $category->id]);
+                factory(CategoryStock::class)->create(['category_id' => $category->id]);
             });
         });
     }
@@ -49,16 +51,97 @@ class StockIndexTest extends AbstractTestCase
         $accountId = 1;
         factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
 
+
         $page = 2;
         $perPage = 20;
         $stockCount = 99;
-
         $stockList = $this->createStocks($perPage);
 
+        $expectedStockList = [];
         $fetchStockList = [];
         foreach ($stockList as $stock) {
+            $expectedStock['stock'] = $stock;
+            $expectedStock['category'] = null;
+            $expectedStockList[] = $expectedStock;
+
             $fetchStock = $this->createFetchStocksData($stock);
-            array_push($fetchStockList, $fetchStock);
+            $fetchStockList[] = $fetchStock;
+        }
+
+
+        $mockData = [[200, ['total-count' => $stockCount], json_encode($fetchStockList)]];
+        $this->setMockGuzzle($mockData);
+
+        $uri = sprintf(
+            '/api/stocks?page=%d&per_page=%d',
+            $page,
+            $perPage
+        );
+
+        $jsonResponse = $this->get(
+            $uri,
+            ['Authorization' => 'Bearer ' . $loginSession]
+        );
+
+        $link = sprintf('<http://127.0.0.1/api/stocks?page=3&per_page=%d>; rel="next", ', $perPage);
+        $link .= sprintf('<http://127.0.0.1/api/stocks?page=5&per_page=%d>; rel="last", ', $perPage);
+        $link .= sprintf('<http://127.0.0.1/api/stocks?page=1&per_page=%d>; rel="first", ', $perPage);
+        $link .= sprintf('<http://127.0.0.1/api/stocks?page=1&per_page=%d>; rel="prev"', $perPage);
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $jsonResponse->assertJson($expectedStockList);
+        $jsonResponse->assertStatus(200);
+        $jsonResponse->assertHeader('X-Request-Id');
+        $jsonResponse->assertHeader('Link', $link);
+        $jsonResponse->assertHeader('Total-Count', $stockCount);
+    }
+
+    /**
+     * 正常系のテスト
+     * ストックを取得できること
+     *
+     * ストックがカテゴリに紐づいているケース
+     */
+    public function testSuccessCategorizedStock()
+    {
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
+
+        $categoryId = 2;
+        $categoryName = 'testCategoryName';
+        factory(Category::class)->create(['account_id' => $accountId]);
+        factory(CategoryName::class)->create(['category_id' => $categoryId, 'name' => $categoryName]);
+
+        $page = 2;
+        $perPage = 20;
+        $stockCount = 99;
+        $stockList = $this->createStocks($perPage);
+
+        $expectedStockList = [];
+        $fetchStockList = [];
+        foreach ($stockList as $stock) {
+            factory(CategoryStock::class)->create([
+                'category_id'               => $categoryId,
+                'article_id'                => $stock['article_id'],
+                'title'                     => $stock['title'],
+                'user_id'                   => $stock['user_id'],
+                'profile_image_url'         => $stock['profile_image_url'],
+                'article_created_at'        => $stock['article_created_at'],
+                'tags'                      => json_encode($stock['tags']),
+                'lock_version'              => 0
+            ]);
+
+            $expectedStock['stock'] = $stock;
+            $expectedStock['category'] = [
+                'categoryId' => $categoryId,
+                'name'       => $categoryName,
+            ];
+
+            $expectedStockList[] = $expectedStock;
+
+            $fetchStock = $this->createFetchStocksData($stock);
+            $fetchStockList[] = $fetchStock;
         }
 
         $mockData = [[200, ['total-count' => $stockCount], json_encode($fetchStockList)]];
@@ -81,7 +164,7 @@ class StockIndexTest extends AbstractTestCase
         $link .= sprintf('<http://127.0.0.1/api/stocks?page=1&per_page=%d>; rel="prev"', $perPage);
 
         // 実際にJSONResponseに期待したデータが含まれているか確認する
-        $jsonResponse->assertJson($stockList);
+        $jsonResponse->assertJson($expectedStockList);
         $jsonResponse->assertStatus(200);
         $jsonResponse->assertHeader('X-Request-Id');
         $jsonResponse->assertHeader('Link', $link);
@@ -108,7 +191,7 @@ class StockIndexTest extends AbstractTestCase
                 'article_created_at'        => '2018-01-01 00:11:22.000000',
                 'tags'                      => ['tag'. $i, 'tag'. $secondTag]
             ];
-            array_push($stocks, $stock);
+            $stocks[] = $stock;
         }
 
         return $stocks;
@@ -129,7 +212,7 @@ class StockIndexTest extends AbstractTestCase
                 'name'     => $stock['tags'][$i],
                 'versions' => []
             ];
-            array_push($tags, $tag);
+            $tags[] = $tag;
         }
 
         $fetchStock = [

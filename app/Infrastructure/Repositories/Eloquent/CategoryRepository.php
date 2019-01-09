@@ -284,7 +284,7 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
      */
     public function searchCategoriesStocksAllByArticleId(AccountEntity $accountEntity, array $articleIdList): array
     {
-        $categories = Category::select('categories_stocks.id', 'categories_names.name', 'categories_stocks.article_id')
+        $categories = Category::select('categories.id', 'categories_names.name', 'categories_stocks.article_id')
             ->where('categories.account_id', $accountEntity->getAccountId())
             ->join('categories_names', 'categories.id', '=', 'categories_names.category_id')
             ->join('categories_stocks', function ($join) use ($articleIdList) {
