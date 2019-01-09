@@ -94,6 +94,15 @@ interface CategoryRepository
     ): array;
 
     /**
+     * カテゴリとカテゴライズされているストックのArticleID一覧を取得する
+     *
+     * @param AccountEntity $accountEntity
+     * @param array $articleIdList
+     * @return array
+     */
+    public function searchCategoriesStocksAllByArticleId(AccountEntity $accountEntity, array $articleIdList): array;
+
+    /**
      * カテゴリとストックのリレーションを削除する
      *
      * @param array $categoryStockRelationList
