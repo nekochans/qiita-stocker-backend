@@ -66,7 +66,6 @@ class StockController extends Controller
      * @return JsonResponse
      * @throws \App\Models\Domain\Exceptions\CategoryNotFoundException
      * @throws \App\Models\Domain\Exceptions\LoginSessionExpiredException
-     * @throws \App\Models\Domain\Exceptions\ServiceUnavailableException
      * @throws \App\Models\Domain\Exceptions\UnauthorizedException
      * @throws \App\Models\Domain\Exceptions\ValidationException
      */
