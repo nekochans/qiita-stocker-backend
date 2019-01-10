@@ -85,11 +85,11 @@ class StockShowCategorizedTest extends AbstractTestCase
             ['Authorization' => 'Bearer ' . $loginSession]
         );
 
-        $link = sprintf('<http://127.0.0.1/api/stocks/categories/%d?page=4&per_page=%d>; rel="next", ', $categoryId, $perPage);
-        $link .= sprintf('<http://127.0.0.1/api/stocks/categories/%d?page=5&per_page=%d>; rel="last", ', $categoryId, $perPage);
-        $link .= sprintf('<http://127.0.0.1/api/stocks/categories/%d?page=1&per_page=%d>; rel="first", ', $categoryId, $perPage);
-        $link .= sprintf('<http://127.0.0.1/api/stocks/categories/%d?page=2&per_page=%d>; rel="prev"', $categoryId, $perPage);
-
+        $uriBase = '<' . env('APP_URL') .'/api/stocks/categories/'.$categoryId. '?page=%d&per_page='. $perPage. '>; rel="%s"';
+        $link = sprintf($uriBase. ', ', 4, 'next');
+        $link .= sprintf($uriBase. ', ', 5, 'last');
+        $link .= sprintf($uriBase. ', ', 1, 'first');
+        $link .= sprintf($uriBase, 2, 'prev');
 
         // 実際にJSONResponseに期待したデータが含まれているか確認する
         $jsonResponse->assertJson($stockList);
