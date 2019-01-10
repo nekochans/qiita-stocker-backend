@@ -211,6 +211,7 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
             $categoryStocks = CategoryStock::where('category_id', $categoryEntity->getId())->get();
         } else {
             $categoryStocks = CategoryStock::where('category_id', $categoryEntity->getId())
+                ->orderBy('id', 'desc')
                 ->offset($offset)
                 ->limit($limit)
                 ->get();

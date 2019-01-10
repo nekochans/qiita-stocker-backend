@@ -70,6 +70,7 @@ class StockShowCategorizedTest extends AbstractTestCase
             ]);
         }
 
+        $stockList = array_reverse($stockList);
         $stockList = array_slice($stockList, 20, $perPage);
 
         $uri = sprintf(
