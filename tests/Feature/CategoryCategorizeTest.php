@@ -285,7 +285,6 @@ class CategoryCategorizeTest extends AbstractTestCase
 
             $stock = [
                 'id'                        => $idSequence,
-                'article_id'                => 'abcdefghij'. str_pad($i, 10, '0', STR_PAD_LEFT),
                 'article_id'                => 'aabbccddee'. str_pad($i, 10, '0', STR_PAD_LEFT),
                 'title'                     => 'title' . $i,
                 'user_id'                   => 'user-id-' . $i,
