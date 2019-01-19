@@ -626,4 +626,29 @@ class CategoryCategorizeTest extends AbstractTestCase
             'tooLongLengthArray'           => [array_fill(0, 21, 'a210ddc2cb1bfeea9332')]
         ];
     }
+
+    /**
+     * 異常系のテスト
+     * メンテナンス中の場合エラーとなること
+     */
+    public function testErrorMaintenance()
+    {
+        \Config::set('app.maintenance', true);
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+
+        $jsonResponse = $this->postJson(
+            '/api/categories/stocks',
+            [
+                'id'         => 1,
+                'articleIds' => ['d210ddc2cb1bfeea9331','d210ddc2cb1bfeea9332','d210ddc2cb1bfeea9333']
+            ],
+            ['Authorization' => 'Bearer ' . $loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 503;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => 'サービスはメンテナンス中です。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+    }
 }

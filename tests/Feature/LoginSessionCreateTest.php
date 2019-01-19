@@ -323,4 +323,29 @@ class LoginSessionCreateTest extends AbstractTestCase
             'tooLongLength'      => [str_repeat('a', 192)]
         ];
     }
+
+    /**
+     * 異常系のテスト
+     * メンテナンス中の場合エラーとなること
+     */
+    public function testErrorMaintenance()
+    {
+        \Config::set('app.maintenance', true);
+        $accessToken = 'login0593b2655e9568f144fb1826342292f5c6b7d406fda00577b8d1530d8a5';
+
+        $jsonResponse = $this->postJson(
+            '/api/login-sessions',
+            [
+                'permanentId'    => '123',
+                'qiitaAccountId' => 'user-name',
+                'accessToken'    => $accessToken
+            ]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 503;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => 'サービスはメンテナンス中です。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+    }
 }
