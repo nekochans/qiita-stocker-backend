@@ -12,7 +12,7 @@
 |
 */
 
-Route::middleware(['cors', 'xRequestId'])->group(function () {
+Route::middleware(['cors', 'maintenance', 'xRequestId'])->group(function () {
     Route::options('accounts', function () {
         return response()->json();
     });
