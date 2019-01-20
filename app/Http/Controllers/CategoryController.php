@@ -149,4 +149,24 @@ class CategoryController extends Controller
 
         return response()->json()->setStatusCode(201);
     }
+
+    /**
+     * カテゴリとストックのリレーションを削除する
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function destroyCategorize(Request $request): JsonResponse
+    {
+        $sessionId = $request->bearerToken();
+        $params = [
+            'sessionId' => $sessionId,
+            'id'        => $request->id,
+        ];
+
+//        TODO シナリオクラスを作成
+//        $this->categoryScenario->destroyCategorize($params);
+
+        return response()->json()->setStatusCode(204);
+    }
 }
