@@ -64,4 +64,14 @@ class CategoryStockEntity
     {
         return $this->stockValue;
     }
+
+    /**
+     * カテゴリとストックのリレーションが作成されていなかった場合に使用するメッセージ
+     *
+     * @return string
+     */
+    public static function categoryStockNotFoundMessage(): string
+    {
+        return '不正なリクエストが行われました。';
+    }
 }

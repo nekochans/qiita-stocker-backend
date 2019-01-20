@@ -155,6 +155,7 @@ class CategoryController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws \App\Models\Domain\Exceptions\CategorizeNotFoundException
      * @throws \App\Models\Domain\Exceptions\UnauthorizedException
      * @throws \App\Models\Domain\exceptions\LoginSessionExpiredException
      */

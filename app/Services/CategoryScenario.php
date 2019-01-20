@@ -11,6 +11,7 @@ use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Account\AccountRepository;
 use App\Models\Domain\Category\CategoryNameValue;
 use App\Models\Domain\Category\CategoryRepository;
+use App\Models\Domain\Category\CategoryStockEntity;
 use App\Models\Domain\Category\CategoryEntityBuilder;
 use App\Models\Domain\Category\CategorySpecification;
 use App\Models\Domain\Exceptions\ValidationException;
@@ -19,6 +20,7 @@ use App\Models\Domain\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\LoginSession\LoginSessionRepository;
 use App\Models\Domain\Exceptions\CategoryNotFoundException;
+use App\Models\Domain\Exceptions\CategorizeNotFoundException;
 use App\Models\Domain\Exceptions\ServiceUnavailableException;
 use App\Models\Domain\exceptions\LoginSessionExpiredException;
 
@@ -300,6 +302,7 @@ class CategoryScenario
      * カテゴリとストックのリレーションを削除する
      *
      * @param array $params
+     * @throws CategorizeNotFoundException
      * @throws LoginSessionExpiredException
      * @throws UnauthorizedException
      */
@@ -310,6 +313,22 @@ class CategoryScenario
         } catch (ModelNotFoundException $e) {
             throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
         } catch (\PDOException $e) {
+            throw $e;
+        }
+
+        try {
+            // TODO idのバリデーションを追加する
+            $categoryStockEntity = $accountEntity->findHasCategoryStockEntity($this->categoryRepository, $params['id']);
+
+            \DB::beginTransaction();
+
+            $this->categoryRepository->destroyCategoriesStocks([$categoryStockEntity->getId()]);
+
+            \DB::commit();
+        } catch (ModelNotFoundException $e) {
+            throw new CategorizeNotFoundException(CategoryStockEntity::categoryStockNotFoundMessage());
+        } catch (\PDOException $e) {
+            \DB::rollBack();
             throw $e;
         }
     }
