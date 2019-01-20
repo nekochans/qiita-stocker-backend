@@ -155,7 +155,7 @@ class CategoryController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
-     * @throws \App\Models\Domain\Exceptions\CategorizeNotFoundException
+     * @throws \App\Models\Domain\Exceptions\CategoryRelationNotFoundException
      * @throws \App\Models\Domain\Exceptions\UnauthorizedException
      * @throws \App\Models\Domain\Exceptions\ValidationException
      * @throws \App\Models\Domain\exceptions\LoginSessionExpiredException

@@ -1,6 +1,6 @@
 <?php
 /**
- * CategorizeNotFoundException
+ * CategoryRelationNotFoundException
  */
 
 namespace App\Models\Domain\Exceptions;
@@ -8,17 +8,17 @@ namespace App\Models\Domain\Exceptions;
 use Throwable;
 
 /**
- * Class CategorizeNotFoundException
+ * Class CategoryRelationNotFoundException
  * @package App\Models\Domain\Exceptions
  */
-class CategorizeNotFoundException extends BusinessLogicException
+class CategoryRelationNotFoundException extends BusinessLogicException
 {
     const ERROR_MESSAGE = 'Not Found';
 
     const ERROR_CODE = 404;
 
     /**
-     * CategorizeNotFoundException constructor.
+     * CategoryRelationNotFoundException constructor.
      * @param string $message
      * @param Throwable|null $previous
      */

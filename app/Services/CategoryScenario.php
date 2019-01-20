@@ -20,7 +20,7 @@ use App\Models\Domain\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\LoginSession\LoginSessionRepository;
 use App\Models\Domain\Exceptions\CategoryNotFoundException;
-use App\Models\Domain\Exceptions\CategorizeNotFoundException;
+use App\Models\Domain\Exceptions\CategoryRelationNotFoundException;
 use App\Models\Domain\Exceptions\ServiceUnavailableException;
 use App\Models\Domain\exceptions\LoginSessionExpiredException;
 
@@ -297,12 +297,11 @@ class CategoryScenario
         }
     }
 
-
     /**
      * カテゴリとストックのリレーションを削除する
      *
      * @param array $params
-     * @throws CategorizeNotFoundException
+     * @throws CategoryRelationNotFoundException
      * @throws LoginSessionExpiredException
      * @throws UnauthorizedException
      * @throws ValidationException
@@ -331,7 +330,7 @@ class CategoryScenario
 
             \DB::commit();
         } catch (ModelNotFoundException $e) {
-            throw new CategorizeNotFoundException(CategoryStockEntity::categoryStockNotFoundMessage());
+            throw new CategoryRelationNotFoundException(CategoryStockEntity::categoryStockNotFoundMessage());
         } catch (\PDOException $e) {
             \DB::rollBack();
             throw $e;
