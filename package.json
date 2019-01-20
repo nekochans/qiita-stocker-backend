@@ -1,12 +1,22 @@
 {
     "private": true,
     "scripts": {
+        "eslint": "eslint *.js",
+        "format": "eslint --fix *.js",
         "createDotenv:local": "DEPLOY_STAGE=local node createDotenv.js",
         "createDotenv:dev": "DEPLOY_STAGE=dev node createDotenv.js",
         "createDotenv:stg": "DEPLOY_STAGE=stg node createDotenv.js",
         "createDotenv:prod": "DEPLOY_STAGE=prod node createDotenv.js"
     },
-    "devDependencies": {
+    "dependencies":  {
         "@nekonomokochan/aws-env-creator": "^1.2.0"
+    },
+    "devDependencies": {
+        "babel-eslint": "^10.0.1",
+        "eslint": "^5.12.1",
+        "eslint-config-prettier": "^3.6.0",
+        "eslint-plugin-import": "^2.14.0",
+        "eslint-plugin-prettier": "^3.0.1",
+        "prettier": "^1.16.0"
     }
 }
