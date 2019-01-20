@@ -213,7 +213,7 @@ class CategoryDestroyTest extends AbstractTestCase
 
     /**
      * 異常系のテスト
-     * カテゴリ更新時のカテゴリIDのバリデーション
+     * カテゴリ削除時のカテゴリIDのバリデーション
      *
      * @param $categoryId
      * @dataProvider categoryIdProvider

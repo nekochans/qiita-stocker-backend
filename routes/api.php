@@ -59,7 +59,7 @@ Route::middleware(['cors', 'maintenance', 'xRequestId'])->group(function () {
 
     Route::post('categories/stocks', 'CategoryController@categorize');
 
-    Route::delete('categories/stocks/{id}', 'CategoryController@destroyCategorize');
+    Route::delete('categories/stocks/{id}', 'CategoryController@destroyRelation');
 
     Route::options('statuses', function () {
         return response()->json();

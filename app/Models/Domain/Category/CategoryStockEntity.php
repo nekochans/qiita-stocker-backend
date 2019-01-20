@@ -74,4 +74,14 @@ class CategoryStockEntity
     {
         return '不正なリクエストが行われました。';
     }
+
+    /**
+     * IDのバリデーションエラー時に利用するメッセージ
+     *
+     * @return string
+     */
+    public static function idValidationErrorMessage(): string
+    {
+        return '不正なリクエストが行われました。';
+    }
 }

@@ -65,4 +65,22 @@ class CategorySpecification
         }
         return [];
     }
+
+    /**
+     * カテゴリとストックのリレーションが削除可能か確認する
+     *
+     * @param array $requestArray
+     * @return array
+     */
+    public static function canDestroyRelation(array $requestArray): array
+    {
+        $validator = \Validator::make($requestArray, [
+            'id'   => 'required|integer|min:1'
+        ]);
+
+        if ($validator->fails()) {
+            return $validator->errors()->toArray();
+        }
+        return [];
+    }
 }

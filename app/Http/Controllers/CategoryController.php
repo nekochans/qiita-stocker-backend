@@ -157,9 +157,10 @@ class CategoryController extends Controller
      * @return JsonResponse
      * @throws \App\Models\Domain\Exceptions\CategorizeNotFoundException
      * @throws \App\Models\Domain\Exceptions\UnauthorizedException
+     * @throws \App\Models\Domain\Exceptions\ValidationException
      * @throws \App\Models\Domain\exceptions\LoginSessionExpiredException
      */
-    public function destroyCategorize(Request $request): JsonResponse
+    public function destroyRelation(Request $request): JsonResponse
     {
         $sessionId = $request->bearerToken();
         $params = [
@@ -167,7 +168,7 @@ class CategoryController extends Controller
             'id'        => $request->id,
         ];
 
-        $this->categoryScenario->destroyCategorize($params);
+        $this->categoryScenario->destroyRelation($params);
 
         return response()->json()->setStatusCode(204);
     }

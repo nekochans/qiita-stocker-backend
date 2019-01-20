@@ -305,8 +305,9 @@ class CategoryScenario
      * @throws CategorizeNotFoundException
      * @throws LoginSessionExpiredException
      * @throws UnauthorizedException
+     * @throws ValidationException
      */
-    public function destroyCategorize(array $params)
+    public function destroyRelation(array $params)
     {
         try {
             $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
@@ -317,7 +318,11 @@ class CategoryScenario
         }
 
         try {
-            // TODO idのバリデーションを追加する
+            $errors = CategorySpecification::canDestroyRelation($params);
+            if ($errors) {
+                throw new ValidationException(CategoryStockEntity::idValidationErrorMessage(), $errors);
+            }
+
             $categoryStockEntity = $accountEntity->findHasCategoryStockEntity($this->categoryRepository, $params['id']);
 
             \DB::beginTransaction();

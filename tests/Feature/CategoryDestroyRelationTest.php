@@ -1,6 +1,6 @@
 <?php
 /**
- * CategoryDestroyCategorizeTest
+ * CategoryDestroyRelationTest
  */
 
 namespace Tests\Feature;
@@ -16,10 +16,10 @@ use App\Eloquents\QiitaUserName;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
- * Class CategoryDestroyCategorizeTest
+ * Class CategoryDestroyRelationTest
  * @package Tests\Feature
  */
-class CategoryDestroyCategorizeTest extends AbstractTestCase
+class CategoryDestroyRelationTest extends AbstractTestCase
 {
     use RefreshDatabase;
 
@@ -185,6 +185,53 @@ class CategoryDestroyCategorizeTest extends AbstractTestCase
         $jsonResponse->assertJson(['message' => 'セッションの期限が切れました。再度、ログインしてください。']);
         $jsonResponse->assertStatus($expectedErrorCode);
         $jsonResponse->assertHeader('X-Request-Id');
+    }
+
+    /**
+     * 異常系のテスト
+     * IDのバリデーション
+     *
+     * @param $id
+     * @dataProvider idProvider
+     */
+    public function testErrorIdValidation($id)
+    {
+        $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
+        $accountId = 1;
+        factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
+
+        $jsonResponse = $this->delete(
+            '/api/categories/stocks/'. $id,
+            [],
+            ['Authorization' => 'Bearer ' . $loginSession]
+        );
+
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
+        $expectedErrorCode = 422;
+        $jsonResponse->assertJson(['code' => $expectedErrorCode]);
+        $jsonResponse->assertJson(['message' => '不正なリクエストが行われました。']);
+        $jsonResponse->assertStatus($expectedErrorCode);
+        $jsonResponse->assertHeader('X-Request-Id');
+    }
+
+    /**
+     * IDのデータプロバイダ
+     *
+     * @return array
+     */
+    public function idProvider()
+    {
+        return [
+            'emptyString'             => [''],
+            'null'                    => [null],
+            'string'                  => ['a'],
+            'symbol'                  => ['1@'],
+            'multiByte'               => ['１'],
+            'negativeNumber'          => [-1],
+            'double'                  => [1.1],
+            'lessThanMin'             => [0],
+            'greaterThanMax'          => [9223372036854775808] // PHP_INT_MAX + 1
+        ];
     }
 
     /**
