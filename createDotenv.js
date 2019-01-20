@@ -34,6 +34,7 @@
       DB_DATABASE: "qiita_stocker",
       DB_USERNAME: "qiita_stocker",
       BROADCAST_DRIVER: "log",
+      MAINTENANCE_MODE: deployUtils.isMaintenanceMode(),
     },
   };
 

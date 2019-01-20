@@ -45,3 +45,12 @@ exports.findDbHost = deployStage => {
 
   return `qiita-stocker-db.${deployStage}`;
 };
+
+/**
+ * メンテナンスモードかどうか判定する
+ *
+ * @return {boolean}
+ */
+exports.isMaintenanceMode = () => {
+  return process.env.MAINTENANCE_MODE === "true";
+};
