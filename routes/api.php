@@ -12,7 +12,7 @@
 |
 */
 
-Route::middleware(['cors', 'xRequestId'])->group(function () {
+Route::middleware(['cors', 'maintenance', 'xRequestId'])->group(function () {
     Route::options('accounts', function () {
         return response()->json();
     });
@@ -53,11 +53,13 @@ Route::middleware(['cors', 'xRequestId'])->group(function () {
 
     Route::get('stocks/categories/{id}', 'StockController@showCategorized');
 
-    Route::options('categories/stocks', function () {
+    Route::options('categories/stocks/{id?}', function () {
         return response()->json();
     });
 
     Route::post('categories/stocks', 'CategoryController@categorize');
+
+    Route::delete('categories/stocks/{id}', 'CategoryController@destroyCategorize');
 
     Route::options('statuses', function () {
         return response()->json();
