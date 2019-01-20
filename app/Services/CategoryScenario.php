@@ -294,4 +294,23 @@ class CategoryScenario
             throw $e;
         }
     }
+
+
+    /**
+     * カテゴリとストックのリレーションを削除する
+     *
+     * @param array $params
+     * @throws LoginSessionExpiredException
+     * @throws UnauthorizedException
+     */
+    public function destroyCategorize(array $params)
+    {
+        try {
+            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
+        } catch (ModelNotFoundException $e) {
+            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+        } catch (\PDOException $e) {
+            throw $e;
+        }
+    }
 }

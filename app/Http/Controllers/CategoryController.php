@@ -120,7 +120,7 @@ class CategoryController extends Controller
         ];
 
         $this->categoryScenario->destroy($params);
-        
+
         return response()->json()->setStatusCode(204);
     }
 
@@ -155,6 +155,8 @@ class CategoryController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws \App\Models\Domain\Exceptions\UnauthorizedException
+     * @throws \App\Models\Domain\exceptions\LoginSessionExpiredException
      */
     public function destroyCategorize(Request $request): JsonResponse
     {
@@ -164,8 +166,7 @@ class CategoryController extends Controller
             'id'        => $request->id,
         ];
 
-//        TODO シナリオクラスを作成
-//        $this->categoryScenario->destroyCategorize($params);
+        $this->categoryScenario->destroyCategorize($params);
 
         return response()->json()->setStatusCode(204);
     }
