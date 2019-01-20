@@ -6,6 +6,7 @@ phases:
       - npm install -g yarn
   pre_build:
     commands:
+      - yarn install
       - yarn run createDotenv:$DEPLOY_STAGE
       - chmod +x ./deployToS3.sh
   build:
