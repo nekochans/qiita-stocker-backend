@@ -8,6 +8,7 @@ namespace App\Models\Domain\Account;
 use App\Models\Domain\QiitaAccountValue;
 use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Category\CategoryRepository;
+use App\Models\Domain\Category\CategoryStockEntity;
 use App\Models\Domain\LoginSession\LoginSessionRepository;
 
 /**
@@ -170,6 +171,18 @@ class AccountEntity
     public function findHasCategoryEntity(CategoryRepository $categoryRepository, string $categoryId): CategoryEntity
     {
         return $categoryRepository->findByIdAndAccountId($categoryId, $this->getAccountId());
+    }
+
+    /**
+     * アカウントが持つCategoryStockEntityを取得する
+     *
+     * @param CategoryRepository $categoryRepository
+     * @param string $id
+     * @return CategoryStockEntity
+     */
+    public function findHasCategoryStockEntity(CategoryRepository $categoryRepository, string $id): CategoryStockEntity
+    {
+        return $categoryRepository->findCategoriesStocksByIdAndAccountId($id, $this->getAccountId());
     }
 
     /**

@@ -72,6 +72,15 @@ interface CategoryRepository
     /**
      * カテゴリとストックのリレーションを取得する
      *
+     * @param string $id
+     * @param string $accountId
+     * @return CategoryStockEntity
+     */
+    public function findCategoriesStocksByIdAndAccountId(string $id, string $accountId): CategoryStockEntity;
+
+    /**
+     * カテゴリとストックのリレーションを取得する
+     *
      * @param CategoryEntity $categoryEntity
      * @param null $limit
      * @param int $offset

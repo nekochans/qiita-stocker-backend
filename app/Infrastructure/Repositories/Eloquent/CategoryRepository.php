@@ -200,6 +200,26 @@ class CategoryRepository implements \App\Models\Domain\Category\CategoryReposito
     /**
      * カテゴリとストックのリレーションを取得する
      *
+     * @param string $id
+     * @param string $accountId
+     * @return CategoryStockEntity
+     */
+    public function findCategoriesStocksByIdAndAccountId(string $id, string $accountId): CategoryStockEntity
+    {
+        $categories = Category::select('categories_stocks.*')
+            ->where('categories.account_id', $accountId)
+            ->join('categories_stocks', function ($join) use ($id) {
+                $join->on('categories.id', '=', 'categories_stocks.category_id')
+                    ->where('categories_stocks.id', $id);
+            })
+        ->firstOrFail();
+
+        return $this->buildCategoryStockEntity($categories->toArray());
+    }
+
+    /**
+     * カテゴリとストックのリレーションを取得する
+     *
      * @param CategoryEntity $categoryEntity
      * @param null $limit
      * @param int $offset
