@@ -20,9 +20,9 @@ use App\Models\Domain\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\LoginSession\LoginSessionRepository;
 use App\Models\Domain\Exceptions\CategoryNotFoundException;
-use App\Models\Domain\Exceptions\CategoryRelationNotFoundException;
 use App\Models\Domain\Exceptions\ServiceUnavailableException;
 use App\Models\Domain\exceptions\LoginSessionExpiredException;
+use App\Models\Domain\Exceptions\CategoryRelationNotFoundException;
 
 class CategoryScenario
 {

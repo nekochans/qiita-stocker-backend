@@ -526,7 +526,7 @@ class CategoryCategorizeTest extends AbstractTestCase
             'negativeNumber'     => [-1],
             'double'             => [1.1],
             'lessThanMin'        => [0],
-            'greaterThanMax'     => [18446744073709551615],
+            'greaterThanMax'     => [9223372036854775808] // PHP_INT_MAX + 1
         ];
     }
 
