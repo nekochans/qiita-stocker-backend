@@ -11,4 +11,4 @@ phases:
       - chmod +x ./deployToS3.sh
   build:
     commands:
-      - ./deployToS3.sh
+      - ./deployToS3.sh ${DEPLOY_STAGE}
