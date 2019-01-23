@@ -16,7 +16,6 @@
     type: ".env",
     outputDir: "./",
     secretIds: deployUtils.findSecretIds(deployStage),
-    profile: "qiita-stocker-dev",
     region: "ap-northeast-1",
     outputWhitelist: ["BACKEND_URL", "FRONTEND_URL", "DB_PASSWORD"],
     keyMapping: {
@@ -37,6 +36,10 @@
       MAINTENANCE_MODE: deployUtils.isMaintenanceMode(),
     },
   };
+
+  if (deployStage === "local") {
+    params.profile = deployUtils.findAwsProfile();
+  }
 
   await awsEnvCreator.createEnvFile(params);
   if (deployStage === "local") {

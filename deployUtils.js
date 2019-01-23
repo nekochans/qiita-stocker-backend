@@ -21,14 +21,9 @@ exports.findSecretIds = deployStage => [`${deployStage}/qiita-stocker`];
 /**
  * AWSのプロファイル名を取得する
  *
- * @param deployStage
  * @return {string}
  */
-exports.findAwsProfile = deployStage => {
-  if (deployStage === "prod") {
-    return "qiita-stocker-prod";
-  }
-
+exports.findAwsProfile = () => {
   return "qiita-stocker-dev";
 };
 
