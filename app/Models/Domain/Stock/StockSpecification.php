@@ -42,7 +42,7 @@ class StockSpecification
         $validator = \Validator::make($requestArray, [
             'page'       => 'required|integer|min:1|max:100',
             'perPage'    => 'required|integer|min:1|max:100',
-            'id'         => 'required|integer|min:1|max:18446744073709551615' // 符号無しBIGINTの最大値
+            'id'         => 'required|integer|min:1'
         ]);
 
         if ($validator->fails()) {
