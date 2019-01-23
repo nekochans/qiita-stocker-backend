@@ -1,6 +1,6 @@
 <?php
 /**
- * CategoryDestroyTest
+ * CategoryDestroyRelationTest
  */
 
 namespace Tests\Feature;
@@ -16,10 +16,10 @@ use App\Eloquents\QiitaUserName;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
- * Class CategoryDestroyTest
+ * Class CategoryDestroyRelationTest
  * @package Tests\Feature
  */
-class CategoryDestroyTest extends AbstractTestCase
+class CategoryDestroyRelationTest extends AbstractTestCase
 {
     use RefreshDatabase;
 
@@ -42,7 +42,6 @@ class CategoryDestroyTest extends AbstractTestCase
 
     /**
      * 正常系のテスト
-     * カテゴリを削除できること
      */
     public function testSuccess()
     {
@@ -52,42 +51,28 @@ class CategoryDestroyTest extends AbstractTestCase
         factory(QiitaAccount::class)->create(['qiita_account_id' => 2, 'account_id' => $otherAccountId]);
         factory(QiitaUserName::class)->create(['account_id' => $otherAccountId]);
         factory(AccessToken::class)->create(['account_id' => $otherAccountId]);
-        factory(LoginSession::class)->create(['account_id' => $otherAccountId]);
         factory(Category::class)->create(['account_id' => $otherAccountId]);
         factory(CategoryName::class)->create(['category_id' => $otherCategoryId]);
         factory(CategoryStock::class)->create(['category_id' => $otherCategoryId]);
 
-        $categoryId = 1;
+        $id = 1;
         $accountId = 1;
         $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
         factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
 
         $jsonResponse = $this->delete(
-            '/api/categories/'. $categoryId,
+            '/api/categories/stocks/'. $id,
             [],
-            ['Authorization' => 'Bearer '.$loginSession]
+            ['Authorization' => 'Bearer ' . $loginSession]
         );
 
+        // 実際にJSONResponseに期待したデータが含まれているか確認する
         $jsonResponse->assertStatus(204);
         $jsonResponse->assertHeader('X-Request-Id');
 
         // DBのテーブルに期待した形でデータが入っているか確認する
-        $this->assertDatabaseMissing('categories', [
-            'account_id'   => $accountId,
-        ]);
-        $this->assertDatabaseHas('categories', [
-            'account_id'   => $otherAccountId,
-        ]);
-
-        $this->assertDatabaseMissing('categories_names', [
-            'category_id'   => $categoryId,
-        ]);
-        $this->assertDatabaseHas('categories_names', [
-            'category_id'   => $otherCategoryId,
-        ]);
-
         $this->assertDatabaseMissing('categories_stocks', [
-            'category_id'   => $categoryId,
+            'id'   => $id,
         ]);
         $this->assertDatabaseHas('categories_stocks', [
             'category_id'   => $otherCategoryId,
@@ -102,7 +87,6 @@ class CategoryDestroyTest extends AbstractTestCase
     {
         $otherAccountId = 2;
         $otherCategoryId = 2;
-
         factory(Account::class)->create();
         factory(QiitaAccount::class)->create(['qiita_account_id' => 2, 'account_id' => $otherAccountId]);
         factory(QiitaUserName::class)->create(['account_id' => $otherAccountId]);
@@ -117,7 +101,7 @@ class CategoryDestroyTest extends AbstractTestCase
         factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
 
         $jsonResponse = $this->delete(
-            '/api/categories/'. $otherCategoryId,
+            '/api/categories/stocks/'. $otherCategoryId,
             [],
             ['Authorization' => 'Bearer ' . $loginSession]
         );
@@ -130,14 +114,6 @@ class CategoryDestroyTest extends AbstractTestCase
         $jsonResponse->assertHeader('X-Request-Id');
 
         // DBのテーブルに期待した形でデータが入っているか確認する
-        $this->assertDatabaseHas('categories', [
-            'account_id'   => $otherAccountId,
-        ]);
-
-        $this->assertDatabaseHas('categories_names', [
-            'category_id'   => $otherCategoryId,
-        ]);
-
         $this->assertDatabaseHas('categories_stocks', [
             'category_id'   => $otherCategoryId,
         ]);
@@ -149,8 +125,8 @@ class CategoryDestroyTest extends AbstractTestCase
      */
     public function testErrorLoginSessionNull()
     {
-        $categoryId = 1;
-        $jsonResponse = $this->delete('/api/categories/'. $categoryId);
+        $id = 1;
+        $jsonResponse = $this->delete('/api/categories/stocks/'. $id);
 
         // 実際にJSONResponseに期待したデータが含まれているか確認する
         $expectedErrorCode = 401;
@@ -167,12 +143,12 @@ class CategoryDestroyTest extends AbstractTestCase
     public function testErrorLoginSessionNotFound()
     {
         $loginSession = 'notFound-2bae-4028-b53d-0f128479e650';
-        $categoryId = 1;
+        $id = 1;
 
         $jsonResponse = $this->delete(
-            '/api/categories/'. $categoryId,
+            '/api/categories/stocks/'. $id,
             [],
-            ['Authorization' => 'Bearer '.$loginSession]
+            ['Authorization' => 'Bearer ' . $loginSession]
         );
 
         // 実際にJSONResponseに期待したデータが含まれているか確認する
@@ -190,7 +166,7 @@ class CategoryDestroyTest extends AbstractTestCase
     public function testErrorLoginSessionIsExpired()
     {
         $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
-        $categoryId = 1;
+        $id = 1;
         factory(LoginSession::class)->create([
             'id'         => $loginSession,
             'account_id' => 1,
@@ -198,9 +174,9 @@ class CategoryDestroyTest extends AbstractTestCase
         ]);
 
         $jsonResponse = $this->delete(
-            '/api/categories/'. $categoryId,
+            '/api/categories/stocks/'. $id,
             [],
-            ['Authorization' => 'Bearer '.$loginSession]
+            ['Authorization' => 'Bearer ' . $loginSession]
         );
 
         // 実際にJSONResponseに期待したデータが含まれているか確認する
@@ -213,21 +189,21 @@ class CategoryDestroyTest extends AbstractTestCase
 
     /**
      * 異常系のテスト
-     * カテゴリ削除時のカテゴリIDのバリデーション
+     * IDのバリデーション
      *
-     * @param $categoryId
-     * @dataProvider categoryIdProvider
+     * @param $id
+     * @dataProvider idProvider
      */
-    public function testErrorCategoryIdValidation($categoryId)
+    public function testErrorIdValidation($id)
     {
         $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
         $accountId = 1;
         factory(LoginSession::class)->create(['id' => $loginSession, 'account_id' => $accountId, ]);
 
         $jsonResponse = $this->delete(
-            '/api/categories/'. $categoryId,
+            '/api/categories/stocks/'. $id,
             [],
-            ['Authorization' => 'Bearer '.$loginSession]
+            ['Authorization' => 'Bearer ' . $loginSession]
         );
 
         // 実際にJSONResponseに期待したデータが含まれているか確認する
@@ -239,21 +215,22 @@ class CategoryDestroyTest extends AbstractTestCase
     }
 
     /**
-     * カテゴリIDのデータプロバイダ
+     * IDのデータプロバイダ
      *
      * @return array
      */
-    public function categoryIdProvider()
+    public function idProvider()
     {
-        // カテゴリIDが設定されていない場合はルーティングされないので考慮しない
         return [
-            'string'             => ['a'],
-            'symbol'             => ['1@'],
-            'multiByte'          => ['１'],
-            'negativeNumber'     => [-1],
-            'double'             => [1.1],
-            'lessThanMin'        => [0],
-            'greaterThanMax'     => [18446744073709551615],
+            'emptyString'             => [''],
+            'null'                    => [null],
+            'string'                  => ['a'],
+            'symbol'                  => ['1@'],
+            'multiByte'               => ['１'],
+            'negativeNumber'          => [-1],
+            'double'                  => [1.1],
+            'lessThanMin'             => [0],
+            'greaterThanMax'          => [9223372036854775808] // PHP_INT_MAX + 1
         ];
     }
 
@@ -264,12 +241,12 @@ class CategoryDestroyTest extends AbstractTestCase
     public function testErrorMaintenance()
     {
         \Config::set('app.maintenance', true);
+        $id = 1;
         $loginSession = '54518910-2bae-4028-b53d-0f128479e650';
-
         $jsonResponse = $this->delete(
-            '/api/categories/'. 1,
+            '/api/categories/stocks/'. $id,
             [],
-            ['Authorization' => 'Bearer '.$loginSession]
+            ['Authorization' => 'Bearer ' . $loginSession]
         );
 
         // 実際にJSONResponseに期待したデータが含まれているか確認する

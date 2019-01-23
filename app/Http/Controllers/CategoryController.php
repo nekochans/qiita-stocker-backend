@@ -120,7 +120,7 @@ class CategoryController extends Controller
         ];
 
         $this->categoryScenario->destroy($params);
-        
+
         return response()->json()->setStatusCode(204);
     }
 
@@ -155,8 +155,12 @@ class CategoryController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws \App\Models\Domain\Exceptions\CategoryRelationNotFoundException
+     * @throws \App\Models\Domain\Exceptions\UnauthorizedException
+     * @throws \App\Models\Domain\Exceptions\ValidationException
+     * @throws \App\Models\Domain\exceptions\LoginSessionExpiredException
      */
-    public function destroyCategorize(Request $request): JsonResponse
+    public function destroyRelation(Request $request): JsonResponse
     {
         $sessionId = $request->bearerToken();
         $params = [
@@ -164,8 +168,7 @@ class CategoryController extends Controller
             'id'        => $request->id,
         ];
 
-//        TODO シナリオクラスを作成
-//        $this->categoryScenario->destroyCategorize($params);
+        $this->categoryScenario->destroyRelation($params);
 
         return response()->json()->setStatusCode(204);
     }

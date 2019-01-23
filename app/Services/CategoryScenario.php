@@ -11,6 +11,7 @@ use App\Models\Domain\Category\CategoryEntity;
 use App\Models\Domain\Account\AccountRepository;
 use App\Models\Domain\Category\CategoryNameValue;
 use App\Models\Domain\Category\CategoryRepository;
+use App\Models\Domain\Category\CategoryStockEntity;
 use App\Models\Domain\Category\CategoryEntityBuilder;
 use App\Models\Domain\Category\CategorySpecification;
 use App\Models\Domain\Exceptions\ValidationException;
@@ -19,6 +20,7 @@ use App\Models\Domain\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Domain\LoginSession\LoginSessionRepository;
 use App\Models\Domain\Exceptions\CategoryNotFoundException;
+use App\Models\Domain\Exceptions\CategoryRelationNotFoundException;
 use App\Models\Domain\Exceptions\ServiceUnavailableException;
 use App\Models\Domain\exceptions\LoginSessionExpiredException;
 
@@ -289,6 +291,46 @@ class CategoryScenario
         } catch (RequestException $e) {
             \DB::rollBack();
             throw new ServiceUnavailableException();
+        } catch (\PDOException $e) {
+            \DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * カテゴリとストックのリレーションを削除する
+     *
+     * @param array $params
+     * @throws CategoryRelationNotFoundException
+     * @throws LoginSessionExpiredException
+     * @throws UnauthorizedException
+     * @throws ValidationException
+     */
+    public function destroyRelation(array $params)
+    {
+        try {
+            $accountEntity = $this->findAccountEntity($params, $this->loginSessionRepository, $this->accountRepository);
+        } catch (ModelNotFoundException $e) {
+            throw new UnauthorizedException(LoginSessionEntity::loginSessionUnauthorizedMessage());
+        } catch (\PDOException $e) {
+            throw $e;
+        }
+
+        try {
+            $errors = CategorySpecification::canDestroyRelation($params);
+            if ($errors) {
+                throw new ValidationException(CategoryStockEntity::idValidationErrorMessage(), $errors);
+            }
+
+            $categoryStockEntity = $accountEntity->findHasCategoryStockEntity($this->categoryRepository, $params['id']);
+
+            \DB::beginTransaction();
+
+            $this->categoryRepository->destroyCategoriesStocks([$categoryStockEntity->getId()]);
+
+            \DB::commit();
+        } catch (ModelNotFoundException $e) {
+            throw new CategoryRelationNotFoundException(CategoryStockEntity::categoryStockNotFoundMessage());
         } catch (\PDOException $e) {
             \DB::rollBack();
             throw $e;
