@@ -17,8 +17,14 @@
     outputDir: "./",
     secretIds: deployUtils.findSecretIds(deployStage),
     region: "ap-northeast-1",
-    outputWhitelist: ["BACKEND_URL", "FRONTEND_URL", "DB_PASSWORD"],
+    outputWhitelist: [
+      "BACKEND_URL",
+      "FRONTEND_URL",
+      "DB_PASSWORD",
+      "BACKEND_APP_KEY",
+    ],
     keyMapping: {
+      BACKEND_APP_KEY: "APP_KEY",
       BACKEND_URL: "APP_URL",
       FRONTEND_URL: "CORS_ORIGIN",
     },
