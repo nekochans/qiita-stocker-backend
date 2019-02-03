@@ -38,7 +38,16 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
-        parent::report($exception);
+        app('log')->alert(
+            $exception,
+            [
+                'request' => [
+                    'url'    => request()->fullUrl(),
+                    'header' => request()->headers->all(),
+                    'params' => request()->all(),
+                ],
+            ]
+        );
     }
 
     /**
