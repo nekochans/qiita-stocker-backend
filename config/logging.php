@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('LOG_CHANNEL', 'stack'),
+    'default' => env('LOG_CHANNEL', 'app'),
 
     /*
     |--------------------------------------------------------------------------
@@ -33,6 +33,15 @@ return [
     */
 
     'channels' => [
+        'app' => [
+            'driver'        => 'custom',
+            'level'         => env('APP_LOG_LEVEL', 'debug'),
+            'days'          => 10,
+            'slack_token'   => env('NOTIFICATION_SLACK_TOKEN'),
+            'slack_channel' => env('NOTIFICATION_SLACK_CHANNEL'),
+            'via'           => App\Infrastructure\Logger::class,
+        ],
+
         'stack' => [
             'driver'   => 'stack',
             'channels' => ['single'],

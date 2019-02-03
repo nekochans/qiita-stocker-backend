@@ -22,6 +22,8 @@
       "FRONTEND_URL",
       "DB_PASSWORD",
       "BACKEND_APP_KEY",
+      "NOTIFICATION_SLACK_TOKEN",
+      "NOTIFICATION_SLACK_CHANNEL",
     ],
     keyMapping: {
       BACKEND_APP_KEY: "APP_KEY",
@@ -32,7 +34,7 @@
       APP_NAME: "qiita-stocker-backend",
       APP_ENV: deployStage,
       APP_DEBUG: true,
-      LOG_CHANNEL: "stack",
+      LOG_CHANNEL: "app",
       DB_CONNECTION: "mysql",
       DB_HOST: deployUtils.findDbHost(deployStage),
       DB_PORT: 3306,
