@@ -38,7 +38,22 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
-        app('log')->alert(
+        if ($this->isNotificationTargetError($exception) === true) {
+            app('log')->alert(
+                $exception,
+                [
+                    'request' => [
+                        'url'    => request()->fullUrl(),
+                        'header' => request()->headers->all(),
+                        'params' => request()->all(),
+                    ],
+                ]
+            );
+
+            return;
+        }
+
+        app('log')->error(
             $exception,
             [
                 'request' => [
@@ -48,6 +63,8 @@ class Handler extends ExceptionHandler
                 ],
             ]
         );
+
+        return;
     }
 
     /**
@@ -107,5 +124,33 @@ class Handler extends ExceptionHandler
             $errorResponseEntityBuilder->setErrors($errors);
         }
         return  $errorResponseEntityBuilder->build();
+    }
+
+    /**
+     * 通知対象エラーかどうかを判定する
+     *
+     * @param Exception $exception
+     * @return bool
+     */
+    private function isNotificationTargetError(Exception $exception): bool
+    {
+        if ($exception instanceof ValidationException) {
+            return false;
+        }
+
+        if ($exception instanceof BusinessLogicException) {
+            return false;
+        }
+
+        if ($exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
+            return false;
+        }
+
+        if ($exception instanceof \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException) {
+            return false;
+        }
+
+        // 全ての判定をすり抜けたエラーは想定外と判断し通知対象とする
+        return true;
     }
 }
