@@ -31,7 +31,10 @@ abstract class AbstractTestCase extends TestCase
     public function setUp()
     {
         parent::setUp();
+    }
 
+    public function tearDown()
+    {
         \DB::statement('SET FOREIGN_KEY_CHECKS=0');
         Account::truncate();
         LoginSession::truncate();
@@ -42,10 +45,7 @@ abstract class AbstractTestCase extends TestCase
         CategoryName::truncate();
         CategoryStock::truncate();
         \DB::statement('SET FOREIGN_KEY_CHECKS=1');
-    }
 
-    public function tearDown()
-    {
         $this->beforeApplicationDestroyed(function () {
             \DB::disconnect();
         });
