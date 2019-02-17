@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "43ff1c8172d45fd75fe31ffd39812c7a",
+    "content-hash": "5c4c6367536d264b1af397d806430ac5",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1002,6 +1002,51 @@
                 "psr-3"
             ],
             "time": "2017-06-19T01:22:40+00:00"
+        },
+        {
+            "name": "nekonomokochan/php-json-logger",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nekonomokochan/php-json-logger.git",
+                "reference": "dfc34b0a65747812ff19632981d09cc624c7bdeb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nekonomokochan/php-json-logger/zipball/dfc34b0a65747812ff19632981d09cc624c7bdeb",
+                "reference": "dfc34b0a65747812ff19632981d09cc624c7bdeb",
+                "shasum": ""
+            },
+            "require": {
+                "monolog/monolog": "^1.23",
+                "php": ">= 7.1.0",
+                "ramsey/uuid": "^3.7"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.11",
+                "php": ">= 7.0.0",
+                "php-coveralls/php-coveralls": "^2.1",
+                "phpunit/phpcov": "^5.0",
+                "phpunit/phpunit": "^7.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Nekonomokochan\\PhpJsonLogger\\": "src/PhpJsonLogger"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "keitakn",
+                    "email": "keita.koga.work@gmail.com"
+                }
+            ],
+            "description": "LoggingLibrary for PHP. Output by JSON Format",
+            "time": "2018-07-05T05:58:10+00:00"
         },
         {
             "name": "nesbot/carbon",
