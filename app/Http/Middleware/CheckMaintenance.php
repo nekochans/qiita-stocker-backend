@@ -20,7 +20,7 @@ class CheckMaintenance
      */
     public function handle($request, Closure $next)
     {
-        if ($request->path() !== 'api/statuses' && $request->method() !== 'OPTIONS' && config('app.maintenance') === true) {
+        if ($request->path() !== 'api/statuses' && $request->method() !== 'OPTIONS' && config('app.maintenance') == 'true') {
             throw new MaintenanceException('サービスはメンテナンス中です。');
         }
         return $next($request);
