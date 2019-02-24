@@ -14,6 +14,9 @@ hooks:
     - location: hooks/build.sh
       timeout: 1000
       runas: ec2-user
+    - location: hooks/migration.sh
+      timeout: 30
+      runas: ec2-user
     - location: hooks/nginx-restart.sh
       timeout: 300
       runas: root
