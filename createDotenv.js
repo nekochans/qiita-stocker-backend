@@ -2,6 +2,7 @@
   const deployUtils = require("./deployUtils");
 
   const deployStage = process.env.DEPLOY_STAGE;
+  const isLocal = process.env.IS_LOCAL;
   if (deployUtils.isAllowedDeployStage(deployStage) === false) {
     return Promise.reject(
       new Error(
@@ -45,8 +46,8 @@
     },
   };
 
-  if (deployStage === "local") {
-    params.profile = deployUtils.findAwsProfile();
+  if (deployStage === "local" || isLocal === "true") {
+    params.profile = deployUtils.findAwsProfile(deployStage);
   }
 
   await awsEnvCreator.createEnvFile(params);
