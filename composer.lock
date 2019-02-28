@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5c4c6367536d264b1af397d806430ac5",
+    "content-hash": "1101050b91744b1c878f538871f23ac0",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -927,16 +927,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "1.23.0",
+            "version": "1.24.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "fd8c787753b3a2ad11bc60c063cff1358a32a3b4"
+                "reference": "bfc9ebb28f97e7a24c45bdc3f0ff482e47bb0266"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/fd8c787753b3a2ad11bc60c063cff1358a32a3b4",
-                "reference": "fd8c787753b3a2ad11bc60c063cff1358a32a3b4",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/bfc9ebb28f97e7a24c45bdc3f0ff482e47bb0266",
+                "reference": "bfc9ebb28f97e7a24c45bdc3f0ff482e47bb0266",
                 "shasum": ""
             },
             "require": {
@@ -1001,33 +1001,33 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2017-06-19T01:22:40+00:00"
+            "time": "2018-11-05T09:00:11+00:00"
         },
         {
             "name": "nekonomokochan/php-json-logger",
-            "version": "v1.2.0",
+            "version": "v1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nekonomokochan/php-json-logger.git",
-                "reference": "dfc34b0a65747812ff19632981d09cc624c7bdeb"
+                "reference": "6df126a82940a00d8ea2da6e0b7c58e3e57eb132"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nekonomokochan/php-json-logger/zipball/dfc34b0a65747812ff19632981d09cc624c7bdeb",
-                "reference": "dfc34b0a65747812ff19632981d09cc624c7bdeb",
+                "url": "https://api.github.com/repos/nekonomokochan/php-json-logger/zipball/6df126a82940a00d8ea2da6e0b7c58e3e57eb132",
+                "reference": "6df126a82940a00d8ea2da6e0b7c58e3e57eb132",
                 "shasum": ""
             },
             "require": {
-                "monolog/monolog": "^1.23",
-                "php": ">= 7.1.0",
-                "ramsey/uuid": "^3.7"
+                "monolog/monolog": "^1.24",
+                "php": "~7.1",
+                "ramsey/uuid": "^3.8"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.11",
-                "php": ">= 7.0.0",
+                "friendsofphp/php-cs-fixer": "^2.14",
+                "php": "~7.1",
                 "php-coveralls/php-coveralls": "^2.1",
                 "phpunit/phpcov": "^5.0",
-                "phpunit/phpunit": "^7.1"
+                "phpunit/phpunit": "^7.5"
             },
             "type": "library",
             "autoload": {
@@ -1046,7 +1046,7 @@
                 }
             ],
             "description": "LoggingLibrary for PHP. Output by JSON Format",
-            "time": "2018-07-05T05:58:10+00:00"
+            "time": "2019-02-18T06:07:14+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -1361,16 +1361,16 @@
         },
         {
             "name": "psr/log",
-            "version": "1.0.2",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
+                "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
-                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
+                "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
                 "shasum": ""
             },
             "require": {
@@ -1404,7 +1404,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-10-10T12:19:37+00:00"
+            "time": "2018-11-20T15:27:04+00:00"
         },
         {
             "name": "psr/simple-cache",
