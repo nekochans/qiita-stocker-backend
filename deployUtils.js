@@ -23,7 +23,11 @@ exports.findSecretIds = deployStage => [`${deployStage}/qiita-stocker`];
  *
  * @return {string}
  */
-exports.findAwsProfile = () => {
+exports.findAwsProfile = (deployStage) => {
+  if (deployStage === "prod") {
+    return "qiita-stocker-prod";
+  }
+
   return "qiita-stocker-dev";
 };
 

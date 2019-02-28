@@ -39,6 +39,7 @@ return [
             'days'          => 10,
             'slack_token'   => env('NOTIFICATION_SLACK_TOKEN'),
             'slack_channel' => env('NOTIFICATION_SLACK_CHANNEL'),
+            'use_in_docker' => env('USE_IN_DOCKER'),
             'via'           => App\Infrastructure\Logger::class,
         ],
 
