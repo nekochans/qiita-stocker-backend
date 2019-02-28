@@ -22,9 +22,15 @@ class Logger
         $builder = new LoggerBuilder($traceId);
         $builder->setChannel('qiita-stocker-backend');
         $builder->setLogLevel(JsonLogger::toMonologLevel($config['level']));
-        $builder->setUseInDocker(true);
         $builder->setSkipClassesPartials(['Illuminate\\']);
         $builder->setSlackHandler($slackHandlerBuilder->build());
+
+        if ($config['use_in_docker']) {
+            $builder->setUseInDocker(true);
+        } else {
+            $builder->setFileName(storage_path('logs/qiita-stocker-backend-' . php_sapi_name() . '.log'));
+            $builder->setMaxFiles($config['days']);
+        }
 
         return $builder->build();
     }

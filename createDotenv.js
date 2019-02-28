@@ -2,7 +2,7 @@
   const deployUtils = require("./deployUtils");
 
   const deployStage = process.env.DEPLOY_STAGE;
-  const isLocal = process.env.IS_LOCAL;
+  const useInDocker = process.env.USE_IN_DOCKER;
   if (deployUtils.isAllowedDeployStage(deployStage) === false) {
     return Promise.reject(
       new Error(
@@ -46,8 +46,12 @@
     },
   };
 
-  if (deployStage === "local" || isLocal === "true") {
+  if (deployStage === "local" || useInDocker === "true") {
     params.profile = deployUtils.findAwsProfile(deployStage);
+  }
+
+  if (useInDocker === "true") {
+    params.addParams.USE_IN_DOCKER = "true";
   }
 
   await awsEnvCreator.createEnvFile(params);
