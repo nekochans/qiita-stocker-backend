@@ -6,6 +6,8 @@ services:
       dockerfile: ./docker/nginx/Dockerfile
     ports:
       - "80:80"
+    environment:
+      PHP_HOST: php
     depends_on:
       - php
   php:
