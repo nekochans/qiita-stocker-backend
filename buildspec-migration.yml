@@ -7,7 +7,7 @@ phases:
       - composer install
   pre_build:
     commands:
-      - yarn run makeMaintenanceMode:${DEPLOY_STAGE}
+      - yarn run createDotenv:${DEPLOY_STAGE}
   build:
     commands:
       - php artisan migrate
