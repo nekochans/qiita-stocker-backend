@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-service nginx restart
+systemctl restart nginx.service
