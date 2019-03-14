@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-service php-fpm restart
+systemctl restart php-fpm.service
