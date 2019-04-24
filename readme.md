@@ -1,4 +1,6 @@
 # qiita-stocker-backend
+[![CircleCI](https://circleci.com/gh/nekochans/qiita-stocker-backend.svg?style=svg)](https://circleci.com/gh/nekochans/qiita-stocker-backend)
+
 ## 環境変数の設定
 
 1. `.env`、`.env.testing`ファイルを作成します。
