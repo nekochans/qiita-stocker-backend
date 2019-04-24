@@ -1,0 +1,38 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/php:7.3.4-fpm-stretch
+      - image: circleci/mysql:5.7
+    environment:
+      - APP_NAME: qiita-stocker-backend
+      - APP_DEBUG: true
+      - APP_ENV: testing
+      - APP_KEY: base64:EV4IJnxLNQdTyf7lKiDSxAuXVctckPHzePPfZe0DBBo=
+      - APP_URL: http://127.0.0.1
+      - DB_CONNECTION: circle_test
+      - MYSQL_ALLOW_EMPTY_PASSWORD: true
+      - CORS_ORIGIN: http://127.0.0.1
+      - BROADCAST_DRIVER: log
+      - MAINTENANCE_MODE: false
+      - LOG_CHANNEL: app
+      - NOTIFICATION_SLACK_CHANNEL: ${NOTIFICATION_SLACK_CHANNEL}
+      - NOTIFICATION_SLACK_TOKEN: ${NOTIFICATION_SLACK_TOKEN}
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - run: sudo docker-php-ext-install pdo_mysql
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "composer.json" }}
+            - v1-dependencies-
+      - run: composer install -n --prefer-dist
+      - save_cache:
+          paths:
+            - ./vendor
+          key: v1-dependencies-{{ checksum "composer.json" }}
+      - run: php artisan migrate
+      - run: php artisan db:seed
+      - run: php ./vendor/bin/phpunit
