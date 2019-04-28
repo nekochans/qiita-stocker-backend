@@ -23,3 +23,6 @@ appspec.yml
 LICENSE
 qiita-stocker-backend.iml
 readme.md
+push-ecr.sh
+push-ecr-local.sh
+
