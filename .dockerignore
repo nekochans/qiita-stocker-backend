@@ -1,8 +1,14 @@
 /.idea
+/.git
 /.github
 /coverage
 /hooks
 /node_modules
+/bootstrap/cache/*
+/storage/app/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
 /storage/logs/*
 /vendor
 deployUtils.js
@@ -17,3 +23,6 @@ appspec.yml
 LICENSE
 qiita-stocker-backend.iml
 readme.md
+push-ecr.sh
+push-ecr-local.sh
+
