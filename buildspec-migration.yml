@@ -10,4 +10,4 @@ phases:
       - yarn run createDotenv:${DEPLOY_STAGE}
   build:
     commands:
-      - php artisan migrate
+      - php artisan migrate --force
