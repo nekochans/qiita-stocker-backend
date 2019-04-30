@@ -6,15 +6,7 @@
         "createDotenv:local": "DEPLOY_STAGE=local node createDotenv.js",
         "createDotenv:dev": "DEPLOY_STAGE=dev node createDotenv.js",
         "createDotenv:stg": "DEPLOY_STAGE=stg node createDotenv.js",
-        "createDotenv:prod": "DEPLOY_STAGE=prod node createDotenv.js",
-        "createDockerEnv:local": "DEPLOY_STAGE=local USE_IN_DOCKER=true node createDotenv.js",
-        "createDockerEnv:dev": "DEPLOY_STAGE=dev USE_IN_DOCKER=true node createDotenv.js",
-        "createDockerEnv:stg": "DEPLOY_STAGE=stg USE_IN_DOCKER=true node createDotenv.js",
-        "createDockerEnv:prod": "DEPLOY_STAGE=prod USE_IN_DOCKER=true node createDotenv.js",
-        "makeMaintenanceMode:local": "DEPLOY_STAGE=local MAINTENANCE_MODE=true node createDotenv.js",
-        "makeMaintenanceMode:dev": "DEPLOY_STAGE=dev MAINTENANCE_MODE=true node createDotenv.js",
-        "makeMaintenanceMode:stg": "DEPLOY_STAGE=stg MAINTENANCE_MODE=true node createDotenv.js",
-        "makeMaintenanceMode:prod": "DEPLOY_STAGE=prod MAINTENANCE_MODE=true node createDotenv.js"
+        "createDotenv:prod": "DEPLOY_STAGE=prod node createDotenv.js"
     },
     "dependencies":  {
         "@nekonomokochan/aws-env-creator": "^2.0.0"
