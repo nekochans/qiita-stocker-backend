@@ -23,7 +23,7 @@ exports.findSecretIds = deployStage => [`${deployStage}/qiita-stocker`];
  *
  * @return {string}
  */
-exports.findAwsProfile = (deployStage) => {
+exports.findAwsProfile = deployStage => {
   if (deployStage === "prod") {
     return "qiita-stocker-prod";
   }
@@ -52,4 +52,21 @@ exports.findDbHost = deployStage => {
  */
 exports.isMaintenanceMode = () => {
   return process.env.MAINTENANCE_MODE === "true";
+};
+
+/**
+ * EnvFileの中身を置換する
+ *
+ * @param replaceParams
+ */
+exports.replaceEnvFile = replaceParams => {
+  const fs = require("fs");
+  let data = fs.readFileSync(replaceParams.outputFilename, "utf-8");
+
+  for (const [key, value] of Object.entries(replaceParams.outputParam)) {
+    data = data.replace(new RegExp(`${key}=.*`, "g"), `${key}=${value}`);
+  }
+
+  fs.unlinkSync(replaceParams.outputFilename);
+  fs.appendFileSync(replaceParams.outputFilename, data);
 };

@@ -16,34 +16,8 @@
   const params = {
     type: ".env",
     outputDir: "./",
-    secretIds: deployUtils.findSecretIds(deployStage),
+    parameterPath: `/${deployStage}/qiita-stocker/api`,
     region: "ap-northeast-1",
-    outputWhitelist: [
-      "BACKEND_URL",
-      "FRONTEND_URL",
-      "DB_PASSWORD",
-      "BACKEND_APP_KEY",
-      "NOTIFICATION_SLACK_TOKEN",
-      "NOTIFICATION_SLACK_CHANNEL",
-    ],
-    keyMapping: {
-      BACKEND_APP_KEY: "APP_KEY",
-      BACKEND_URL: "APP_URL",
-      FRONTEND_URL: "CORS_ORIGIN",
-    },
-    addParams: {
-      APP_NAME: "qiita-stocker-backend",
-      APP_ENV: deployStage,
-      APP_DEBUG: true,
-      LOG_CHANNEL: "app",
-      DB_CONNECTION: "mysql",
-      DB_HOST: deployUtils.findDbHost(deployStage),
-      DB_PORT: 3306,
-      DB_DATABASE: "qiita_stocker",
-      DB_USERNAME: "qiita_stocker",
-      BROADCAST_DRIVER: "log",
-      MAINTENANCE_MODE: deployUtils.isMaintenanceMode(),
-    },
   };
 
   if (deployStage === "local" || useInDocker === "true") {
@@ -51,15 +25,24 @@
   }
 
   if (useInDocker === "true") {
+    params.addParams = {};
     params.addParams.USE_IN_DOCKER = "true";
   }
 
   await awsEnvCreator.createEnvFile(params);
   if (deployStage === "local") {
-    params.addParams.DB_DATABASE = "qiita_stocker_test";
-    params.addParams.DB_USERNAME = "qiita_stocker_test";
-    params.addParams.APP_ENV = "testing";
-    params.outputFilename = ".env.testing";
+    const outputFilename = ".env.testing";
+    params["outputFilename"] = outputFilename;
     await awsEnvCreator.createEnvFile(params);
+
+    const replaceParams = {
+      outputFilename: outputFilename,
+      outputParam: {
+        DB_DATABASE: "qiita_stocker_test",
+        DB_USERNAME: "qiita_stocker_test",
+        APP_ENV: "testing",
+      },
+    };
+    deployUtils.replaceEnvFile(replaceParams);
   }
 })();
