@@ -1,8 +1,10 @@
 (async () => {
+  // TODO 将来的にこのscriptはローカル環境になる、その為には以下の課題解決が必要
+  // TODO https://github.com/nekochans/qiita-stocker-terraform/issues/74
+  // TODO https://github.com/nekochans/qiita-stocker-terraform/issues/75
   const deployUtils = require("./deployUtils");
 
   const deployStage = process.env.DEPLOY_STAGE;
-  const useInDocker = process.env.USE_IN_DOCKER;
   if (deployUtils.isAllowedDeployStage(deployStage) === false) {
     return Promise.reject(
       new Error(
@@ -18,16 +20,11 @@
     outputDir: "./",
     parameterPath: `/${deployStage}/qiita-stocker/api`,
     region: "ap-northeast-1",
+    profile: deployUtils.findAwsProfile(deployStage),
+    addParams: {
+      USE_IN_DOCKER: "true",
+    },
   };
-
-  if (deployStage === "local" || useInDocker === "true") {
-    params.profile = deployUtils.findAwsProfile(deployStage);
-  }
-
-  if (useInDocker === "true") {
-    params.addParams = {};
-    params.addParams.USE_IN_DOCKER = "true";
-  }
 
   await awsEnvCreator.createEnvFile(params);
   if (deployStage === "local") {
