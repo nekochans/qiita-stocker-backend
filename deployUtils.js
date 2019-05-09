@@ -11,19 +11,11 @@ exports.isAllowedDeployStage = deployStage =>
   deployStage === "prod";
 
 /**
- * SecretIdsを取得する
- *
- * @param deployStage
- * @return {string[]}
- */
-exports.findSecretIds = deployStage => [`${deployStage}/qiita-stocker`];
-
-/**
  * AWSのプロファイル名を取得する
  *
  * @return {string}
  */
-exports.findAwsProfile = (deployStage) => {
+exports.findAwsProfile = deployStage => {
   if (deployStage === "prod") {
     return "qiita-stocker-prod";
   }
@@ -32,24 +24,18 @@ exports.findAwsProfile = (deployStage) => {
 };
 
 /**
- * DBのホスト名を取得する
+ * EnvFileの中身を置換する
  *
- * @param deployStage
- * @return {string}
+ * @param replaceParams
  */
-exports.findDbHost = deployStage => {
-  if (deployStage === "local") {
-    return "mysql";
+exports.replaceEnvFile = replaceParams => {
+  const fs = require("fs");
+  let data = fs.readFileSync(replaceParams.outputFilename, "utf-8");
+
+  for (const [key, value] of Object.entries(replaceParams.outputParam)) {
+    data = data.replace(new RegExp(`${key}=.*`, "g"), `${key}=${value}`);
   }
 
-  return `qiita-stocker-db.${deployStage}`;
-};
-
-/**
- * メンテナンスモードかどうか判定する
- *
- * @return {boolean}
- */
-exports.isMaintenanceMode = () => {
-  return process.env.MAINTENANCE_MODE === "true";
+  fs.unlinkSync(replaceParams.outputFilename);
+  fs.appendFileSync(replaceParams.outputFilename, data);
 };
