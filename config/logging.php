@@ -40,6 +40,7 @@ return [
             'slack_token'   => env('NOTIFICATION_SLACK_TOKEN'),
             'slack_channel' => env('NOTIFICATION_SLACK_CHANNEL'),
             'via'           => App\Infrastructure\Logger::class,
+            'env'           => env('APP_ENV', 'production'),
         ],
 
         'stack' => [
