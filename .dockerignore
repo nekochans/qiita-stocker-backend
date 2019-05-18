@@ -1,4 +1,5 @@
 /.idea
+/.circleci
 /.git
 /.github
 /coverage
