@@ -1,8 +1,8 @@
 /.idea
+/.circleci
 /.git
 /.github
 /coverage
-/hooks
 /node_modules
 /bootstrap/cache/*
 /storage/app/*
@@ -15,14 +15,9 @@ deployUtils.js
 createDotenv.js
 package.json
 yarn.lock
-deployToS3.sh
-buildspec.yml
-buildspec-maintenance.yml
-appspec.yml
-.env.example
+.env*
 LICENSE
 qiita-stocker-backend.iml
 readme.md
 push-ecr.sh
 push-ecr-local.sh
-
