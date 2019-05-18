@@ -19,10 +19,9 @@ deployToS3.sh
 buildspec.yml
 buildspec-maintenance.yml
 appspec.yml
-.env.example
+.env*
 LICENSE
 qiita-stocker-backend.iml
 readme.md
 push-ecr.sh
 push-ecr-local.sh
-
