@@ -29,6 +29,26 @@ CORS_ORIGIN=http://localhost:8080
 MAINTENANCE_MODE=false
 ```
 
+## DockerfileのBuildを行いECRにプッシュする
+
+### ローカル環境からECRにDockerイメージをプッシュする
+
+`push-ecr-local.sh` を実行して下さい。
+
+例えば利用しているAWSアカウントが `000000000000` で Dockerイメージに `1.0.0` のタグを付けたい場合は以下のように実行します。
+
+```bash
+./push-ecr-local.sh 000000000000 1.0.0
+```
+
+### CodeBuildプロジェクトからECRにDockerイメージをプッシュする
+
+`buildspec-push-ecr.yml` が実行されます。
+
+CodeBuildの定義自体は [こちら](https://github.com/nekochans/qiita-stocker-terraform/blob/master/modules/aws/api/codebuild.tf) に定義されています。
+
+一時的な動作確認時には `push-ecr-local.sh` を使い、本番反映する際にはこちらのCodeBuildプロジェクトのほうを利用するのが良いでしょう。
+
 ## CircleCIをローカル上で実行する
 
 以下の手順を実行するとCircleCIがローカル上で実行出来るようになります。
