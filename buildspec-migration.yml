@@ -3,11 +3,7 @@ version: 0.2
 phases:
   install:
     commands:
-      - yarn install
       - composer install
-  pre_build:
-    commands:
-      - yarn run createDotenv:${DEPLOY_STAGE}
   build:
     commands:
       - php artisan migrate --force
