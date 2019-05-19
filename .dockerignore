@@ -19,5 +19,6 @@ yarn.lock
 LICENSE
 qiita-stocker-backend.iml
 readme.md
-push-ecr.sh
 push-ecr-local.sh
+buildspec-migration.yml
+buildspec-push-ecr.yml

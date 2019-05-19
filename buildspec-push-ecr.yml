@@ -1,0 +1,28 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - $(aws ecr get-login --no-include-email --region ap-northeast-1)
+      - echo ${DEPLOY_STAGE}
+      - echo ${AWS_ACCOUNT_ID}
+      - echo ${IMAGE_TAG}
+      - echo ${REPOSITORY_NGINX}
+      - echo ${REPOSITORY_PHP}
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build --no-cache --rm -t ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${REPOSITORY_NGINX}:latest -f docker/nginx/Dockerfile .
+      - docker tag ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${REPOSITORY_NGINX}:latest ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${REPOSITORY_NGINX}:${IMAGE_TAG}
+      - docker build --no-cache --rm -t ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${REPOSITORY_PHP}:latest -f docker/php/Dockerfile .
+      - docker tag ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${REPOSITORY_PHP}:latest ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${REPOSITORY_PHP}:${IMAGE_TAG}
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${REPOSITORY_NGINX}:latest
+      - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${REPOSITORY_NGINX}:${IMAGE_TAG}
+      - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${REPOSITORY_PHP}:latest
+      - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/${REPOSITORY_PHP}:${IMAGE_TAG}
