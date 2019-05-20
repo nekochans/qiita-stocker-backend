@@ -25,11 +25,12 @@ class Logger
         $builder->setSkipClassesPartials(['Illuminate\\']);
         $builder->setSlackHandler($slackHandlerBuilder->build());
 
-        if ($config['use_in_docker']) {
-            $builder->setUseInDocker(true);
-        } else {
+        // テストコード実行時は標準出力すると見にくいのでファイル出力する
+        if ($config['env'] === 'testing') {
             $builder->setFileName(storage_path('logs/qiita-stocker-backend-' . php_sapi_name() . '.log'));
             $builder->setMaxFiles($config['days']);
+        } else {
+            $builder->setUseInDocker(true);
         }
 
         return $builder->build();

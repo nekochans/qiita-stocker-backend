@@ -21,9 +21,6 @@
     parameterPath: `/${deployStage}/qiita-stocker/api`,
     region: "ap-northeast-1",
     profile: deployUtils.findAwsProfile(deployStage),
-    addParams: {
-      USE_IN_DOCKER: "true",
-    },
   };
 
   await awsEnvCreator.createEnvFile(params);
