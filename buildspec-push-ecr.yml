@@ -1,9 +1,10 @@
 version: 0.2
 
 phases:
-  pre_build:
+  install:
     runtime-versions:
       docker: 18
+  pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --no-include-email --region ap-northeast-1)
